@@ -117,219 +117,15 @@ public class Constants {
         public static final Matrix<N3,N1> VISION_STDEVS_MATRIX = new MatBuilder<N3,N1>(Nat.N3(),Nat.N1()).fill(1.0,1.0,1.0);
     }
 
-    /**
-     * Path Constants
-     */
-    public class PathConstants {
+    public class PathingConstants {
         public static final int BASE_TRAJ_PERIOD_MS = 0;
         public static final int MIN_POINTS_IN_TALON = 10;
         public static final int TRANSMIT_PERIOD_MS = 20;
     }
 
-    /**
-     * Intake Constants
-     */
-    public static final class IntakeConstants {
-        public static final int LEFT_MOTOR_ID = 16;
-        public static final int RIGHT_MOTOR_ID = 15;
+    public static final class IntakeConstants {}
 
-        public static final IdleMode NEUTRAL_MODE = IdleMode.kCoast;
-
-        public static final boolean LEFT_INVERSION = true;
-        public static final boolean RIGHT_INVERSION = false;
-
-        public static final double CONTROL_SCALING_FACTOR = 2;
-    }
-
-    /**
-     * Climb Constants
-     */
-    public static final class ClimbConstants {
-        public static final int MOTOR_ID = 27;
-
-        public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
-        public static final InvertType INVERSION = InvertType.None;
-    }
-
-
-    public static final class ThroatXConstants {
-        public static final int MOTOR_ID = 25; 
-
-        public static final IdleMode NEUTRAL_MODE = IdleMode.kBrake;
-        public static final boolean MOTOR_INVERSION = true;
-
-        public static final double KF = 0.010;
-        public static final double KP = 0.00022;
-        public static final double KI = 0;
-        public static final double KD = 0.003;
     
-        public static final double IZONE = 0;
-        public static final double MINOUT = -1;
-        public static final double MAXOUT = 1;
-
-        public static final double MAXSPEED = 5000 * 2048;
-    }
-
-    public static final class ThroatYConstants {
-        public static final int MOTOR_ID = 26;
-
-        public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
-        public static final boolean MOTOR_INVERSION = false;
-
-        public static final double KF = 0.010;
-        public static final double KP = 0.00022;
-        public static final double KI = 0;
-        public static final double KD = 0.003;
-    
-        public static final double IZONE = 0;
-        public static final double MINOUT = -1;
-        public static final double MAXOUT = 1;
-
-        public static final double MAXSPEED = 5000 * 2048;
-    }
-
-    public static final class TurretConstants {
-        public static final int MOTOR_ID = 40;
-
-        public static final IdleMode NEUTRAL_MODE = IdleMode.kBrake;
-        public static final boolean INVERSION = true;
-
-        public static final double TICKS_PER_DEGREE = 10732 / 90;
-
-        public static final double MAX_INPUT_PERCENTAGE = 0.2;
-
-        public static final double KF = 1/11000;
-        public static final double KP = 0.0;
-        public static final double KI = 0.0;
-        public static final double KD = 0.0;
-        public static final int IZONE = 0;
-
-        public static final double MINOUT = -1;
-        public static final double MAXOUT = 1;
-
-        public static final int TOLERANCE = 1000;
-        public static final double MANUAL_COEF = 0.3;
-        public static final double AT_SETPOINT_DURATION = 0.05;
-
-        //SmartMotion Coefficients
-        public static final double MAXVEL = 2000;
-        public static final double MAXACC = 4000;
-    }
-
-    public static final class HoodConstants {
-        public static final int MOTOR_ID = 30;
-
-        public static final IdleMode IDLE_MODE = IdleMode.kBrake;
-        public static final boolean INVERSION = false;
-
-        public static final double GEAR_RATIO = 45.0;
-
-        public static final int FULLY_EXTENDED_TICKS = 82;
-
-        public static final double[] LOGISTFIT = new double[]{-2.317,-1.246,78.78};
-        // The names refer to the angle of ball release
-        //For limelight, the following are areas:
-        //Green zone: 4.04
-        //Yellow zone: 2.6
-        //Blue zone: 1.55
-        //Red zone: 0.91
-        public static enum HoodAngle {
-            // +-500 for extra tolerance, limit switches should do its thing
-            RETRACTED(70.6), HIGH(46.02), MEDIUM(22.55), LOW(11.02);
-            
-            public final double ticks;
-
-            private HoodAngle(double ticks) {
-                this.ticks = ticks;
-            }
-        }
-
-        public static final double K_F = 0;
-        public static final double K_P = 0.04;
-        public static final double K_I = 0;
-        public static final double K_D = 0.01;
-        public static final int K_INTEGRAL_ZONE = 0;
-
-        public static final int TOLERANCE = 400;
-        public static final double AT_SETPOINT_DURATION = 0.2;
-
-        // distance to hood angle regression
-        public static final double ATAN_COEFFICIENT = -600670000;// 6.0067*10^8
-        public static final double DISTANCE_COEFFICIENT = -624343.7;
-        public static final double ANGLE_CONSTANT = -943521338;
-    }
-
-    public static final class ShooterConstants {
-        public static final int MOTOR_LEFT_ID = 21;
-        public static final int MOTOR_RIGHT_ID = 20;
-
-        public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
-        public static final InvertType INVERSION = InvertType.None;
-
-        public static final double MAX_SPEED = 7900; // in ticks per 100ms
-        public static final double FAKE_MAX_SPEED = 17000; // in ticks per 100ms
-        public static final double ERROR_TOLERANCE = 250;
-        public static final double UP_TO_SPEED_DURATION = 0.5; // in seconds
-
-        public static final double K_F = 1023.0 * 0.4 / MAX_SPEED;
-        public static final double K_P = 0.1;
-        public static final double K_I = 0; // Shouldn't be touched
-        public static final double K_D = 10; // Shouldn't be touched
-        public static final int K_INTEGRAL_ZONE = 0; // Shouldn't be touched
-    }
-
-    /**
-     * Limelight Constants
-     */
-    public static final class LimelightConstants {
-        public static final String NAME = "limelight";
-
-        public static final double MOUNTING_ANGLE = 31.4; // in degrees
-        public static final double MOUNTING_HEIGHT = 0.56; // in meters
-
-        // TODO: Improve the constants
-        public static final double AIM_KP = 0.0088;
-        public static final double AIM_KI = 0;
-        public static final double AIM_KD = 0.0;
-        public static final double MIN_I = 0;
-        public static final double MAX_I = 0;
-        public static final double ANGLE_ADJUST_THRESHOLD = 2.0;
-
-        public static final double AIM_ON_TARGET_DURATION = 0.2;
-
-        public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> DIST_TO_TICK_ESTIMATOR = new InterpolatingTreeMap<>();
-        static {
-            DIST_TO_TICK_ESTIMATOR.put(new InterpolatingDouble(0.0), new InterpolatingDouble(0.0));
-            DIST_TO_TICK_ESTIMATOR.put(new InterpolatingDouble(1.0), new InterpolatingDouble(1.0));
-        }
-    }
-
-    public static final class ExtensionConstants {
-        public static final int MOTOR_ID = 40;
-
-        public static final IdleMode NEUTRAL_MODE = IdleMode.kBrake;
-        public static final boolean INVERSION = false;
-
-        public static final boolean FORWARD_LIMIT_ENABLE = true;
-        public static final int MAX_EXTENSION = 387914;
-        public static final double TICKS_PER_DEGREE = 10732 / 90;
-
-        public static final double MAX_INPUT_PERCENTAGE = 1;
-
-        public static final double KF = 0.0;
-        public static final double KP = 0.07;
-        public static final double KI = 0.0;
-        public static final double KD = 0.001;
-        public static final int IZONE = 0;
-
-        public static final double MINOUT = -1;
-        public static final double MAXOUT = 1;
-        public static final double MAXRPM = 5000;
-
-        public static final int TOLERANCE = 1000;
-        public static final double MANUAL_COEF = 0.3;
-        public static final double AT_SETPOINT_DURATION = 0.05;
-    }
 
     public static final class VisionConstants{
         public static final String NAME = "SmartDashboard";
@@ -345,24 +141,11 @@ public class Constants {
         Path trajectoryFilePath = Filesystem.getDeployDirectory().toPath().resolve("paths/");
     }
 
-    public static final class TOFSensorConstants {
-        public static final int SENSOR_ID = 0;   
-    }
-
-    /**
-     * Universal constants
-     */
     public static final double JOYSTICK_DEADBAND = 0.07;
-
     public static final int TIMEOUT_MS = 20;
-
     public static final double TIMEOUT_S = TIMEOUT_MS/1000.0f;
-
     public static final int SECONDS_IN_MINUTE = 60;
-
     public static final double SQRTTWO = Math.sqrt(2);
-
     public static final String CANBUS_STRING = "seCANdary";
-
     public static final PneumaticsModuleType PNEUMATICS_MODULE_TYPE = PneumaticsModuleType.REVPH;
 }

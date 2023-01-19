@@ -1,8 +1,9 @@
-package raidzero.robot.submodules;
+package raidzero.robot.wrappers;
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import raidzero.robot.Constants.TOFSensorConstants;
+import raidzero.robot.submodules.Submodule;
 
 
 public class TOFSensor extends Submodule {

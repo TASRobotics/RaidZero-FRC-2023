@@ -1,7 +1,8 @@
-package raidzero.robot.submodules;
+package raidzero.robot.wrappers;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
+import raidzero.robot.submodules.Submodule;
 
 public class Led extends Submodule {
 

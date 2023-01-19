@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
+import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
@@ -78,7 +79,7 @@ public class Swerve extends Submodule {
     private Field2d fieldPose = new Field2d();
 
     private HolonomicDriveController pathController;
-    private Trajectory currentTrajectory;
+    private PathPlannerTrajectory currentTrajectory;
     private Rotation2d targetAngle;
     private Timer timer = new Timer();
 
@@ -124,10 +125,14 @@ public class Swerve extends Submodule {
             4
         );
         
+        // check
         odometry = new SwerveDrivePoseEstimator(
+            kinematics,
+            Rotation2d.fromDegrees(pigeon.getAngle()),
+            
                 DriveConstants.STARTING_ROTATION,
                 DriveConstants.STARTING_POSE,
-                kinematics, DriveConstants.STATE_STDEVS_MATRIX,
+                DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.ANGLE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
@@ -275,17 +280,12 @@ public class Swerve extends Submodule {
         bottomRightModule.setTargetState(targetState[3], ignoreAngle, true);
     }
 
-    public void followPath(Trajectory trajectory) {
-        followPath(trajectory, new Rotation2d());
-    }
-
-    public void followPath(Trajectory trajectory, Rotation2d targetAngle) {
+    public void followPath(PathPlannerTrajectory trajectory) {
         if (controlState == ControlState.PATHING) {
             return;
         }
         controlState = ControlState.PATHING;
         currentTrajectory = trajectory;
-        this.targetAngle = targetAngle;
 
         timer.reset();
         timer.start();
