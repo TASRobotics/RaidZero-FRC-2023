@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -56,8 +57,7 @@ public class Swerve extends Submodule {
         return instance;
     }
 
-    private Swerve() {
-    }
+    private Swerve() {}
 
     private SwerveModule topRightModule = new SwerveModule();
     private SwerveModule topLeftModule = new SwerveModule();
@@ -101,27 +101,27 @@ public class Swerve extends Submodule {
         Shuffleboard.getTab(Tab.MAIN).add("Pigey", pigeon).withSize(2, 2).withPosition(4, 4);
 
         topRightModule.onInit(
-            SwerveConstants.MODULE_ID_TOP_RIGHT, 
-            SwerveConstants.MODULE_ID_TOP_RIGHT + 1, 
-            SwerveConstants.INIT_MODULES_DEGREES[0], 
+            SwerveConstants.TOP_RIGHT_THROTTLE_ID, 
+            SwerveConstants.TOP_RIGHT_ROTOR_ID, 
+            SwerveConstants.TOP_RIGHT_ROTOR_OFFSET, 
             1
         );
         topLeftModule.onInit(
-            SwerveConstants.MODULE_ID_TOP_LEFT, 
-            SwerveConstants.MODULE_ID_TOP_LEFT + 1, 
-            SwerveConstants.INIT_MODULES_DEGREES[1], 
+            SwerveConstants.TOP_LEFT_THROTTLE_ID, 
+            SwerveConstants.TOP_LEFT_ROTOR_ID, 
+            SwerveConstants.TOP_LEFT_ROTOR_OFFSET, 
             2
         );
         bottomLeftModule.onInit(
-            SwerveConstants.MODULE_ID_BOTTOM_LEFT, 
-            SwerveConstants.MODULE_ID_BOTTOM_LEFT + 1, 
-            SwerveConstants.INIT_MODULES_DEGREES[2], 
+            SwerveConstants.REAR_LEFT_THROTTLE_ID, 
+            SwerveConstants.REAR_LEFT_ROTOR_ID, 
+            SwerveConstants.REAR_LEFT_ROTOR_OFFSET, 
             3
         );
         bottomRightModule.onInit(
-            SwerveConstants.MODULE_ID_BOTTOM_RIGHT, 
-            SwerveConstants.MODULE_ID_BOTTOM_RIGHT + 1, 
-            SwerveConstants.INIT_MODULES_DEGREES[3], 
+            SwerveConstants.REAR_RIGHT_THROTTLE_ID, 
+            SwerveConstants.REAR_RIGHT_ROTOR_ID, 
+            SwerveConstants.REAR_RIGHT_ROTOR_OFFSET, 
             4
         );
         
@@ -203,6 +203,15 @@ public class Swerve extends Submodule {
         bottomRightModule.zero();
     }
 
+    public SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+            topLeftModule.getModulePosition(), 
+            topRightModule.getModulePosition(), 
+            bottomLeftModule.getModulePosition(), 
+            bottomRightModule.getModulePosition()
+        };
+    }
+
     /**
      * Zeroes the heading of the swerve.
      */
@@ -211,7 +220,7 @@ public class Swerve extends Submodule {
     }
 
     public void setPose(Pose2d pose) {
-        odometry.resetPosition(pose, Rotation2d.fromDegrees(pigeon.getAngle()));
+        odometry.resetPosition(Rotation2d.fromDegrees(pigeon.getAngle()), getModulePositions(), pose);
     }
 
     public Pose2d getPose() {
@@ -245,10 +254,7 @@ public class Swerve extends Submodule {
         try{
             return odometry.update(
                 Rotation2d.fromDegrees(pigeon.getAngle()),
-                topLeftModule.getState(),
-                topRightModule.getState(),
-                bottomLeftModule.getState(),
-                bottomRightModule.getState()
+                getModulePositions()
             );
         }
         catch(Exception e){
@@ -316,12 +322,5 @@ public class Swerve extends Submodule {
         } else { 
             bottomRightModule.testMotorAndRotor(motorOutput, rotorOutput);
         }
-    }
-
-    public void setThrottleRampRate(double val) {
-        topRightModule.setRotorRampRate(val);
-        topLeftModule.setRotorRampRate(val);
-        bottomRightModule.setRotorRampRate(val);
-        bottomLeftModule.setRotorRampRate(val);
     }
 }

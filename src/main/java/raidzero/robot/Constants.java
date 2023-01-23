@@ -2,14 +2,7 @@ package raidzero.robot;
 
 import java.nio.file.Path;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.fasterxml.jackson.annotation.JacksonAnnotationValue;
-import com.revrobotics.CANSparkMax.IdleMode;
-
-import org.apache.commons.math3.util.FastMath;
-import org.ejml.simple.SimpleMatrix;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -22,25 +15,43 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import raidzero.robot.utils.InterpolatingDouble;
-import raidzero.robot.utils.InterpolatingTreeMap;
-import raidzero.robot.utils.MathTools;
 
 public class Constants {
     /**
      * Swerve Constants
      */
     public static final class SwerveConstants {
-        public static final int MODULE_ID_TOP_RIGHT = 1;
-        public static final int MODULE_ID_TOP_LEFT = 3;
-        public static final int MODULE_ID_BOTTOM_LEFT = 5;
-        public static final int MODULE_ID_BOTTOM_RIGHT = 7;
-        public static final double[] INIT_MODULES_DEGREES = new double[] {
-            (130.781 + 90) % 360.0, 
-            (190.371 + 90) % 360.0, 
-            (125.420 + 90) % 360.0, 
-            (311.924 + 90) % 360.0
-        };
+        public static final double kOpenLoopRampRate = 0.0;
+        public static final double kClosedLoopRampRate = 0.0;
+
+        /** Device IDs */
+        public static final int TOP_LEFT_THROTTLE_ID = 0;
+        public static final int TOP_RIGHT_THROTTLE_ID = 0;
+        public static final int REAR_LEFT_THROTTLE_ID = 0;
+        public static final int REAR_RIGHT_THROTTLE_ID = 0;
+
+        public static final int TOP_LEFT_ROTOR_ID = 0;
+        public static final int TOP_RIGHT_ROTOR_ID = 0;
+        public static final int REAR_LEFT_ROTOR_ID = 0;
+        public static final int REAR_RIGHT_ROTOR_ID = 0;
+
+        public static final int TOP_LEFT_ROTOR_OFFSET = 0;
+        public static final int TOP_RIGHT_ROTOR_OFFSET = 0;
+        public static final int REAR_LEFT_ROTOR_OFFSET = 0;
+        public static final int REAR_RIGHT_ROTOR_OFFSET = 0;
+
+
+
+        // public static final int MODULE_ID_TOP_RIGHT = 1;
+        // public static final int MODULE_ID_TOP_LEFT = 3;
+        // public static final int MODULE_ID_BOTTOM_LEFT = 5;
+        // public static final int MODULE_ID_BOTTOM_RIGHT = 7;
+        // public static final double[] INIT_MODULES_DEGREES = new double[] {
+        //     (130.781 + 90) % 360.0, 
+        //     (190.371 + 90) % 360.0, 
+        //     (125.420 + 90) % 360.0, 
+        //     (311.924 + 90) % 360.0
+        // };
 
         // (349.893 + 90) % 360.0, 
         // (149.854 + 90) % 360.0, 
@@ -57,7 +68,7 @@ public class Constants {
         // Robot dimensions
         public static final double ROBOT_WIDTH_INCHES = 28.0; // 23.0 inches on ugly bot
         public static final double ROBOT_HALF_WIDTH_METERS = Units.inchesToMeters(ROBOT_WIDTH_INCHES) / 2.0;
-        public static final double ROBOT_RADIUS_INCHES = FastMath.hypot(ROBOT_WIDTH_INCHES, ROBOT_WIDTH_INCHES) / 2.0;
+        public static final double ROBOT_RADIUS_INCHES = Math.hypot(ROBOT_WIDTH_INCHES, ROBOT_WIDTH_INCHES) / 2.0;
         public static final double ROBOT_RADIUS_METERS = Units.inchesToMeters(ROBOT_RADIUS_INCHES);
         public static final double WHEEL_DIAMETER_INCHES = 4.0;
         public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(WHEEL_DIAMETER_INCHES);
@@ -141,6 +152,57 @@ public class Constants {
         Path trajectoryFilePath = Filesystem.getDeployDirectory().toPath().resolve("paths/");
     }
 
+    public static final class LimelightConstants {
+        public static final String NAME = "limelight";
+
+        public static final double MOUNTING_ANGLE = 0.0; // in degrees
+        public static final double MOUNTING_HEIGHT = 0.0; // in meters
+    }
+
+    public static final class ArmConstants {
+        public static final int LOWER_LEADER_ID = 0;
+        public static final int LOWER_FOLLOWER_ID = 0;
+        public static final int UPPER_LEADER_ID = 0;
+        public static final int UPPER_FOLLOWER_ID = 0;
+
+        public static final boolean LOWER_MOTOR_INVERSION = false;
+        public static final boolean UPPER_MOTOR_INVERSION = false;
+
+        public static final int LOWER_CURRENT_LIMIT = 35;
+        public static final int UPPER_CURRENT_LIMIT = 35;
+
+        public static final double LOWER_ZERO_OFFSET = 0.0;
+        public static final double UPPER_ZERO_OFFSET = 0.0;
+
+        public static final boolean LOWER_ENCODER_INVERSION = false;
+        public static final boolean UPPER_ENCODER_INVERSION = false;
+
+        public static final int LOWER_SMART_MOTION_SLOT = 0;
+        public static final int UPPER_SMART_MOTION_SLOT = 0;
+
+        public static final double LOWER_KF = 0.0;
+        public static final double LOWER_KP = 0.0;
+        public static final double LOWER_KI = 0.0;
+        public static final double LOWER_KD = 0.0;
+        public static final double LOWER_ARBITRARY_FF = 0.0;
+        public static final double LOWER_MIN_VEL = 0.0;
+        public static final double LOWER_MAX_VEL = 0.0;
+        public static final double LOWER_MAX_ACCEL = 0.0;
+        public static final double LOWER_MIN_ERROR = 0.0;
+        public static final double UPPER_KF = 0.0;
+        public static final double UPPER_KP = 0.0;
+        public static final double UPPER_KI = 0.0;
+        public static final double UPPER_KD = 0.0;
+        public static final double UPPER_ARBITRARY_FF = 0.0;
+        public static final double UPPER_MIN_VEL = 0.0;
+        public static final double UPPER_MAX_VEL = 0.0;
+        public static final double UPPER_MAX_ACCEL = 0.0;
+        public static final double UPPER_MIN_ERROR = 0.0;
+
+        public static final double PID_WRAPPING_MIN = 0.0;
+        public static final double PID_WRAPPING_MAX = 360.0;
+    }
+
     public static final double JOYSTICK_DEADBAND = 0.07;
     public static final int TIMEOUT_MS = 20;
     public static final double TIMEOUT_S = TIMEOUT_MS/1000.0f;
@@ -148,4 +210,5 @@ public class Constants {
     public static final double SQRTTWO = Math.sqrt(2);
     public static final String CANBUS_STRING = "seCANdary";
     public static final PneumaticsModuleType PNEUMATICS_MODULE_TYPE = PneumaticsModuleType.REVPH;
+    public static final double VOLTAGE_COMP = 12.0;
 }

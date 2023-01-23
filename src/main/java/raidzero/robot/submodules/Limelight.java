@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import raidzero.robot.Constants.LimelightConstants;
 import raidzero.robot.dashboard.Tab;
-import raidzero.robot.utils.InterpolatingDouble;
-import raidzero.robot.Constants.LimelightConstants;
 
 // Reference:
 // http://docs.limelightvision.io/en/latest/networktables_api.html
