@@ -9,6 +9,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -40,76 +41,57 @@ public class Constants {
         public static final int REAR_LEFT_ROTOR_OFFSET = 0;
         public static final int REAR_RIGHT_ROTOR_OFFSET = 0;
 
+        public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
+        public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
+        public static final double WHEEL_DIAMETER_METERS = 0.1016; 
+        public static final double MAX_VEL_MPS = 4.959668;
 
+        // 20.75 OR 22.75 inches
+        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(20.75); 
+        public static final double WHEELBASE_METERS = Units.inchesToMeters(20.75); 
 
-        // public static final int MODULE_ID_TOP_RIGHT = 1;
-        // public static final int MODULE_ID_TOP_LEFT = 3;
-        // public static final int MODULE_ID_BOTTOM_LEFT = 5;
-        // public static final int MODULE_ID_BOTTOM_RIGHT = 7;
-        // public static final double[] INIT_MODULES_DEGREES = new double[] {
-        //     (130.781 + 90) % 360.0, 
-        //     (190.371 + 90) % 360.0, 
-        //     (125.420 + 90) % 360.0, 
-        //     (311.924 + 90) % 360.0
-        // };
+        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
+            // Front left
+            new Translation2d(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
+            // Front right
+            new Translation2d(TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0),
+            // Back left
+            new Translation2d(-TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
+            // Back right
+            new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0)
+        );
 
-        // (349.893 + 90) % 360.0, 
-        // (149.854 + 90) % 360.0, 
-        // (6.416 + 90) % 360.0, 
-        // (182.637 + 90) % 360.0
-        // Ugly Bot
-        // (195.820 + 90) % 360.0, 
-        // (278.789 + 90) % 360.0, 
-        // (180.000 + 90) % 360.0, 
-        // (107.139 + 90) % 360.0
+        /** 254 Pathing Constants (smooth): */
+        public static final double MAX_DRIVE_VEL = MAX_VEL_MPS * 0.7;
+        public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL;
+        public static final double MAX_STEERING_VEL = Units.degreesToRadians(750);
 
-        //new double[] {(57.832 + 0) % 360.0, (205.576 + 0) % 360.0, (212.520 + 0) % 360.0, (308.232 + 0) % 360.0};
+        /** 254 Pathing Constants (fast): */
+        // public static final double MAX_DRIVE_VEL = MAX_VEL_MPS;
+        // public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL / 0.2;
+        // public static final double MAX_STEERING_VEL = Units.degreesToRadians(1000);
+        
+        /** 254 Module Constants */
+        public static final int ROTOR_POSITION_PID_SLOT = 0;
+        public static final double ROTOR_KP = 0.75;
+        public static final double ROTOR_KI = 0;
+        public static final double ROTOR_KD = 15;
 
-        // Robot dimensions
-        public static final double ROBOT_WIDTH_INCHES = 28.0; // 23.0 inches on ugly bot
-        public static final double ROBOT_HALF_WIDTH_METERS = Units.inchesToMeters(ROBOT_WIDTH_INCHES) / 2.0;
-        public static final double ROBOT_RADIUS_INCHES = Math.hypot(ROBOT_WIDTH_INCHES, ROBOT_WIDTH_INCHES) / 2.0;
-        public static final double ROBOT_RADIUS_METERS = Units.inchesToMeters(ROBOT_RADIUS_INCHES);
-        public static final double WHEEL_DIAMETER_INCHES = 4.0;
-        public static final double WHEEL_DIAMETER_METERS = Units.inchesToMeters(WHEEL_DIAMETER_INCHES);
-
-        public static final Translation2d MODULE_TOP_LEFT_POSITION = new Translation2d(ROBOT_HALF_WIDTH_METERS, ROBOT_HALF_WIDTH_METERS);
-        public static final Translation2d MODULE_TOP_RIGHT_POSITION = new Translation2d(ROBOT_HALF_WIDTH_METERS, -ROBOT_HALF_WIDTH_METERS);
-        public static final Translation2d MODULE_BOTTOM_LEFT_POSITION = new Translation2d(-ROBOT_HALF_WIDTH_METERS, ROBOT_HALF_WIDTH_METERS);
-        public static final Translation2d MODULE_BOTTOM_RIGHT_POSITION = new Translation2d(-ROBOT_HALF_WIDTH_METERS, -ROBOT_HALF_WIDTH_METERS);
-
-        public static final double FALCON_TICKS = 2048.0;
+        public static final int THROTTLE_VELOCITY_PID_SLOT = 0;
+        public static final double THROTTLE_KP = 0.1;
+        public static final double THROTTLE_KI = 0.0;
+        public static final double THROTTLE_KD = 0.01;
+        public static final double THROTTLE_KF = 1023 / (MAX_VEL_MPS / (Math.PI * WHEEL_DIAMETER_METERS * THROTTLE_REDUCTION / 2048.0 * 10));
 
         // Using SDS 6.75 ratio
-        public static final double MOTOR_RATIO = 6.75;
-        public static final double MOTOR_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS / (FALCON_TICKS * MOTOR_RATIO);
-
+        public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS / (2048 * (1/THROTTLE_REDUCTION));
         public static final double CANCODER_TO_DEGREES = 360.0 / 4096.0;
-
-        public static final double MAX_SPEED_MPS = 5.0;  //was 4.0
-        public static final double MAX_ANGULAR_SPEED_RPS = 2 * Math.PI;
 
         public static final boolean MOTOR_INVERSION = false;
         public static final boolean ROTOR_INVERSION = true;
         public static final boolean ROTOR_INVERT_SENSOR_PHASE = true;
 
-        // PID constants
-        public static final int PID_PRIMARY_SLOT = 0;
-        public static final int PID_AUX_SLOT = 1;
-
-        public static final double MOTOR_MAX_VELOCITY_TICKS_PER_100MS = 21397.0;
-        public static final double MOTOR_MAX_VELOCITY_EFFECTIVE_MPS = 3.0;
-        public static final double MOTOR_KF = 1.0 * 1023 / MOTOR_MAX_VELOCITY_TICKS_PER_100MS;
-        public static final double MOTOR_KP = 0.08;
-        public static final double MOTOR_KD = 0.2;
-
-        public static final double ROTOR_MAX_VELOCITY_TICKS_PER_100MS = 3600.0;
-        public static final double ROTOR_KF = 1.0 * 1023 / ROTOR_MAX_VELOCITY_TICKS_PER_100MS;
-        public static final double ROTOR_KP = 0.8; //1.35
-        public static final double ROTOR_KD = 3.0; //0.2
-        public static final double ROTOR_TARG_VELO = 1.0 * ROTOR_MAX_VELOCITY_TICKS_PER_100MS;
-        public static final double ROTOR_TARG_ACCEL = 10 * ROTOR_TARG_VELO;
-
+        /** Current Limits */
         public static final SupplyCurrentLimitConfiguration ROTOR_CURRENT_LIMIT = 
             new SupplyCurrentLimitConfiguration(true, 25, 40, 0.1);
         public static final SupplyCurrentLimitConfiguration THROTTLE_CURRENT_LIMIT = 

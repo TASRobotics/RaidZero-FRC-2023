@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import raidzero.robot.auto.sequences.*;
 import raidzero.robot.dashboard.Tab;
-import raidzero.robot.submodules.Vision;
 
 /**
  * Class that manages autonomous sequences.
@@ -17,7 +16,8 @@ public class AutoRunner {
     private AutoSequence selectedSequence;
 
     private AutoSequence[] availableSequences = {
-        new TestRotationSequence()
+        new TestSequence(), 
+        new EmptySequence()
     };
 
     public AutoRunner() {

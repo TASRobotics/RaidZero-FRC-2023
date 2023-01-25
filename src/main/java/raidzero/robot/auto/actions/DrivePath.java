@@ -2,9 +2,6 @@ package raidzero.robot.auto.actions;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-
 import raidzero.robot.submodules.Swerve;
 
 /**

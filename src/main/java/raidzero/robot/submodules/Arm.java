@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 
+import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
@@ -75,6 +76,7 @@ public class Arm extends Submodule {
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
         mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
+        mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mLowerEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
         mLowerEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
         mLowerPIDController.setFeedbackDevice(mLowerEncoder);
@@ -96,6 +98,7 @@ public class Arm extends Submodule {
         mUpperLeader.setIdleMode(IdleMode.kBrake);
         mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
         mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
+        mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mUpperEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
         mUpperEncoder.setInverted(ArmConstants.UPPER_ENCODER_INVERSION);
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);

@@ -122,7 +122,7 @@ public class SwerveModule extends Submodule implements Sendable {
 
     @Override
     public void zero() {
-        throttle.setSelectedSensorPosition(0, SwerveConstants.PID_PRIMARY_SLOT, Constants.TIMEOUT_MS);
+        throttle.setSelectedSensorPosition(0, SwerveConstants.THROTTLE_VELOCITY_PID_SLOT, Constants.TIMEOUT_MS);
         double abs = rotorExternalEncoder.getAbsolutePosition();
         System.out.println("Q" + quadrant + " abs angle=" + abs + ", forward=" + forwardAngle);
         rotorExternalEncoder.setPosition(MathTools.wrapDegrees(abs - forwardAngle));
@@ -133,17 +133,17 @@ public class SwerveModule extends Submodule implements Sendable {
         switch (controlState) {
             case VELOCITY:                
                 throttle.set(ControlMode.Velocity, outputThrottleVelocity);
-                rotor.set(ControlMode.MotionMagic, outputRotorAngle);
+                rotor.set(ControlMode.Position, outputRotorAngle);
                 break;
             case PATHING:
                 break;
             case TESTING:
                 throttle.set(ControlMode.Velocity, outputThrottleVelocity);
-                rotor.set(ControlMode.MotionMagic, outputRotorAngle);
+                rotor.set(ControlMode.Position, outputRotorAngle);
                 break;
             case PERCENT:
                 throttle.set(ControlMode.PercentOutput, outputThrottlePercentSpeed);
-                rotor.set(ControlMode.MotionMagic, outputRotorAngle);
+                rotor.set(ControlMode.Position, outputRotorAngle);
                 break;
         }
     }
@@ -154,8 +154,8 @@ public class SwerveModule extends Submodule implements Sendable {
      * @return the velocity of the throttle in meters per second.
      */
     public double getThrottleVelocity() {
-        return throttle.getSelectedSensorVelocity(SwerveConstants.PID_PRIMARY_SLOT)
-             * SwerveConstants.MOTOR_TICKS_TO_METERS * 10.0;
+        return throttle.getSelectedSensorVelocity(SwerveConstants.THROTTLE_VELOCITY_PID_SLOT)
+             * SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0;
     }
 
     /**
@@ -166,7 +166,7 @@ public class SwerveModule extends Submodule implements Sendable {
     public void setThrottleVelocity(double velocity) {
         controlState = ControlState.VELOCITY;
 
-        outputThrottleVelocity = velocity / (SwerveConstants.MOTOR_TICKS_TO_METERS * 10.0);
+        outputThrottleVelocity = velocity / (SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0);
     }
 
     /**
@@ -194,7 +194,7 @@ public class SwerveModule extends Submodule implements Sendable {
      * @return thottle position
      */
     public double getThrottlePosition() {
-        return throttle.getSelectedSensorPosition() * SwerveConstants.MOTOR_TICKS_TO_METERS;
+        return throttle.getSelectedSensorPosition() * SwerveConstants.THROTTLE_TICKS_TO_METERS;
     }
 
     /**
@@ -300,7 +300,7 @@ public class SwerveModule extends Submodule implements Sendable {
     public void testMotorAndRotor(double motorOutput, double rotorOutput) {
         controlState = ControlState.TESTING;
 
-        outputThrottleVelocity = motorOutput / (SwerveConstants.MOTOR_TICKS_TO_METERS * 10.0);
+        outputThrottleVelocity = motorOutput / (SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0);
         outputRotorAngle = MathTools.wrapDegrees(rotorOutput) / SwerveConstants.CANCODER_TO_DEGREES;
         // if (quadrant == 1) {
         //     System.out.println("Target angle: " + outputRotorAngle + ", actual: " + (getRotorAngle() / 360.0 * 4096));
@@ -312,10 +312,9 @@ public class SwerveModule extends Submodule implements Sendable {
         throttle.setInverted(SwerveConstants.MOTOR_INVERSION);
         throttle.setNeutralMode(NeutralMode.Brake);
         throttle.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        throttle.selectProfileSlot(0, SwerveConstants.PID_PRIMARY_SLOT);
-        throttle.config_kF(0, SwerveConstants.MOTOR_KF);
-        throttle.config_kP(0, SwerveConstants.MOTOR_KP);
-        throttle.config_kD(0, SwerveConstants.MOTOR_KD);
+        throttle.config_kF(SwerveConstants.THROTTLE_VELOCITY_PID_SLOT, SwerveConstants.THROTTLE_KF);
+        throttle.config_kP(SwerveConstants.THROTTLE_VELOCITY_PID_SLOT, SwerveConstants.THROTTLE_KP);
+        throttle.config_kD(SwerveConstants.THROTTLE_VELOCITY_PID_SLOT, SwerveConstants.THROTTLE_KD);
         throttle.configVoltageCompSaturation(Constants.VOLTAGE_COMP);
         throttle.enableVoltageCompensation(true);
         throttle.configSupplyCurrentLimit(SwerveConstants.THROTTLE_CURRENT_LIMIT);
@@ -331,12 +330,9 @@ public class SwerveModule extends Submodule implements Sendable {
         rotor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
         rotor.setSensorPhase(SwerveConstants.ROTOR_INVERT_SENSOR_PHASE);
         rotor.configRemoteFeedbackFilter(encoder, 0);
-        rotor.selectProfileSlot(0, SwerveConstants.PID_PRIMARY_SLOT);
-        rotor.config_kF(0, SwerveConstants.ROTOR_KF);
-        rotor.config_kP(0, SwerveConstants.ROTOR_KP);
-        rotor.config_kD(0, SwerveConstants.ROTOR_KD);
-        rotor.configMotionAcceleration(SwerveConstants.ROTOR_TARG_ACCEL);
-        rotor.configMotionCruiseVelocity(SwerveConstants.ROTOR_TARG_VELO);
+        rotor.config_kP(SwerveConstants.ROTOR_POSITION_PID_SLOT, SwerveConstants.ROTOR_KP);
+        rotor.config_kI(SwerveConstants.ROTOR_POSITION_PID_SLOT, SwerveConstants.ROTOR_KI);
+        rotor.config_kD(SwerveConstants.ROTOR_POSITION_PID_SLOT, SwerveConstants.ROTOR_KD);
         rotor.configVoltageCompSaturation(Constants.VOLTAGE_COMP);
         rotor.enableVoltageCompensation(true);
         rotor.configSupplyCurrentLimit(SwerveConstants.ROTOR_CURRENT_LIMIT);

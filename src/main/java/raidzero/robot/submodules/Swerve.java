@@ -66,13 +66,6 @@ public class Swerve extends Submodule {
 
     private WPI_Pigeon2_Helper pigeon;
 
-    private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-        SwerveConstants.MODULE_TOP_LEFT_POSITION, 
-        SwerveConstants.MODULE_TOP_RIGHT_POSITION,
-        SwerveConstants.MODULE_BOTTOM_LEFT_POSITION, 
-        SwerveConstants.MODULE_BOTTOM_RIGHT_POSITION
-    );
-
     private SwerveDrivePoseEstimator odometry;
     private Pose2d currentPose;
     private Pose2d prevPose;
@@ -127,7 +120,7 @@ public class Swerve extends Submodule {
         
         // check
         odometry = new SwerveDrivePoseEstimator(
-            kinematics,
+            SwerveConstants.KINEMATICS,
             Rotation2d.fromDegrees(pigeon.getAngle()),
             
                 DriveConstants.STARTING_ROTATION,
@@ -247,7 +240,7 @@ public class Swerve extends Submodule {
     }
 
     public SwerveDriveKinematics getKinematics() {
-        return kinematics;
+        return SwerveConstants.KINEMATICS;
     }
 
     private Pose2d updateOdometry() {
@@ -271,7 +264,7 @@ public class Swerve extends Submodule {
             ignoreAngle = true;
         }
         var targetState =
-            kinematics.toSwerveModuleStates(
+            SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                     xSpeed, ySpeed, angularSpeed, 
@@ -279,7 +272,7 @@ public class Swerve extends Submodule {
                   )
                 : new ChassisSpeeds(xSpeed, ySpeed, angularSpeed)
             );
-        SwerveDriveKinematics.desaturateWheelSpeeds(targetState, SwerveConstants.MAX_SPEED_MPS);
+        SwerveDriveKinematics.desaturateWheelSpeeds(targetState, SwerveConstants.MAX_DRIVE_VEL);
         topLeftModule.setTargetState(targetState[0], ignoreAngle, true);
         topRightModule.setTargetState(targetState[1], ignoreAngle, true);
         bottomLeftModule.setTargetState(targetState[2], ignoreAngle, true);
@@ -300,7 +293,7 @@ public class Swerve extends Submodule {
     private void updatePathing() {
         var state = currentTrajectory.sample(timer.get());
         var chassisSpeed = pathController.calculate(currentPose, state, targetAngle);
-        var targetState = kinematics.toSwerveModuleStates(chassisSpeed);
+        var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(chassisSpeed);
         topLeftModule.setTargetState(targetState[0], false, false);
         topRightModule.setTargetState(targetState[1], false, false);
         bottomLeftModule.setTargetState(targetState[2], false, false);
