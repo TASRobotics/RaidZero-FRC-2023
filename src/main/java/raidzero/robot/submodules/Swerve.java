@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -45,7 +47,14 @@ public class Swerve extends Submodule {
     }
 
     private enum ControlState {
-        OPEN_LOOP, PATHING
+        OPEN_LOOP, PATHING, AUTO_AIM
+    };
+
+    public enum AutoAimLocation {
+        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR, 
+        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR, 
+        B_LOAD, 
+        R_LOAD
     };
 
     private static Swerve instance = null;
@@ -71,19 +80,17 @@ public class Swerve extends Submodule {
     private Pose2d prevPose;
     private Field2d fieldPose = new Field2d();
 
-    private HolonomicDriveController pathController;
+    // private HolonomicDriveController pathController;
     private PathPlannerTrajectory currentTrajectory;
-    private Rotation2d targetAngle;
+    // private Rotation2d targetAngle;
+    private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
 
-    private ControlState controlState = ControlState.OPEN_LOOP;
+    private Pose2d desiredAutoAimPose; 
+    private PIDController autoAimXController, autoAimYController, autoAimThetaController;
 
-    // private NetworkTableEntry xPositionEntry =
-    //     Shuffleboard.getTab(Tab.MAIN).add("X (m)", 0).withWidget(BuiltInWidgets.kTextView)
-    //             .withSize(1, 1).withPosition(5, 3).getEntry();
-    // private NetworkTableEntry yPositionEntry =
-    //     Shuffleboard.getTab(Tab.MAIN).add("Y (m)", 0).withWidget(BuiltInWidgets.kTextView)
-    //             .withSize(1, 1).withPosition(6, 3).getEntry();
+
+    private ControlState controlState = ControlState.OPEN_LOOP;
 
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
@@ -130,13 +137,24 @@ public class Swerve extends Submodule {
                 DriveConstants.VISION_STDEVS_MATRIX);
 
         
-        pathController = new HolonomicDriveController(
-            new PIDController(1, 0, 0), 
-            new PIDController(1, 0, 0),
-            new ProfiledPIDController(1.5, 0, 0,
-                new TrapezoidProfile.Constraints(6.28, 6.28)
-            )
-        );
+        // pathController = new HolonomicDriveController(
+        //     new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0), 
+        //     new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0),
+        //     new ProfiledPIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0,
+        //         SwerveConstants.THETACONTROLLER_CONSTRAINTS
+        //     )
+        // );
+        xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
+        yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
+        thetaController = new PIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0);
+
+        autoAimXController = new PIDController(0, 0, 0);
+        autoAimYController = new PIDController(0, 0, 0);
+        autoAimThetaController = new PIDController(0, 0, 0);
+        autoAimThetaController.enableContinuousInput(0, 360);
+        autoAimXController.setTolerance(0);
+        autoAimYController.setTolerance(0);
+        autoAimThetaController.setTolerance(0);
 
         zero();
         prevPose = new Pose2d();
@@ -146,7 +164,9 @@ public class Swerve extends Submodule {
     public void update(double timestamp) {
         if (controlState == ControlState.PATHING) {
             updatePathing();
-        }
+        } else if (controlState == ControlState.AUTO_AIM) {
+            updateAutoAim();
+        } 
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -272,11 +292,11 @@ public class Swerve extends Submodule {
                   )
                 : new ChassisSpeeds(xSpeed, ySpeed, angularSpeed)
             );
-        SwerveDriveKinematics.desaturateWheelSpeeds(targetState, SwerveConstants.MAX_DRIVE_VEL);
-        topLeftModule.setTargetState(targetState[0], ignoreAngle, true);
-        topRightModule.setTargetState(targetState[1], ignoreAngle, true);
-        bottomLeftModule.setTargetState(targetState[2], ignoreAngle, true);
-        bottomRightModule.setTargetState(targetState[3], ignoreAngle, true);
+        SwerveDriveKinematics.desaturateWheelSpeeds(targetState, SwerveConstants.MAX_DRIVE_VEL_MPS);
+        topLeftModule.setTargetState(targetState[0], ignoreAngle, true, true);
+        topRightModule.setTargetState(targetState[1], ignoreAngle, true, true);
+        bottomLeftModule.setTargetState(targetState[2], ignoreAngle, true, true);
+        bottomRightModule.setTargetState(targetState[3], ignoreAngle, true, true);
     }
 
     public void followPath(PathPlannerTrajectory trajectory) {
@@ -290,20 +310,83 @@ public class Swerve extends Submodule {
         timer.start();
     }
 
+    // private void updatePathing() {
+    //     var state = currentTrajectory.sample(timer.get());
+    //     var chassisSpeed = pathController.calculate(currentPose, state, targetAngle);
+    //     var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(chassisSpeed);
+    //     topLeftModule.setTargetState(targetState[0], false, false);
+    //     topRightModule.setTargetState(targetState[1], false, false);
+    //     bottomLeftModule.setTargetState(targetState[2], false, false);
+    //     bottomRightModule.setTargetState(targetState[3], false, false);
+    // }
+    
+    /**
+     * A better updatePathing(), featuring:
+     * - actually allows the robot to turn
+     * - actually reads turn changes from the pathplanner trajectory
+     * - fully feedback, no more weird feedforward stuff that doesnt actually work
+     */
     private void updatePathing() {
-        var state = currentTrajectory.sample(timer.get());
-        var chassisSpeed = pathController.calculate(currentPose, state, targetAngle);
-        var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(chassisSpeed);
-        topLeftModule.setTargetState(targetState[0], false, false);
-        topRightModule.setTargetState(targetState[1], false, false);
-        bottomLeftModule.setTargetState(targetState[2], false, false);
-        bottomRightModule.setTargetState(targetState[3], false, false);
+        PathPlannerState state = (PathPlannerState)currentTrajectory.sample(timer.get());
+        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            xController.calculate(currentPose.getX(), state.poseMeters.getX()), 
+            yController.calculate(currentPose.getY(), state.poseMeters.getY()), 
+            thetaController.calculate(currentPose.getRotation().getRadians(), state.holonomicRotation.getRadians()), 
+            currentPose.getRotation()
+        );
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        topLeftModule.setTargetState(desiredState[0], false, true, false);
+        topRightModule.setTargetState(desiredState[1], false, true, false);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, false);
+        bottomRightModule.setTargetState(desiredState[3], false, true, false);
     }
 
     public boolean isFinishedPathing() {
         return timer.hasElapsed(currentTrajectory.getTotalTimeSeconds());
     }
 
+    public void autoAim(AutoAimLocation location) {
+        controlState = ControlState.AUTO_AIM;
+        switch(location) {
+            case BLL:
+                break;
+            case BLM:
+                break;
+            case BLR:
+                break;
+            case BML:
+                break;
+            case BMM:
+                break;
+            case BMR:
+                break;
+            case BRL:
+                break;
+            case BRM:
+                break;
+            case BRR:
+                break;
+            case B_LOAD:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void updateAutoAim() {
+        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            xController.calculate(getPose().getX(), desiredAutoAimPose.getX()), 
+            yController.calculate(getPose().getY(), desiredAutoAimPose.getY()), 
+            thetaController.calculate(getPose().getRotation().getDegrees(), desiredAutoAimPose.getRotation().getDegrees()), 
+            getPose().getRotation()
+        );
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        topLeftModule.setTargetState(desiredState[0], false, true, false);
+        topRightModule.setTargetState(desiredState[1], false, true, false);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, false);
+        bottomRightModule.setTargetState(desiredState[3], false, true, false);
+    }
+    
     public void testModule(int quadrant, double motorOutput, double rotorOutput) {
         System.out.println("Testing Q" + quadrant + ": motor=" + motorOutput + " rotor=" + rotorOutput);
         if (quadrant == 1) {

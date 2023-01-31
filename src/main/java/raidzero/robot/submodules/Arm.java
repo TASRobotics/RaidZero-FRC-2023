@@ -1,10 +1,13 @@
 package raidzero.robot.submodules;
 
 import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
@@ -22,10 +25,25 @@ public class Arm extends Submodule {
         return instance;
     }
 
+    private enum ControlState {
+        OPEN_LOOP, CLOSED_LOOP
+    }
+
+    private ControlState mControlState = ControlState.OPEN_LOOP;
+
+    private double mLowerPercentOut = 0.0;
+    private double mUpperPercentOut = 0.0;
+    private double mLowerDesiredPosition = 0.0;
+    private double mUpperDesiredPosition = 0.0;
+
     private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID, MotorType.kBrushless);
     private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID, MotorType.kBrushless);
     private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID, MotorType.kBrushless);
     private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID, MotorType.kBrushless);
+
+    // check!
+    private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader.getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader.getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
     private final SparkMaxAbsoluteEncoder mLowerEncoder = mLowerLeader.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -48,35 +66,50 @@ public class Arm extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {
-        
-    }
+    public void onStart(double timestamp) {}
 
     @Override
-    public void update(double timestamp) {
-        
-    }
+    public void update(double timestamp) {}
 
     @Override
     public void run() {
-        
+        if(mControlState == ControlState.OPEN_LOOP) {
+            mLowerLeader.set(mLowerPercentOut);
+            mUpperLeader.set(mUpperPercentOut);
+        } else if (mControlState == ControlState.CLOSED_LOOP) {
+            mLowerPIDController.setReference(
+                mLowerDesiredPosition, 
+                ControlType.kSmartMotion, 
+                ArmConstants.LOWER_SMART_MOTION_SLOT, 
+                0, 
+                ArbFFUnits.kPercentOut
+            );
+            mUpperPIDController.setReference(
+                mUpperDesiredPosition, 
+                ControlType.kSmartMotion, 
+                ArmConstants.UPPER_SMART_MOTION_SLOT, 
+                0, 
+                ArbFFUnits.kPercentOut
+            );
+        }
     }
 
     @Override
     public void stop() {
-        
+        mLowerLeader.stopMotor();
+        mUpperLeader.stopMotor();
     }
 
     @Override
-    public void zero() {
-        
-    }
+    public void zero() {}
 
     private void configLowerSparkMax() {
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
         mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
         mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+        mLowerForwardLimitSwitch.enableLimitSwitch(true);
+        mLowerReverseLimitSwitch.enableLimitSwitch(true);
         mLowerEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
         mLowerEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
         mLowerPIDController.setFeedbackDevice(mLowerEncoder);

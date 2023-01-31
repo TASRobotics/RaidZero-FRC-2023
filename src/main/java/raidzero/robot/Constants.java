@@ -3,6 +3,7 @@ package raidzero.robot;
 import java.nio.file.Path;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.revrobotics.SparkMaxLimitSwitch;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -62,9 +64,10 @@ public class Constants {
         );
 
         /** 254 Pathing Constants (smooth): */
-        public static final double MAX_DRIVE_VEL = MAX_VEL_MPS * 0.7;
-        public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL;
-        public static final double MAX_STEERING_VEL = Units.degreesToRadians(750);
+        public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.7;
+        public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS;
+        public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
+        public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(MAX_ANGULAR_VEL_RPS, 2);
 
         /** 254 Pathing Constants (fast): */
         // public static final double MAX_DRIVE_VEL = MAX_VEL_MPS;
@@ -82,6 +85,13 @@ public class Constants {
         public static final double THROTTLE_KI = 0.0;
         public static final double THROTTLE_KD = 0.01;
         public static final double THROTTLE_KF = 1023 / (MAX_VEL_MPS / (Math.PI * WHEEL_DIAMETER_METERS * THROTTLE_REDUCTION / 2048.0 * 10));
+
+        /** 1678 Pathing Constants */
+        public static final double XCONTROLLER_KP = 1;
+        public static final double YCONTROLLER_KP = 1;
+        public static final double THETACONTROLLER_KP = 5;
+        public static final TrapezoidProfile.Constraints THETACONTROLLER_CONSTRAINTS = 
+            new TrapezoidProfile.Constraints(MAX_ANGULAR_VEL_RPS, MAX_ANGULAR_ACCEL_RPSPS);
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS / (2048 * (1/THROTTLE_REDUCTION));
@@ -153,6 +163,9 @@ public class Constants {
         public static final int LOWER_CURRENT_LIMIT = 35;
         public static final int UPPER_CURRENT_LIMIT = 35;
 
+        public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+        public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+
         public static final double LOWER_ZERO_OFFSET = 0.0;
         public static final double UPPER_ZERO_OFFSET = 0.0;
 
@@ -166,7 +179,6 @@ public class Constants {
         public static final double LOWER_KP = 0.0;
         public static final double LOWER_KI = 0.0;
         public static final double LOWER_KD = 0.0;
-        public static final double LOWER_ARBITRARY_FF = 0.0;
         public static final double LOWER_MIN_VEL = 0.0;
         public static final double LOWER_MAX_VEL = 0.0;
         public static final double LOWER_MAX_ACCEL = 0.0;
@@ -175,11 +187,37 @@ public class Constants {
         public static final double UPPER_KP = 0.0;
         public static final double UPPER_KI = 0.0;
         public static final double UPPER_KD = 0.0;
-        public static final double UPPER_ARBITRARY_FF = 0.0;
         public static final double UPPER_MIN_VEL = 0.0;
         public static final double UPPER_MAX_VEL = 0.0;
         public static final double UPPER_MAX_ACCEL = 0.0;
         public static final double UPPER_MIN_ERROR = 0.0;
+
+        public static final double PID_WRAPPING_MIN = 0.0;
+        public static final double PID_WRAPPING_MAX = 360.0;
+    }
+
+    public static final class WristConstants {
+        public static final int ID = 0;
+
+        public static final boolean INVERSION = false;
+
+        public static final int CURRENT_LIMIT = 25;
+
+        public static final boolean ENCODER_INVERSION = false;
+        // 1:75 ratio, in degrees
+        public static final double POSITION_CONVERSION_FACTOR = 1 / 75 * 360; 
+
+        public static final int SMART_MOTION_SLOT = 0;
+
+        public static final double KF = 0.0;
+        public static final double KP = 0.0;
+        public static final double KI = 0.0;
+        public static final double KD = 0.0;
+
+        public static final double MIN_VEL = 0.0;
+        public static final double MAX_VEL = 0.0;
+        public static final double MAX_ACCEL = 0.0;
+        public static final double MIN_ERROR = 0.0;
 
         public static final double PID_WRAPPING_MIN = 0.0;
         public static final double PID_WRAPPING_MAX = 360.0;

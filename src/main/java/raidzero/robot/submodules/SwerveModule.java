@@ -256,7 +256,7 @@ public class SwerveModule extends Submodule implements Sendable {
      * @param targetState target state of the module
      */
     public void setTargetState(SwerveModuleState targetState) {
-        setTargetState(targetState, false, true);
+        setTargetState(targetState, false, true, false);
     }
 
     /**
@@ -266,7 +266,7 @@ public class SwerveModule extends Submodule implements Sendable {
      * @param ignoreAngle whether to ignore the target angle
      * @param optimize whether to optimize the target angle
      */
-    public void setTargetState(SwerveModuleState targetState, boolean ignoreAngle, boolean optimize) {
+    public void setTargetState(SwerveModuleState targetState, boolean ignoreAngle, boolean optimize, boolean isOpenLoop) {
         SwerveModuleState state = targetState;
         if (optimize) {
             // Optimize the reference state to avoid spinning further than 90 degrees
@@ -274,7 +274,11 @@ public class SwerveModule extends Submodule implements Sendable {
                 SwerveModuleState.optimize(targetState, Rotation2d.fromDegrees(MathTools.wrapDegrees(getRotorAngle())));
         }
         // System.out.println("Q" + quadrant + ": state=" + state);
-        setThrottleVelocity(state.speedMetersPerSecond);
+        if(isOpenLoop) {
+            setThrottlePercentSpeed(state.speedMetersPerSecond);
+        } else {
+            setThrottleVelocity(state.speedMetersPerSecond);
+        }
         if (!ignoreAngle) {
             setRotorAngle(state.angle.getDegrees());
         }
