@@ -7,7 +7,7 @@ import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.DrivePath;
 
 public class TestSequence extends AutoSequence {
-    private PathPlannerTrajectory mTrajectory = PathPlanner.loadPath("TestPath", SwerveConstants.MAX_DRIVE_VEL, SwerveConstants.MAX_DRIVE_ACCEL);
+    private PathPlannerTrajectory mTrajectory = PathPlanner.loadPath("TestPath", SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
 
     public TestSequence() {}
 

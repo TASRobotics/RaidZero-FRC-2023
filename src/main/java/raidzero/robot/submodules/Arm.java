@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import raidzero.robot.Constants;
+import raidzero.robot.submodules.DoubleJointedArm;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
@@ -28,6 +29,8 @@ public class Arm extends Submodule {
     private enum ControlState {
         OPEN_LOOP, CLOSED_LOOP
     }
+
+    private DoubleJointedArm Controller = new DoubleJointedArm();
 
     private ControlState mControlState = ControlState.OPEN_LOOP;
 
