@@ -1,13 +1,13 @@
 package raidzero.robot.wrappers;
+
 import com.playingwithfusion.TimeOfFlight;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import raidzero.robot.Constants.TOFSensorConstants;
 import raidzero.robot.submodules.Submodule;
 
-
 public class TOFSensor extends Submodule {
-    
+
     private static TOFSensor instance = null;
 
     public static TOFSensor getInstance() {
@@ -17,9 +17,10 @@ public class TOFSensor extends Submodule {
         return instance;
     }
 
-    public TOFSensor() {}
+    public TOFSensor() {
+    }
 
-    private TimeOfFlight sensor; 
+    private TimeOfFlight sensor;
 
     @Override
     public void onInit() {
@@ -29,10 +30,10 @@ public class TOFSensor extends Submodule {
     }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
-    public boolean isDetecting()
-    {
+    public boolean isDetecting() {
         return sensor.getRange() < 100.0;
     }
 

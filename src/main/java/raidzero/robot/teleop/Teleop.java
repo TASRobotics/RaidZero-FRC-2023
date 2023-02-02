@@ -47,25 +47,25 @@ public class Teleop {
     private void p1Loop(XboxController p) {
         /**
          * Drive
-        */
+         */
         boolean turning = p.getRawButton(12);
-        //System.out.println(p.getLeftY());
+        // System.out.println(p.getLeftY());
 
         rampRate = SmartDashboard.getNumber("Ramp Rate", 0);
         SmartDashboard.putNumber("Ramp Rate", rampRate);
         swerve.setThrottleRampRate(rampRate);
 
         swerve.drive(
-            JoystickUtils.deadband(-p.getLeftY()) * SwerveConstants.MAX_SPEED_MPS,
-            JoystickUtils.deadband(-p.getLeftX()) * SwerveConstants.MAX_SPEED_MPS,
-            JoystickUtils.deadband(-p.getRightX() * SwerveConstants.MAX_SPEED_MPS),
-            true
-        );
+                JoystickUtils.deadband(-p.getLeftY()) * SwerveConstants.MAX_VEL_MPS,
+                JoystickUtils.deadband(-p.getLeftX()) * SwerveConstants.MAX_VEL_MPS,
+                JoystickUtils.deadband(-p.getRightX() * SwerveConstants.MAX_VEL_MPS),
+                true);
 
     }
 
     private int mode = 0;
-    private void p2Loop(XboxController p) {}
+
+    private void p2Loop(XboxController p) {
+    }
 
 }
-

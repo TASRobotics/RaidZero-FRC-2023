@@ -249,6 +249,10 @@ public class Constants {
                 public static final double PID_WRAPPING_MAX = 360.0;
         }
 
+        public static final class TOFSensorConstants {
+                public static final int SENSOR_ID = 0;
+        }
+
         public static final double JOYSTICK_DEADBAND = 0.07;
         public static final int TIMEOUT_MS = 20;
         public static final double TIMEOUT_S = TIMEOUT_MS / 1000.0f;
