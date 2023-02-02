@@ -16,11 +16,13 @@ import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {
 
-    private Arm() {}
+    private Arm() {
+    }
 
     private static Arm instance = null;
+
     public static Arm getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Arm();
         }
         return instance;
@@ -39,17 +41,25 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID, MotorType.kBrushless);
-    private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID, MotorType.kBrushless);
-    private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID, MotorType.kBrushless);
-    private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID, MotorType.kBrushless);
+    private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
+            MotorType.kBrushless);
 
     // check!
-    private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader.getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
-    private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader.getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
+            .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
-    private final SparkMaxAbsoluteEncoder mLowerEncoder = mLowerLeader.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-    private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder mLowerEncoder = mLowerLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
     private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
     private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
@@ -69,31 +79,31 @@ public class Arm extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     @Override
     public void run() {
-        if(mControlState == ControlState.OPEN_LOOP) {
+        if (mControlState == ControlState.OPEN_LOOP) {
             mLowerLeader.set(mLowerPercentOut);
             mUpperLeader.set(mUpperPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mLowerPIDController.setReference(
-                mLowerDesiredPosition, 
-                ControlType.kSmartMotion, 
-                ArmConstants.LOWER_SMART_MOTION_SLOT, 
-                0, 
-                ArbFFUnits.kPercentOut
-            );
+                    mLowerDesiredPosition,
+                    ControlType.kSmartMotion,
+                    ArmConstants.LOWER_SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
             mUpperPIDController.setReference(
-                mUpperDesiredPosition, 
-                ControlType.kSmartMotion, 
-                ArmConstants.UPPER_SMART_MOTION_SLOT, 
-                0, 
-                ArbFFUnits.kPercentOut
-            );
+                    mUpperDesiredPosition,
+                    ControlType.kSmartMotion,
+                    ArmConstants.UPPER_SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
         }
     }
 
@@ -104,7 +114,8 @@ public class Arm extends Submodule {
     }
 
     @Override
-    public void zero() {}
+    public void zero() {
+    }
 
     private void configLowerSparkMax() {
         mLowerLeader.setIdleMode(IdleMode.kBrake);
@@ -123,9 +134,12 @@ public class Arm extends Submodule {
         mLowerPIDController.setP(ArmConstants.LOWER_KP, ArmConstants.LOWER_SMART_MOTION_SLOT);
         mLowerPIDController.setI(ArmConstants.LOWER_KI, ArmConstants.LOWER_SMART_MOTION_SLOT);
         mLowerPIDController.setD(ArmConstants.LOWER_KD, ArmConstants.LOWER_SMART_MOTION_SLOT);
-        mLowerPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, ArmConstants.LOWER_SMART_MOTION_SLOT);
-        mLowerPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.LOWER_MIN_ERROR, ArmConstants.LOWER_SMART_MOTION_SLOT);
-        mLowerPIDController.setSmartMotionMinOutputVelocity(ArmConstants.LOWER_MIN_VEL, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.LOWER_MIN_ERROR,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMinOutputVelocity(ArmConstants.LOWER_MIN_VEL,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
         mLowerPIDController.setSmartMotionMaxVelocity(ArmConstants.LOWER_MAX_VEL, ArmConstants.LOWER_SMART_MOTION_SLOT);
         mLowerPIDController.setSmartMotionMaxAccel(ArmConstants.LOWER_MAX_ACCEL, ArmConstants.LOWER_SMART_MOTION_SLOT);
     }
@@ -145,9 +159,12 @@ public class Arm extends Submodule {
         mUpperPIDController.setP(ArmConstants.UPPER_KP, ArmConstants.UPPER_SMART_MOTION_SLOT);
         mUpperPIDController.setI(ArmConstants.UPPER_KI, ArmConstants.UPPER_SMART_MOTION_SLOT);
         mUpperPIDController.setD(ArmConstants.UPPER_KD, ArmConstants.UPPER_SMART_MOTION_SLOT);
-        mUpperPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, ArmConstants.UPPER_SMART_MOTION_SLOT);
-        mUpperPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.UPPER_MIN_ERROR, ArmConstants.UPPER_SMART_MOTION_SLOT);
-        mUpperPIDController.setSmartMotionMinOutputVelocity(ArmConstants.UPPER_MIN_VEL, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.UPPER_MIN_ERROR,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMinOutputVelocity(ArmConstants.UPPER_MIN_VEL,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
         mUpperPIDController.setSmartMotionMaxVelocity(ArmConstants.UPPER_MAX_VEL, ArmConstants.UPPER_SMART_MOTION_SLOT);
         mUpperPIDController.setSmartMotionMaxAccel(ArmConstants.UPPER_MAX_ACCEL, ArmConstants.UPPER_SMART_MOTION_SLOT);
     }

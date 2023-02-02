@@ -13,11 +13,13 @@ import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Wrist extends Submodule {
-    private Wrist() {}
+    private Wrist() {
+    }
 
     private static Wrist instance = null;
+
     public static Wrist getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new Wrist();
         }
         return instance;
@@ -46,23 +48,24 @@ public class Wrist extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     @Override
     public void run() {
-        if(mControlState == ControlState.OPEN_LOOP) {
+        if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredAngle, 
-                ControlType.kSmartMotion, 
-                WristConstants.SMART_MOTION_SLOT, 
-                mDesiredAngle, 
-                ArbFFUnits.kPercentOut
-            );
+                    mDesiredAngle,
+                    ControlType.kSmartMotion,
+                    WristConstants.SMART_MOTION_SLOT,
+                    mDesiredAngle,
+                    ArbFFUnits.kPercentOut);
         }
     }
 

@@ -11,7 +11,7 @@ public class DrivePath implements Action {
 
     private static final Swerve swerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mTrajectory; 
+    private PathPlannerTrajectory mTrajectory;
 
     public DrivePath(PathPlannerTrajectory trajectory) {
         mTrajectory = trajectory;
@@ -33,7 +33,8 @@ public class DrivePath implements Action {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     @Override
     public void done() {

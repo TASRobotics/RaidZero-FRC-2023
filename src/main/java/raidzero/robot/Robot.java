@@ -23,11 +23,13 @@ public class Robot extends TimedRobot {
     private AutoRunner autoRunner;
 
     // private NetworkTableEntry shouldCheckGSCEntry =
-    //     Shuffleboard.getTab(Tab.SELECTION).add("Scan Path", 0).withWidget(BuiltInWidgets.kBooleanBox)
-    //             .withSize(1, 1).withPosition(0, 0).getEntry();
+    // Shuffleboard.getTab(Tab.SELECTION).add("Scan Path",
+    // 0).withWidget(BuiltInWidgets.kBooleanBox)
+    // .withSize(1, 1).withPosition(0, 0).getEntry();
     // private NetworkTableEntry foundPathEntry =
-    //     Shuffleboard.getTab(Tab.SELECTION).add("Chosen Path", 0).withWidget(BuiltInWidgets.kTextView)
-    //             .withSize(2, 1).withPosition(0, 1).getEntry();
+    // Shuffleboard.getTab(Tab.SELECTION).add("Chosen Path",
+    // 0).withWidget(BuiltInWidgets.kTextView)
+    // .withSize(2, 1).withPosition(0, 1).getEntry();
 
     /**
      * Runs only once at the start of robot code execution.
@@ -36,9 +38,8 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Register all submodules here
         submoduleManager.setSubmodules(
-            swerve,
-            vision
-        );
+                swerve,
+                vision);
         submoduleManager.onInit();
 
         autoRunner = new AutoRunner();
@@ -62,7 +63,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         submoduleManager.onStart(Timer.getFPGATimestamp());
-        
+
         autoRunner.readSendableSequence();
         autoRunner.start();
     }
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         // Stop the autonomous
         autoRunner.stop();
-        
+
         // Start the teleop handler
         teleop.onStart();
         submoduleManager.onStart(Timer.getFPGATimestamp());
