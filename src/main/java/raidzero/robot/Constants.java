@@ -168,9 +168,17 @@ public class Constants {
                 public static final double LOWER_ARM_MOI = 0.0;
                 public static final double UPPER_ARM_MOI = 0.0;
 
-                public static final double STALL_TORQUE = 0.0;
-                public static final double STALL_CURRENT = 0.0;
-                public static final double FREE_SPEED = 0.0;
+                /**
+                 * Constants for a DC brushed motor.
+                 * nominal_voltage -- voltage at which the motor constants were measured
+                 * stall_torque -- current draw when stalled in Newton-meters
+                 * stall_current -- current draw when stalled in Amps
+                 * free_current -- current draw under no load in Amps
+                 * free_speed -- angular velocity under no load in RPM
+                 **/
+                public static final double STALL_TORQUE = 2.6;
+                public static final double STALL_CURRENT = 105;
+                public static final double FREE_SPEED = 5676;
                 public static final double BASE_PIVOT_GEAR_RATIO = 150;
                 public static final double JOINT_GEAR_RATIO = 150;
                 public static final double BASE_PIVOT_MOTORS = 2;
