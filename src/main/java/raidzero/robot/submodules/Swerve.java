@@ -124,19 +124,15 @@ public class Swerve extends Submodule {
             SwerveConstants.REAR_RIGHT_ROTOR_OFFSET, 
             4
         );
-        
-        // check
+
         odometry = new SwerveDrivePoseEstimator(
             SwerveConstants.KINEMATICS,
-            Rotation2d.fromDegrees(pigeon.getAngle()),
-            
-                DriveConstants.STARTING_ROTATION,
+            Rotation2d.fromDegrees(pigeon.getAngle()),      
+                this.getModulePositions(),
                 DriveConstants.STARTING_POSE,
                 DriveConstants.STATE_STDEVS_MATRIX,
-                DriveConstants.ANGLE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
-        
         // pathController = new HolonomicDriveController(
         //     new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0), 
         //     new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0),
@@ -399,4 +395,5 @@ public class Swerve extends Submodule {
             bottomRightModule.testMotorAndRotor(motorOutput, rotorOutput);
         }
     }
+
 }
