@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
@@ -44,6 +45,7 @@ public class Wrist extends Submodule {
     public void onInit() {
         mMotor.restoreFactoryDefaults();
         configWristSparkMax();
+        mMotor.burnFlash();
         zero();
     }
 
@@ -121,6 +123,7 @@ public class Wrist extends Submodule {
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
+        mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
         mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);

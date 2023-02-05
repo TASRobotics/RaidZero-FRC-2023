@@ -124,11 +124,7 @@ public class Constants {
         public static final int BASE_TRAJ_PERIOD_MS = 0;
         public static final int MIN_POINTS_IN_TALON = 10;
         public static final int TRANSMIT_PERIOD_MS = 20;
-    }
-
-    public static final class IntakeConstants {}
-
-    
+    }    
 
     public static final class VisionConstants{
         public static final String NAME = "SmartDashboard";
@@ -222,6 +218,14 @@ public class Constants {
 
         public static final double PID_WRAPPING_MIN = 0.0;
         public static final double PID_WRAPPING_MAX = 360.0;
+    }
+
+    public static final class IntakeConstants {
+        public static final int ID = 0;
+
+        public static final boolean INVERSION = false;
+
+        public static final int CURRENT_LIMIT = 20;
     }
 
     public static final double JOYSTICK_DEADBAND = 0.07;
