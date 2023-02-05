@@ -1,6 +1,5 @@
 package raidzero.robot.submodules;
 
-import com.revrobotics.MotorFeedbackSensor;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -9,6 +8,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
@@ -31,6 +32,7 @@ public class Wrist extends Submodule {
 
     private double mPercentOut = 0.0;
     private double mDesiredAngle = 0.0;
+    private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
 
@@ -60,7 +62,7 @@ public class Wrist extends Submodule {
                 mDesiredAngle, 
                 ControlType.kSmartMotion, 
                 WristConstants.SMART_MOTION_SLOT, 
-                mDesiredAngle, 
+                mFeedforward.calculate(getAngle().getRadians(), 0), 
                 ArbFFUnits.kPercentOut
             );
         }
@@ -87,13 +89,32 @@ public class Wrist extends Submodule {
     }
 
     /**
-     * Set desired wrist angle [0, 360]
+     * Set desired wrist angle (degrees) [0, 360]
      * 
      * @param angle desired angle
      */
     public void setDesiredAngle(double angle) {
         mControlState = ControlState.CLOSED_LOOP;
         mDesiredAngle = angle;
+        mEncoder.getVelocity();
+    }
+
+    /**
+     * Get current wrist angle
+     * 
+     * @return current angle
+     */
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(mEncoder.getPosition());
+    }
+
+    /**
+     * Get current wrist velocity
+     * 
+     * @return current velocity
+     */
+    public Rotation2d getVelocity() {
+        return Rotation2d.fromDegrees(mEncoder.getVelocity());
     }
 
     private void configWristSparkMax() {
@@ -103,6 +124,7 @@ public class Wrist extends Submodule {
 
         mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
         mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);
+        mEncoder.setVelocityConversionFactor(WristConstants.VELOCITY_CONVERSION_FACTOR);
 
         mPIDController.setFeedbackDevice(mEncoder);
         mPIDController.setFF(WristConstants.KF, WristConstants.SMART_MOTION_SLOT);

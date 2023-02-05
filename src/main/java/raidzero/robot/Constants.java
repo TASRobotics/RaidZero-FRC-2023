@@ -206,6 +206,7 @@ public class Constants {
         public static final boolean ENCODER_INVERSION = false;
         // 1:75 ratio, in degrees
         public static final double POSITION_CONVERSION_FACTOR = 1 / 75 * 360; 
+        public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
         public static final int SMART_MOTION_SLOT = 0;
 

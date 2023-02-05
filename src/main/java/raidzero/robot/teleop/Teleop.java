@@ -48,12 +48,6 @@ public class Teleop {
         /**
          * Drive
         */
-        boolean turning = p.getRawButton(12);
-        //System.out.println(p.getLeftY());
-
-        rampRate = SmartDashboard.getNumber("Ramp Rate", 0);
-        SmartDashboard.putNumber("Ramp Rate", rampRate);
-        swerve.setThrottleRampRate(rampRate);
 
         swerve.drive(
             JoystickUtils.deadband(-p.getLeftY()) * SwerveConstants.MAX_SPEED_MPS,
