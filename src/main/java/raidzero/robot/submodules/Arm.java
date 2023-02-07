@@ -47,7 +47,8 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    // private Pose2d[] state = {new Pose2d(0,180,new Rotation2d(0)), new Pose2d(0,90, new Rotation2d(90))};
+    // private Pose2d[] state = {new Pose2d(0,180,new Rotation2d(0)), new
+    // Pose2d(0,90, new Rotation2d(90))};
     private Pose2d[] state;
 
     /* Arm Control Constants */
@@ -109,20 +110,18 @@ public class Arm extends Submodule {
 
     @Override
     public void update(double timestamp) 
-        //add kinematics here
-        Pose2d prox = new Pose2d(1,2, Rotation2d.fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES));
-        Pose2d dist = new Pose2d(1,2, Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)) 
+        //add forward kinematics here
+        Rotation2d[] states = {Rotation2d.fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES), Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)};
+        Pose2d prox = new Pose2d(1,2, states[0]);
+        Pose2d dist = new Pose2d(1,2, states[1]);
 
-        state[0] = mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
-        state[1] = mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
-        forKin();
+        // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
         SmartDashboard.putNumber("Proximal Angle", prox.getRotation().getDegrees());
         SmartDashboard.putNumber("Distral Angle", dist.getRotation().getDegrees());
-        // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
-        SmartDashboard.putNumber("Proximal X ", state[2]);
-        SmartDashboard.putNumber("Proximal Y ", state[3]);
-        SmartDashboard.putNumber("Distral X", state[4]);
-        SmartDashboard.putNumber("Distral Y", state[5]);
+        SmartDashboard.putNumber("Proximal X ", prox.getX());
+        SmartDashboard.putNumber("Proximal Y ", prox.getY());
+        SmartDashboard.putNumber("Distral X", dist.getX());
+        SmartDashboard.putNumber("Distral Y", dist.getY());
     }
 
     @Override
@@ -229,25 +228,32 @@ public class Arm extends Submodule {
         mUpperDesiredPosition = upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 
-    public void forKin(double[] state) {
+    public double[] forKin(double[] state) {
 
         Rotation2d ang_1 = new Rotation2d(state[0]);
         Rotation2d ang_2 = new Rotation2d(state[1]);
-
-        Pose2d elbow = new Pose2d(ArmConstants.LOWER_ARM_LENGTH*ang_1.fromRadians().getSin(), -ArmConstants.LOWER_ARM_LENGTH*ang_1.getCos(), ang_1);
-        Pose2d endeff = new Pose2d();
-
+        double[] calc;
 
         // Elbow state
-        state[4] = ArmConstants.LOWER_ARM_LENGTH * Math.sin(Math.toRadians(90-state[0]));
-        state[5] = -1 * ArmConstants.LOWER_ARM_LENGTH * Math.cos(Math.toRadians(90-state[0]));
+        calc[0] = Rotation2d.fromDegrees(state[0](state[0]))
+        state[4] = ArmConstants.LOWER_ARM_LENGTH * Math.sin(Math.toRadians(90 - state[0]));
+        state[5] = -1 * ArmConstants.LOWER_ARM_LENGTH * Math.cos(Math.toRadians(90 - state[0]));
 
         // End-effector state
-        state[2] = state[4] + ArmConstants.UPPER_ARM_LENGTH * Math.sin(Math.toRadians(90-state[0]) + Math.toRadians(360-state[1]));
-        state[3] = state[5] + -1 * ArmConstants.UPPER_ARM_LENGTH * Math.cos(Math.toRadians(90-state[0]) + Math.toRadians(360-state[1]));
+        state[2] = state[4] + ArmConstants.UPPER_ARM_LENGTH
+                * Math.sin(Math.toRadians(90 - state[0]) + Math.toRadians(360 - state[1]));
+        state[3] = state[5] + -1 * ArmConstants.UPPER_ARM_LENGTH
+                * Math.cos(Math.toRadians(90 - state[0]) + Math.toRadians(360 - state[1]));
     }
 
     public double[] invKin(double[] pos) {
+
+        
+        Pose2d elbow = new Pose2d(ArmConstants.LOWER_ARM_LENGTH * ang_1.fromRadians().getSin(),
+                -ArmConstants.LOWER_ARM_LENGTH * ang_1.getCos(), ang_1);
+
+
+        Pose2d endeff = new Pose2d();
         // Position of target end-effector state
         radius_sq = pos[0] * pos[0] + pos[1] + pos[1];
         radius = Math.sqrt(radius_sq);
