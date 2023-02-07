@@ -106,9 +106,14 @@ public class Arm extends Submodule {
     public void update(double timestamp) {
         state[0] = mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
         state[1] = mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
-        SmartDashboard.putNumber("Lower Arm Angle", state[0]);
+        forKin();
+        SmartDashboard.putNumber("Lower Arm Angle ", state[0]);
         SmartDashboard.putNumber("Upper Arm Angle", state[1]);
-        // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
+        //SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
+        SmartDashboard.putNumber("EE Pos X ", state[2]);
+        SmartDashboard.putNumber("EE Pos Y ", state[3]);
+        SmartDashboard.putNumber("Elbow Pos X", state[4]);
+        SmartDashboard.putNumber("Elbow Pos Y", state[5]);
     }
 
     @Override
@@ -215,9 +220,15 @@ public class Arm extends Submodule {
         mUpperDesiredPosition = upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 
-    // public double[] forKin() {
+    public void forKin() {
+        //Elbow state
+        state[4] = ArmConstants.LOWER_ARM_LENGTH * Math.sin(state[0]);
+        state[5] = -1*ArmConstants.LOWER_ARM_LENGTH * Math.cos(state[0]);
 
-    // }
+        //End-effector state
+        state[2] = state[4]+ArmConstants.UPPER_ARM_LENGTH*Math.sin(state[0]+state[1]);
+        state[3] = state[5]+ -1*ArmConstants.UPPER_ARM_LENGTH*Math.cos(state[0]+state[1]);
+    }
 
     public double[] invKin(double[] pos) {
         // Position of target end-effector state
