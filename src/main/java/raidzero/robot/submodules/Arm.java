@@ -44,6 +44,18 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
+    private double[] state = { 0, 0, 0, 180, 0, 90 }; // ang1, ang2, ee_x, ee_y, elb_x, elb_y
+    /* Arm Control Constants */
+    private double radius = 0;
+    private double radius_sq = 0;
+    private double theta = 0;
+    private double acosarg = 0;
+    private double elbow_supplement = 0;
+    private double alpha = 0;
+    private double[] s1 = { 0, 0 };
+    private double[] s2 = { 0, 0 };
+    private double[] sf = { 0, 0 };
+
     private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
             MotorType.kBrushless);
     // private final LazyCANSparkMax mLowerFollower = new
@@ -62,7 +74,7 @@ public class Arm extends Submodule {
     // .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
     // private final SparkMaxAbsoluteEncoder AbsoluteEncoder = mLowerLeader
-    //         .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     // private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
     // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
@@ -92,10 +104,11 @@ public class Arm extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        SmartDashboard.putNumber("Lower Arm Angle", mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES);
-        SmartDashboard.putNumber("Upper Arm Angle", mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES);
+        state[0] = mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
+        state[1] = mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES;
+        SmartDashboard.putNumber("Lower Arm Angle", state[0]);
+        SmartDashboard.putNumber("Upper Arm Angle", state[1]);
         // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
-    
     }
 
     @Override
@@ -133,7 +146,7 @@ public class Arm extends Submodule {
     private void configLowerSparkMax() {
         // AbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
         // AbsoluteEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
-        
+
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
         mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
@@ -202,5 +215,49 @@ public class Arm extends Submodule {
         mUpperDesiredPosition = upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 
+    // public double[] forKin() {
 
+    // }
+
+    public double[] invKin(double[] pos) {
+        // Position of target end-effector state
+        radius_sq = pos[0] * pos[0] + pos[1] + pos[1];
+        radius = Math.sqrt(radius_sq);
+        // Angle of target State
+        theta = Math.atan2(pos[0], -1 * pos[1]);
+
+        // Use law of cosines to compute elbow angle
+        acosarg = (radius_sq - ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH)
+                / (-2 * ArmConstants.LOWER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH);
+        if (acosarg < -1.0)
+            elbow_supplement = Math.PI;
+        else if (acosarg > 1.0)
+            elbow_supplement = 0.0;
+        else
+            elbow_supplement = Math.acos(acosarg);
+
+        // use law of sines to compute angle at the bottom vertex of the triangle
+        // defined by the links
+        if (radius > 0.0)
+            alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
+        else
+            alpha = 0.0;
+
+        // compute the two solutions with opposite elbow sign
+        s1[0] = Math.toDegrees(theta - alpha);
+        s1[1] = Math.toDegrees(Math.PI - elbow_supplement);
+
+        s2[0] = Math.toDegrees(theta + alpha);
+        s2[1] = Math.toDegrees(elbow_supplement - Math.PI);
+
+        if (Math.abs(s1[0]) > 160 || Math.abs(s1[1]) > 160) {
+            sf[0] = s2[0];
+            sf[1] = s2[1];
+        } else {
+            sf[0] = s1[0];
+            sf[1] = s1[1];
+        }
+        return sf;
+    }
 }

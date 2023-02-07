@@ -23,8 +23,8 @@ public class Constants {
 
         public static final class ArmConstants {
                 /** Arm Kinematics Constants */
-                public static final double LOWER_ARM_LENGTH = 0.0; // in meters
-                public static final double UPPER_ARM_LENGTH = 0.0;
+                public static final double LOWER_ARM_LENGTH = 0.91; // in meters
+                public static final double UPPER_ARM_LENGTH = 0.91;
 
                 public static final double BASE_PIVOT_COG = 0.0; // in meters
                 public static final double JOINT_COM = 0.0;

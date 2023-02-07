@@ -21,6 +21,8 @@ public class Teleop {
 
     private static final Arm arm = Arm.getInstance();
     private double rampRate = 0.0;
+    
+    
 
     public static Teleop getInstance() {
         if (instance == null) {
