@@ -87,7 +87,7 @@ public class Constants {
                 public static final double LOWER_MAX_ACCEL = 1960;
                 public static final double LOWER_MIN_ERROR = 0.0;
                 
-                public static final double UPPER_KF = 0.00016;
+                public static final double UPPER_KF = 0.000166;
                 public static final double UPPER_KP = 0.000106;
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.000009;

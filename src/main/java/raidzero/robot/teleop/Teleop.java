@@ -43,7 +43,7 @@ public class Teleop {
     }
 
     private int mode = 0;
-    private double[] target = { -1.7, 0.3, 0.0, 0.0 }; //Pos_x, Pos_y, ang_1, ang_2
+    private double[] target = { -1.7, 0.3, 0.0, 0.0 }; // Pos_x, Pos_y, ang_1, ang_2
 
     private void p1Loop(XboxController p) {
 
@@ -56,10 +56,10 @@ public class Teleop {
 
         // arm.setArmRampRate(rampRate);
 
-        if (p.getAButtonPressed()) {
+        if (p.getRightBumperPressed()) {
             mode = 1;
 
-        } else if (p.getBButtonPressed()) {
+        } else if (p.getBackButtonPressed()) {
             mode = 2;
 
         } else if (p.getStartButtonPressed()) {
@@ -67,27 +67,36 @@ public class Teleop {
         }
 
         if (mode == 1) {
-            arm.moveArm(p.getRightX() * 0.2, p.getLeftX() * 0.2);
+            arm.moveArm(p.getRightX() * 0.16, p.getLeftX() * 0.16);
         } else if (mode == 2) {
-            if (p.getYButton()) {
-                arm.moveToAngle(52, -30);
+            if (p.getYButtonPressed()) {
+                arm.moveToAngle(50, -36.7);
             } else if (p.getXButtonPressed()) {
-                arm.moveToAngle(-52, 30);
-            } else if (p.getBackButtonPressed()) {
+                arm.moveToAngle(-50, 36.7);
+            } else if (p.getAButtonPressed()) {
                 arm.moveToAngle(0, 0);
             }
         } else if (mode == 3) {
-            if (!(Math.abs(target[0]) >= 1.75) && !(target[1] <= 0.1) && !(target[1] >= 1.75)) {
+            if (!(Math.abs(target[0]) > 1.85) && !(target[1] < -1.6) && !(target[1] > 1.6)) {
                 target[0] += MathUtil.applyDeadband(p.getRightX() * 0.07, 0.05);
                 target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.07, 0.05);
+                // if (p.getYButtonPressed()) {
+                //     target[1] += 0.05;
+                // } else if (p.getAButtonPressed()) {
+                //     target[1] -= 0.05;
+                // } else if (p.getXButtonPressed()) {
+                //     target[0] -= 0.05;
+                // } else if (p.getBButtonPressed()) {
+                //     target[0] += 0.05;
+                // }
             }
             if (p.getLeftBumperPressed()) {
                 target[0] = -1.7;
                 target[1] = 0.3;
             }
             target[2] = 90 - Math.abs(arm.invKin(target)[0]);
-            target[3] = -1 * (Math.abs(arm.invKin(target)[1]));
-            arm.moveToAngle(target[2],target[3]);
+            target[3] = -1 * Math.abs(arm.invKin(target)[1]);
+            arm.moveToAngle(target[2], target[3]);
         }
 
     }
