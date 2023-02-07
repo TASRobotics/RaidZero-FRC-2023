@@ -11,15 +11,19 @@ public class Superstructure extends Submodule {
         return instance;
     }
 
-    private Superstructure() {}
+    private Superstructure() {
+    }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
 }
