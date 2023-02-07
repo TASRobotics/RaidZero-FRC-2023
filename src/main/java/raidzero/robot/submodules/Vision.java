@@ -108,7 +108,7 @@ public class Vision extends Submodule {
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
         aprilYawFilter.predict(new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.0), Constants.TIMEOUT_S);
         // angleHistory[historyLoc] = robotDrive.getPose().getRotation();
-        // timestampHistory[historyLoc] = timestamp;
+        // timestampHistory[historyLoc] = timestamp;l
         // historyLoc = (historyLoc+1 == VisionConstants.ANGLEHISTNUM ? 0:
         // historyLoc+1);
 
@@ -230,6 +230,7 @@ public class Vision extends Submodule {
         public Matrix<N2, N1> apply(Matrix<N2, N1> x, Matrix<N1, N1> u) {
             return feedForward.times(x);
         }
+        
     }
 
     private static class ForwardMeasure implements BiFunction<Matrix<N2, N1>, Matrix<N1, N1>, Matrix<N1, N1>> {
