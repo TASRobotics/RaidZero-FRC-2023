@@ -35,6 +35,8 @@ public class Constants {
                 public static final double LOWER_ARM_MOI = 0.0;
                 public static final double UPPER_ARM_MOI = 0.0;
 
+                public static final int LINKAGES = 2;
+
                 /**
                  * Constants for a DC brushed motor.
                  * nominal_voltage -- voltage at which the motor constants were measured

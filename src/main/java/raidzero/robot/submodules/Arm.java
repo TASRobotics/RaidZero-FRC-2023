@@ -21,7 +21,33 @@ import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {
 
+    private DoubleJointedArm Controller = new DoubleJointedArm();
+
+    private ControlState mControlState = ControlState.OPEN_LOOP;
+    private double outputOpenLoop = 0.0;
+
+    private double mLowerPercentOut = 0.0;
+    private double mUpperPercentOut = 0.0;
+    private double mLowerDesiredPosition = 0.0;
+    private double mUpperDesiredPosition = 0.0;
+
+    // State of Proximal and Distral Links
+    private Pose2d[] state;
+
+    /* Arm Control Constants */
+    private double radius = 0;
+    private double radius_sq = 0;
+    private double theta = 0;
+    private double acosarg = 0;
+    private double elbow_supplement = 0;
+    private double alpha = 0;
+    private double[] s1 = { 0, 0 };
+    private double[] s2 = { 0, 0 };
+    private double[] sf = { 0, 0 };
+
     private Arm() {
+        int numLinkages = ArmConstants.LINKAGES;
+        state = new Pose2d[numLinkages];
     }
 
     private static Arm instance = null;
@@ -37,31 +63,6 @@ public class Arm extends Submodule {
         OPEN_LOOP, CLOSED_LOOP
     }
 
-    private DoubleJointedArm Controller = new DoubleJointedArm();
-
-    private ControlState mControlState = ControlState.OPEN_LOOP;
-    private double outputOpenLoop = 0.0;
-
-    private double mLowerPercentOut = 0.0;
-    private double mUpperPercentOut = 0.0;
-    private double mLowerDesiredPosition = 0.0;
-    private double mUpperDesiredPosition = 0.0;
-
-    // private Pose2d[] state = {new Pose2d(0,180,new Rotation2d(0)), new
-    // Pose2d(0,90, new Rotation2d(90))};
-    private Pose2d[] state;
-
-    /* Arm Control Constants */
-    private double radius = 0;
-    private double radius_sq = 0;
-    private double theta = 0;
-    private double acosarg = 0;
-    private double elbow_supplement = 0;
-    private double alpha = 0;
-    private double[] s1 = { 0, 0 };
-    private double[] s2 = { 0, 0 };
-    private double[] sf = { 0, 0 };
-
     private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
             MotorType.kBrushless);
     // private final LazyCANSparkMax mLowerFollower = new
@@ -73,7 +74,6 @@ public class Arm extends Submodule {
     // LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
     // MotorType.kBrushless);
 
-    // // check!
     // private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
     // .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
     // private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
@@ -111,17 +111,17 @@ public class Arm extends Submodule {
     @Override
     public void update(double timestamp) 
         //add forward kinematics here
-        Rotation2d[] states = {Rotation2d.fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES), Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)};
-        Pose2d prox = new Pose2d(1,2, states[0]);
-        Pose2d dist = new Pose2d(1,2, states[1]);
+        Rotation2d[] q = {Rotation2d.fromDegrees(90 - mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES), Rotation2d.fromDegrees(-1 * mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)};
+        state[0] = new Pose2d(1,2, q[0]);
+        state[1] = new Pose2d(1,2, q[1]);
 
         // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
-        SmartDashboard.putNumber("Proximal Angle", prox.getRotation().getDegrees());
-        SmartDashboard.putNumber("Distral Angle", dist.getRotation().getDegrees());
-        SmartDashboard.putNumber("Proximal X ", prox.getX());
-        SmartDashboard.putNumber("Proximal Y ", prox.getY());
-        SmartDashboard.putNumber("Distral X", dist.getX());
-        SmartDashboard.putNumber("Distral Y", dist.getY());
+        SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
+        SmartDashboard.putNumber("Distral Angle", state[1].getRotation().getDegrees());
+        SmartDashboard.putNumber("Proximal X ", state[0].getX());
+        SmartDashboard.putNumber("Proximal Y ", state[0].getY());
+        SmartDashboard.putNumber("Distral X", state[1].getX());
+        SmartDashboard.putNumber("Distral Y", state[1].getY());
     }
 
     @Override
@@ -228,7 +228,7 @@ public class Arm extends Submodule {
         mUpperDesiredPosition = upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 
-    public double[] forKin(double[] state) {
+    public double[] forKin(Rotation2d[] q) {
 
         Rotation2d ang_1 = new Rotation2d(state[0]);
         Rotation2d ang_2 = new Rotation2d(state[1]);
