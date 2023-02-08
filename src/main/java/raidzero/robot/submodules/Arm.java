@@ -13,6 +13,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.util.Units;
 
 import raidzero.robot.Constants;
 import raidzero.robot.submodules.DoubleJointedArm;
@@ -31,19 +32,8 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    // State of Proximal and Distral Links
+    // State of Proximal and Distal Links
     private Pose2d[] state;
-
-    /* Arm Control Constants */
-    private double radius = 0;
-    private double radius_sq = 0;
-    private double theta = 0;
-    private double acosarg = 0;
-    private double elbow_supplement = 0;
-    private double alpha = 0;
-    private double[] s1 = { 0, 0 };
-    private double[] s2 = { 0, 0 };
-    private double[] sf = { 0, 0 };
 
     private Arm() {
         int numLinkages = ArmConstants.LINKAGES;
@@ -109,19 +99,21 @@ public class Arm extends Submodule {
     }
 
     @Override
-    public void update(double timestamp) 
-        //add forward kinematics here
-        Rotation2d[] q = {Rotation2d.fromDegrees(90 - mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES), Rotation2d.fromDegrees(-1 * mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)};
-        state[0] = new Pose2d(1,2, q[0]);
-        state[1] = new Pose2d(1,2, q[1]);
+    public void update(double timestamp) {
+        Rotation2d[] q = {
+                Rotation2d.fromDegrees(90)
+                        .minus(Rotation2d.fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
+                Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES).unaryMinus() };
+        state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
+        state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
         // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
-        SmartDashboard.putNumber("Distral Angle", state[1].getRotation().getDegrees());
+        SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
-        SmartDashboard.putNumber("Distral X", state[1].getX());
-        SmartDashboard.putNumber("Distral Y", state[1].getY());
+        SmartDashboard.putNumber("Distal X", state[1].getX());
+        SmartDashboard.putNumber("Distal Y", state[1].getY());
     }
 
     @Override
@@ -224,44 +216,42 @@ public class Arm extends Submodule {
 
     public void moveToAngle(double lowerAngle, double upperAngle) {
         mControlState = ControlState.CLOSED_LOOP;
-        mLowerDesiredPosition = lowerAngle / ArmConstants.TICKS_TO_DEGREES;
-        mUpperDesiredPosition = upperAngle / ArmConstants.TICKS_TO_DEGREES;
+        mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
+        mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
+    }
+
+    public Pose2d[] getState() {
+        return state;
     }
 
     public double[] forKin(Rotation2d[] q) {
 
-        Rotation2d ang_1 = new Rotation2d(state[0]);
-        Rotation2d ang_2 = new Rotation2d(state[1]);
-        double[] calc;
+        double[] pos = new double[state.length * 2];
 
-        // Elbow state
-        calc[0] = Rotation2d.fromDegrees(state[0](state[0]))
-        state[4] = ArmConstants.LOWER_ARM_LENGTH * Math.sin(Math.toRadians(90 - state[0]));
-        state[5] = -1 * ArmConstants.LOWER_ARM_LENGTH * Math.cos(Math.toRadians(90 - state[0]));
+        // Proximal Position
+        pos[0] = ArmConstants.LOWER_ARM_LENGTH * q[0].getCos();
+        pos[1] = ArmConstants.LOWER_ARM_LENGTH * q[0].getSin();
 
-        // End-effector state
-        state[2] = state[4] + ArmConstants.UPPER_ARM_LENGTH
-                * Math.sin(Math.toRadians(90 - state[0]) + Math.toRadians(360 - state[1]));
-        state[3] = state[5] + -1 * ArmConstants.UPPER_ARM_LENGTH
-                * Math.cos(Math.toRadians(90 - state[0]) + Math.toRadians(360 - state[1]));
+        // Distal Position
+        pos[2] = pos[0] + ArmConstants.UPPER_ARM_LENGTH
+                * q[0].plus(q[1]).getCos();
+        pos[3] = pos[1] + ArmConstants.UPPER_ARM_LENGTH
+                * q[0].plus(q[1]).getSin();
+
+        return pos;
     }
 
-    public double[] invKin(double[] pos) {
-
-        
-        Pose2d elbow = new Pose2d(ArmConstants.LOWER_ARM_LENGTH * ang_1.fromRadians().getSin(),
-                -ArmConstants.LOWER_ARM_LENGTH * ang_1.getCos(), ang_1);
-
-
-        Pose2d endeff = new Pose2d();
+    public double[] invKin(double[] target) {
         // Position of target end-effector state
-        radius_sq = pos[0] * pos[0] + pos[1] + pos[1];
-        radius = Math.sqrt(radius_sq);
+        double radius_sq = target[1] * target[1] + -target[0] * -target[0];
+        double radius = Math.sqrt(radius_sq);
+
         // Angle of target State
-        theta = Math.atan2(pos[0], -1 * pos[1]);
+        double theta = Math.atan2(target[1], target[0]);
 
         // Use law of cosines to compute elbow angle
-        acosarg = (radius_sq - ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+        double elbow_supplement = 0.0;
+        double acosarg = (radius_sq - ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
                 - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH)
                 / (-2 * ArmConstants.LOWER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH);
         if (acosarg < -1.0)
@@ -271,27 +261,30 @@ public class Arm extends Submodule {
         else
             elbow_supplement = Math.acos(acosarg);
 
-        // use law of sines to compute angle at the bottom vertex of the triangle
+        // Use law of sines to compute angle at the bottom vertex of the triangle
         // defined by the links
+        double alpha = 0;
         if (radius > 0.0)
             alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
         else
             alpha = 0.0;
 
-        // compute the two solutions with opposite elbow sign
-        s1[0] = Math.toDegrees(theta - alpha);
-        s1[1] = Math.toDegrees(Math.PI - elbow_supplement);
+        // Compute the two solutions with opposite elbow sign
+        double[] s1 = { Math.toDegrees(theta - alpha), Math.toDegrees(Math.PI - elbow_supplement) };
+        double[] s2 = { Math.toDegrees(theta + alpha), Math.toDegrees(elbow_supplement - Math.PI) };
 
-        s2[0] = Math.toDegrees(theta + alpha);
-        s2[1] = Math.toDegrees(elbow_supplement - Math.PI);
+        // Check for hooked solutions
+        if (Math.signum(s1[1]) <= 0) {
+            return s2;
+        } else
+            return s1;
 
-        if (Math.abs(s1[0]) > 160 || Math.abs(s1[1]) > 160) {
-            sf[0] = s2[0];
-            sf[1] = s2[1];
-        } else {
-            sf[0] = s1[0];
-            sf[1] = s1[1];
-        }
-        return sf;
+        // Compare elbow angle solutions, find closest angle to move to
+        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
+        //         .abs(s2[0] - state[0].getRotation().getDegrees())) {
+        //     return s1;
+        // } else
+        //     return s2;
+
     }
 }

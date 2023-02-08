@@ -43,7 +43,7 @@ public class Teleop {
     }
 
     private int mode = 0;
-    private double[] target = { -1.7, 0.3, 0.0, 0.0 }; // Pos_x, Pos_y, ang_1, ang_2
+    private double[] target = { 0, 1.8, 0, 0 }; 
 
     private void p1Loop(XboxController p) {
 
@@ -70,14 +70,14 @@ public class Teleop {
             arm.moveArm(p.getRightX() * 0.16, p.getLeftX() * 0.16);
         } else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.moveToAngle(50, -36.7);
+                arm.moveToAngle(36.7, 36.7);
             } else if (p.getXButtonPressed()) {
-                arm.moveToAngle(-50, 36.7);
+                arm.moveToAngle(135.7, -36.7);
             } else if (p.getAButtonPressed()) {
-                arm.moveToAngle(0, 0);
+                arm.moveToAngle(90, 0);
             }
         } else if (mode == 3) {
-            if (!(Math.abs(target[0]) > 1.85) && !(target[1] < -1.6) && !(target[1] > 1.6)) {
+            if (!(Math.abs(target[0]) > 1.85) && !(target[1] > 1.85) && !(target[1] < 0)) {
                 target[0] += MathUtil.applyDeadband(p.getRightX() * 0.07, 0.05);
                 target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.07, 0.05);
                 // if (p.getYButtonPressed()) {
@@ -91,11 +91,11 @@ public class Teleop {
                 // }
             }
             if (p.getLeftBumperPressed()) {
-                target[0] = -1.7;
-                target[1] = 0.3;
+                target[0] = 0;
+                target[1] = 1.8;
             }
-            target[2] = 90 - Math.abs(arm.invKin(target)[0]);
-            target[3] = -1 * Math.abs(arm.invKin(target)[1]);
+            target[2] = arm.invKin(target)[0];
+            target[3] = arm.invKin(target)[1];
             arm.moveToAngle(target[2], target[3]);
         }
 
