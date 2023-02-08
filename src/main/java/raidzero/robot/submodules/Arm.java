@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import com.revrobotics.RelativeEncoder;
@@ -69,8 +70,8 @@ public class Arm extends Submodule {
     // private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
     // .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
-    // private final SparkMaxAbsoluteEncoder AbsoluteEncoder = mLowerLeader
-    // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder AbsoluteEncoder = mLowerLeader
+    .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     // private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
     // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
@@ -92,6 +93,11 @@ public class Arm extends Submodule {
 
         configLowerSparkMax();
         configUpperSparkMax();
+
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+        
     }
 
     @Override
@@ -107,7 +113,7 @@ public class Arm extends Submodule {
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-        // SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
+        SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
@@ -149,8 +155,8 @@ public class Arm extends Submodule {
     }
 
     private void configLowerSparkMax() {
-        // AbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
-        // AbsoluteEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
+        AbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
+        AbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
 
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
@@ -160,7 +166,9 @@ public class Arm extends Submodule {
         // mLowerReverseLimitSwitch.enableLimitSwitch(true);
         // mLowerEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
         // mLowerEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
-        mLowerPIDController.setFeedbackDevice(mLowerEncoder);
+
+        // mLowerPIDController.setFeedbackDevice(mLowerEncoder);
+        mLowerPIDController.setFeedbackDevice(AbsoluteEncoder);
         mLowerPIDController.setPositionPIDWrappingEnabled(true);
         mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
         mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MAX);
@@ -216,7 +224,8 @@ public class Arm extends Submodule {
 
     public void moveToAngle(double lowerAngle, double upperAngle) {
         mControlState = ControlState.CLOSED_LOOP;
-        mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
+        //mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
+        mLowerDesiredPosition = lowerAngle;
         mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 

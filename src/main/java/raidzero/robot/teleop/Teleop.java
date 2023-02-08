@@ -67,16 +67,17 @@ public class Teleop {
             arm.moveArm(p.getRightX() * 0.2, p.getLeftX() * 0.2);
         else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.moveToAngle(36.7, 36.7);
+                //arm.moveToAngle(36.7, 36.7);
+                arm.moveToAngle(0.8, 36.7);
             } else if (p.getXButtonPressed()) {
-                arm.moveToAngle(135.7, -36.7);
+                //arm.moveToAngle(135.7, -36.7);
             } else if (p.getAButtonPressed()) {
-                arm.moveToAngle(90, 0);
+                //arm.moveToAngle(90, 0);
             }
         } else if (mode == 3) {
-            if (Math.abs(target[0]) <= 1.8 && target[1] <= 1.8 && target[1] >= -0.2) {
+            if (Math.abs(target[0]) <= 1.8 && target[1] <= 1.8 && target[1] >= 0) {
                 target[0] += MathUtil.applyDeadband(p.getRightX() * 0.07, 0.05);
-                target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.07, 0.05);
+                target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.06, 0.05);
             } else if (Math.abs(target[0]) > 1.8) {
                 if (Math.signum(target[0]) == -1)
                     target[0] = -1.8;
@@ -84,8 +85,8 @@ public class Teleop {
                     target[0] = 1.8;
             } else if (target[1] > 1.8)
                 target[1] = 1.8;
-            else if (target[1] < -0.2)
-                target[1] = -0.2;
+            else if (target[1] < 0)
+                target[1] = 0;
 
             // Reset Pose
             if (p.getLeftBumperPressed()) {
