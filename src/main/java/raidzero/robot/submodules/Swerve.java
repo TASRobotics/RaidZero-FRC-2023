@@ -122,11 +122,9 @@ public class Swerve extends Submodule {
         odometry = new SwerveDrivePoseEstimator(
             SwerveConstants.KINEMATICS,
             Rotation2d.fromDegrees(pigeon.getAngle()),
-            
-                DriveConstants.STARTING_ROTATION,
+                getModulePositions(),
                 DriveConstants.STARTING_POSE,
                 DriveConstants.STATE_STDEVS_MATRIX,
-                DriveConstants.ANGLE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
         

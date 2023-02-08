@@ -7,7 +7,10 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.MatBuilder;
@@ -47,8 +50,9 @@ public class Constants {
         public static final double MAX_VEL_MPS = 4.959668;
 
         // 20.75 OR 22.75 inches
-        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(20.75); 
-        public static final double WHEELBASE_METERS = Units.inchesToMeters(20.75); 
+        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75); 
+        public static final double WHEELBASE_METERS = Units.inchesToMeters(22.75);
+        public static final double ROBOT_RADIUS_METERS = 0.40863; 
 
         public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
             // Front left
@@ -125,8 +129,15 @@ public class Constants {
         public static final String APRILTAGFAMILY = "tag36h11";
         private static final String APRILTAGFILENAME = "AprilTagPoses.json";
         public static final Path APRILTAGPATH = Filesystem.getDeployDirectory().toPath().resolve(APRILTAGFILENAME);
-        private static final double[][] CAMERALOCATIONS = {{1,2,3},{3,4,5}};
-        private static final double[] CAMERAANGLES = {0,180};
+        private static final double CAMERAXDISPLACEMENT = 0.0772;
+        private static final double CAMERAYDISPLACEMENT = 0.3429;
+        private static final double CAMERAZDISPLACEMENT = 0.56198;
+        private static final Rotation2d[] CAMERAANGLES = {new Rotation2d(0),new Rotation2d(Math.PI)};
+        
+        // private static final double[][] CAMERALOCATIONS = {{1,2,3},{3,4,5}};
+        private static final Pose2d[] CAMERALOCATIONS = {new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
+            new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1])};
+    
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
         //public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new Rotation2d(.5))};
