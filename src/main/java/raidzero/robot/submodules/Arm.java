@@ -243,7 +243,7 @@ public class Arm extends Submodule {
 
     public double[] invKin(double[] target) {
         // Position of target end-effector state
-        double radius_sq = target[1] * target[1] + -target[0] * -target[0];
+        double radius_sq = target[0] * target[0] + target[1] * target[1];
         double radius = Math.sqrt(radius_sq);
 
         // Angle of target State

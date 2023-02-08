@@ -43,7 +43,7 @@ public class Teleop {
     }
 
     private int mode = 0;
-    private double[] target = { 0, 1.8, 0, 0 }; 
+    private double[] target = { 0, 1.8, 0, 0 };
 
     private void p1Loop(XboxController p) {
 
@@ -56,19 +56,16 @@ public class Teleop {
 
         // arm.setArmRampRate(rampRate);
 
-        if (p.getRightBumperPressed()) {
+        if (p.getRightBumperPressed())
             mode = 1;
-
-        } else if (p.getBackButtonPressed()) {
+        else if (p.getBackButtonPressed())
             mode = 2;
-
-        } else if (p.getStartButtonPressed()) {
+        else if (p.getStartButtonPressed())
             mode = 3;
-        }
 
-        if (mode == 1) {
-            arm.moveArm(p.getRightX() * 0.16, p.getLeftX() * 0.16);
-        } else if (mode == 2) {
+        if (mode == 1)
+            arm.moveArm(p.getRightX() * 0.2, p.getLeftX() * 0.2);
+        else if (mode == 2) {
             if (p.getYButtonPressed()) {
                 arm.moveToAngle(36.7, 36.7);
             } else if (p.getXButtonPressed()) {
@@ -77,19 +74,20 @@ public class Teleop {
                 arm.moveToAngle(90, 0);
             }
         } else if (mode == 3) {
-            if (!(Math.abs(target[0]) > 1.85) && !(target[1] > 1.85) && !(target[1] < 0)) {
+            if (Math.abs(target[0]) <= 1.8 && target[1] <= 1.8 && target[1] >= -0.2) {
                 target[0] += MathUtil.applyDeadband(p.getRightX() * 0.07, 0.05);
                 target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.07, 0.05);
-                // if (p.getYButtonPressed()) {
-                //     target[1] += 0.05;
-                // } else if (p.getAButtonPressed()) {
-                //     target[1] -= 0.05;
-                // } else if (p.getXButtonPressed()) {
-                //     target[0] -= 0.05;
-                // } else if (p.getBButtonPressed()) {
-                //     target[0] += 0.05;
-                // }
-            }
+            } else if (Math.abs(target[0]) > 1.8) {
+                if (Math.signum(target[0]) == -1)
+                    target[0] = -1.8;
+                else
+                    target[0] = 1.8;
+            } else if (target[1] > 1.8)
+                target[1] = 1.8;
+            else if (target[1] < -0.2)
+                target[1] = -0.2;
+
+            // Reset Pose
             if (p.getLeftBumperPressed()) {
                 target[0] = 0;
                 target[1] = 1.8;
