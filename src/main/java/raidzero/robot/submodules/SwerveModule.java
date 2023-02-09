@@ -319,10 +319,6 @@ public class SwerveModule extends Submodule implements Sendable {
         // }
     }
 
-    public void setRotorRampRate(double val) {
-        throttle.configClosedloopRamp(val);
-    }
-
     public void initThrottle(TalonFX throttle) {
         throttle.configFactoryDefault();
         throttle.setInverted(SwerveConstants.MOTOR_INVERSION);
@@ -352,6 +348,10 @@ public class SwerveModule extends Submodule implements Sendable {
         rotor.configVoltageCompSaturation(Constants.VOLTAGE_COMP);
         rotor.enableVoltageCompensation(true);
         rotor.configSupplyCurrentLimit(SwerveConstants.ROTOR_CURRENT_LIMIT);
+    }
+
+    public void setRotorRampRate(double val) {
+        throttle.configClosedloopRamp(val);
     }
 
 }

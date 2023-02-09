@@ -25,7 +25,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 // import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.networktables.NetworkTableListener;
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -90,11 +90,9 @@ public class Vision extends Submodule {
         aprilYawFilter.reset();
         for (String cameraSubTable : cameraSubTables) {
             System.out.println("Setting up triggers");
-            table.getSubTable(cameraSubTable).
-
-                    addEntryListener("Timestamp", (table, key, entry, value, flags) -> {
-                        aprilDetect(value.getDouble(), table);
-                    }, EntryListenerFlags.kUpdate);
+            table.getSubTable(cameraSubTable).addEntryListener("Timestamp", (table, key, entry, value, flags) -> {
+                aprilDetect(value.getDouble(), table);
+            }, EntryListenerFlags.kUpdate);
         }
     }
 
@@ -108,7 +106,7 @@ public class Vision extends Submodule {
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
         aprilYawFilter.predict(new MatBuilder<N1, N1>(Nat.N1(), Nat.N1()).fill(0.0), Constants.TIMEOUT_S);
         // angleHistory[historyLoc] = robotDrive.getPose().getRotation();
-        // timestampHistory[historyLoc] = timestamp;l
+        // timestampHistory[historyLoc] = timestamp;
         // historyLoc = (historyLoc+1 == VisionConstants.ANGLEHISTNUM ? 0:
         // historyLoc+1);
 
@@ -230,7 +228,6 @@ public class Vision extends Submodule {
         public Matrix<N2, N1> apply(Matrix<N2, N1> x, Matrix<N1, N1> u) {
             return feedForward.times(x);
         }
-        
     }
 
     private static class ForwardMeasure implements BiFunction<Matrix<N2, N1>, Matrix<N1, N1>, Matrix<N1, N1>> {

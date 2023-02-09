@@ -26,32 +26,26 @@ public class Constants {
         public static final class SwerveConstants {
                 public static final double kOpenLoopRampRate = 0.0;
                 public static final double kClosedLoopRampRate = 0.0;
-
                 /** Device IDs */
                 public static final int TOP_LEFT_THROTTLE_ID = 0;
                 public static final int TOP_RIGHT_THROTTLE_ID = 0;
                 public static final int REAR_LEFT_THROTTLE_ID = 0;
                 public static final int REAR_RIGHT_THROTTLE_ID = 0;
-
                 public static final int TOP_LEFT_ROTOR_ID = 0;
                 public static final int TOP_RIGHT_ROTOR_ID = 0;
                 public static final int REAR_LEFT_ROTOR_ID = 0;
                 public static final int REAR_RIGHT_ROTOR_ID = 0;
-
                 public static final int TOP_LEFT_ROTOR_OFFSET = 0;
                 public static final int TOP_RIGHT_ROTOR_OFFSET = 0;
                 public static final int REAR_LEFT_ROTOR_OFFSET = 0;
                 public static final int REAR_RIGHT_ROTOR_OFFSET = 0;
-
                 public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
                 public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
                 public static final double WHEEL_DIAMETER_METERS = 0.1016;
                 public static final double MAX_VEL_MPS = 4.959668;
-
                 // 20.75 OR 22.75 inches
                 public static final double TRACKWIDTH_METERS = Units.inchesToMeters(20.75);
                 public static final double WHEELBASE_METERS = Units.inchesToMeters(20.75);
-
                 public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
                                 // Front left
                                 new Translation2d(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
@@ -61,13 +55,11 @@ public class Constants {
                                 new Translation2d(-TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0),
                                 // Back right
                                 new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
-
                 /** 254 Pathing Constants (smooth): */
                 public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.7;
                 public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS;
                 public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
                 public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(MAX_ANGULAR_VEL_RPS, 2);
-
                 /** 254 Pathing Constants (fast): */
                 // public static final double MAX_DRIVE_VEL = MAX_VEL_MPS;
                 // public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL / 0.2;
@@ -78,35 +70,31 @@ public class Constants {
                 public static final double ROTOR_KP = 0.75;
                 public static final double ROTOR_KI = 0;
                 public static final double ROTOR_KD = 15;
-
                 public static final int THROTTLE_VELOCITY_PID_SLOT = 0;
                 public static final double THROTTLE_KP = 0.1;
                 public static final double THROTTLE_KI = 0.0;
                 public static final double THROTTLE_KD = 0.01;
                 public static final double THROTTLE_KF = 1023
                                 / (MAX_VEL_MPS / (Math.PI * WHEEL_DIAMETER_METERS * THROTTLE_REDUCTION / 2048.0 * 10));
-
                 /** 1678 Pathing Constants */
                 public static final double XCONTROLLER_KP = 1;
                 public static final double YCONTROLLER_KP = 1;
                 public static final double THETACONTROLLER_KP = 5;
                 public static final TrapezoidProfile.Constraints THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
                                 MAX_ANGULAR_VEL_RPS, MAX_ANGULAR_ACCEL_RPSPS);
-
                 // Using SDS 6.75 ratio
                 public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
                                 / (2048 * (1 / THROTTLE_REDUCTION));
                 public static final double CANCODER_TO_DEGREES = 360.0 / 4096.0;
-
                 public static final boolean MOTOR_INVERSION = false;
                 public static final boolean ROTOR_INVERSION = true;
                 public static final boolean ROTOR_INVERT_SENSOR_PHASE = true;
-
                 /** Current Limits */
                 public static final SupplyCurrentLimitConfiguration ROTOR_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(
                                 true, 25, 40, 0.1);
                 public static final SupplyCurrentLimitConfiguration THROTTLE_CURRENT_LIMIT = new SupplyCurrentLimitConfiguration(
                                 true, 35, 60, 0.1);
+
         }
 
         public static final class DriveConstants {
@@ -128,6 +116,11 @@ public class Constants {
         }
 
         public static final class IntakeConstants {
+                public static final int ID = 0;
+
+                public static final boolean INVERSION = false;
+
+                public static final int CURRENT_LIMIT = 20;
         }
 
         public static final class VisionConstants {
@@ -240,6 +233,7 @@ public class Constants {
                 public static final boolean ENCODER_INVERSION = false;
                 // 1:75 ratio, in degrees
                 public static final double POSITION_CONVERSION_FACTOR = 1 / 75 * 360;
+                public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
                 public static final int SMART_MOTION_SLOT = 0;
 
