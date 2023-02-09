@@ -33,7 +33,9 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    public double driftTolerance = 10.0; //degrees
+    public double drift = 0.0; //degrees
+    public double driftTolerance = 5.0; 
+    public double dResets = 0.0;
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
@@ -130,6 +132,9 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
         SmartDashboard.putNumber("Distal X", state[1].getX());
         SmartDashboard.putNumber("Distal Y", state[1].getY());
+        SmartDashboard.putNumber("Drift",  Math.toDegrees(mLowerAbsoluteEncoder.getPosition())-state[0].getRotation().getDegrees());
+        SmartDashboard.putNumber("Resets", dResets);
+
     }
 
     @Override
@@ -173,7 +178,7 @@ public class Arm extends Submodule {
         // mLowerReverseLimitSwitch.enableLimitSwitch(true);
 
         mLowerAbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
-        mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_POSITION_CONVERSION_FACTOR);
+        mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_ABS_POSITION_CONVERSION_FACTOR);
         mLowerAbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
 
         mLowerPIDController.setFeedbackDevice(mLowerEncoder);
@@ -241,9 +246,10 @@ public class Arm extends Submodule {
     }
 
     // TODO: Add Kalman Filter to sanity check here:
-    public Rotation2d lowerSanityCheck(Rotation2d rel, Rotation2d abs) {
-        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance) {
-            mLowerEncoder.setPosition(abs.getDegrees());
+    public Rotation2d lowerSanityCheck(Rotation2d abs, Rotation2d rel) {
+        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance && abs.getDegrees()<=Math.PI && abs.getDegrees()>=0) {
+            mLowerEncoder.setPosition(abs.getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+            dResets++;
             return abs;
         }
         return rel;
@@ -252,7 +258,7 @@ public class Arm extends Submodule {
     // TODO: Add Kalman Filter to sanity check here:
     public Rotation2d upperSanityCheck(Rotation2d abs, Rotation2d rel) {
         if (Math.abs(abs.minus(rel).getDegrees()) > driftTolerance) {
-            mUpperEncoder.setPosition(abs.getDegrees());
+            mUpperEncoder.setPosition(abs.getDegrees() / ArmConstants.TICKS_TO_DEGREES);
             return abs;
         }
         return rel;
