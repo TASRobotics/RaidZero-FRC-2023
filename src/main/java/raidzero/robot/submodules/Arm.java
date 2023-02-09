@@ -33,8 +33,8 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    public double drift = 0.0; //degrees
-    public double driftTolerance = 5.0; 
+    public double drift = 0.0; // degrees
+    public double driftTolerance = 5.0;
     public double dResets = 0.0;
 
     // State of Proximal and Distal Links
@@ -132,7 +132,8 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
         SmartDashboard.putNumber("Distal X", state[1].getX());
         SmartDashboard.putNumber("Distal Y", state[1].getY());
-        SmartDashboard.putNumber("Drift",  Math.toDegrees(mLowerAbsoluteEncoder.getPosition())-state[0].getRotation().getDegrees());
+        SmartDashboard.putNumber("Drift",
+                Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) - state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Resets", dResets);
 
     }
@@ -247,8 +248,9 @@ public class Arm extends Submodule {
 
     // TODO: Add Kalman Filter to sanity check here:
     public Rotation2d lowerSanityCheck(Rotation2d abs, Rotation2d rel) {
-        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance && abs.getDegrees()<=Math.PI && abs.getDegrees()>=0) {
-            mLowerEncoder.setPosition(abs.getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance && abs.getRadians() <= Math.PI
+                && abs.getRadians() >= 0) {
+            mLowerEncoder.setPosition(Rotation2d.fromDegrees(90).minus(abs).getDegrees() / ArmConstants.TICKS_TO_DEGREES);
             dResets++;
             return abs;
         }
@@ -258,7 +260,7 @@ public class Arm extends Submodule {
     // TODO: Add Kalman Filter to sanity check here:
     public Rotation2d upperSanityCheck(Rotation2d abs, Rotation2d rel) {
         if (Math.abs(abs.minus(rel).getDegrees()) > driftTolerance) {
-            mUpperEncoder.setPosition(abs.getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+            mUpperEncoder.setPosition(abs.unaryMinus().getDegrees() / ArmConstants.TICKS_TO_DEGREES);
             return abs;
         }
         return rel;
