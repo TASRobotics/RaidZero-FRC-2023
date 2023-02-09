@@ -4,7 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 public class LazyTalonFX extends WPI_TalonFX {
-    
+
     protected double prevVal = 0;
     protected ControlMode prevControlMode = null;
 

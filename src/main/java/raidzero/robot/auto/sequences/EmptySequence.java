@@ -8,12 +8,12 @@ public class EmptySequence extends AutoSequence {
 
     @Override
     public void sequence() {
-        
+
     }
 
     @Override
     public void onEnded() {
-        
+
     }
 
     @Override

@@ -40,20 +40,24 @@ public class Led extends Submodule {
 
     public void glowPattern(int patternId) {
         data[0] = (byte) patternId;
-        if (patternId < 256) leds.transaction(data, 1, new byte[1], 0);
-        else return;
+        if (patternId < 256)
+            leds.transaction(data, 1, new byte[1], 0);
+        else
+            return;
     }
 
     /**
      * Reads cached inputs & calculate outputs.
      */
-    public void update(double timestamp) {}
-    
+    public void update(double timestamp) {
+    }
+
     /**
-     * Runs components in the submodule that have continuously changing 
+     * Runs components in the submodule that have continuously changing
      * inputs.
      */
-    public void run() {}
+    public void run() {
+    }
 
     public void stop() {
         glowPattern(1);
@@ -62,5 +66,6 @@ public class Led extends Submodule {
     /**
      * Resets the sensor(s) to zero.
      */
-    public void zero() {}
+    public void zero() {
+    }
 }
