@@ -70,8 +70,8 @@ public class Arm extends Submodule {
     // private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
     // .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
-    private final SparkMaxAbsoluteEncoder AbsoluteEncoder = mLowerLeader
-    .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     // private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
     // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
@@ -97,7 +97,7 @@ public class Arm extends Submodule {
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
-        
+
     }
 
     @Override
@@ -113,7 +113,7 @@ public class Arm extends Submodule {
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-        SmartDashboard.putNumber("Absolute Angle", AbsoluteEncoder.getPosition());
+        SmartDashboard.putNumber("Absolute Angle", mLowerAbsoluteEncoder.getPosition());
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
@@ -155,20 +155,19 @@ public class Arm extends Submodule {
     }
 
     private void configLowerSparkMax() {
-        AbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
-        AbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
-
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
         mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
         mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         // mLowerForwardLimitSwitch.enableLimitSwitch(true);
         // mLowerReverseLimitSwitch.enableLimitSwitch(true);
-        // mLowerEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
-        // mLowerEncoder.setInverted(ArmConstants.LOWER_ENCODER_INVERSION);
 
-        // mLowerPIDController.setFeedbackDevice(mLowerEncoder);
-        mLowerPIDController.setFeedbackDevice(AbsoluteEncoder);
+        mLowerAbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
+        mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_POSITION_CONVERSION_FACTOR);
+        mLowerAbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
+
+        //mLowerPIDController.setFeedbackDevice(mLowerEncoder);
+        mLowerPIDController.setFeedbackDevice(mLowerEncoder);
         mLowerPIDController.setPositionPIDWrappingEnabled(true);
         mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
         mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MAX);
@@ -224,13 +223,16 @@ public class Arm extends Submodule {
 
     public void moveToAngle(double lowerAngle, double upperAngle) {
         mControlState = ControlState.CLOSED_LOOP;
-        //mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
-        mLowerDesiredPosition = lowerAngle;
+        mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
     }
 
     public Pose2d[] getState() {
         return state;
+    }
+
+    public double[] sanityCheck(){
+        
     }
 
     public double[] forKin(Rotation2d[] q) {
@@ -290,10 +292,10 @@ public class Arm extends Submodule {
 
         // Compare elbow angle solutions, find closest angle to move to
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
-        //         .abs(s2[0] - state[0].getRotation().getDegrees())) {
-        //     return s1;
+        // .abs(s2[0] - state[0].getRotation().getDegrees())) {
+        // return s1;
         // } else
-        //     return s2;
+        // return s2;
 
     }
 }

@@ -57,18 +57,18 @@ public class Teleop {
         // arm.setArmRampRate(rampRate);
 
         if (p.getRightBumperPressed())
-            mode = 1;
+            mode = 1; //Joystick
         else if (p.getBackButtonPressed())
-            mode = 2;
+            mode = 2; //Setpoint SM
         else if (p.getStartButtonPressed())
-            mode = 3;
+            mode = 3; //Joystick with Inv Kin.
 
         if (mode == 1)
             arm.moveArm(p.getRightX() * 0.2, p.getLeftX() * 0.2);
         else if (mode == 2) {
             if (p.getYButtonPressed()) {
                 //arm.moveToAngle(36.7, 36.7);
-                arm.moveToAngle(0.8, 36.7);
+                arm.moveToAngle(0.2, 36.7);
             } else if (p.getXButtonPressed()) {
                 //arm.moveToAngle(135.7, -36.7);
             } else if (p.getAButtonPressed()) {

@@ -69,8 +69,11 @@ public class Constants {
                 public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
                 public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
 
-                public static final double LOWER_ZERO_OFFSET = 0.0;
+                public static final double LOWER_ZERO_OFFSET = 5.6360036;
                 public static final double UPPER_ZERO_OFFSET = 0.0;
+
+                public static final double LOWER_POSITION_CONVERSION_FACTOR = 6.28318;
+                public static final double UPPER_POSITION_CONVERSION_FACTOR = 0.0;
 
                 public static final boolean LOWER_ENCODER_INVERSION = false;
                 public static final boolean UPPER_ENCODER_INVERSION = false;
@@ -99,10 +102,10 @@ public class Constants {
                 // public static final double UPPER_MAX_ACCEL = 1960;
                 // public static final double UPPER_MIN_ERROR = 0.0;
 
-                public static final double LOWER_KF = 0.000166;
-                public static final double LOWER_KP = 0.000187;
+                public static final double LOWER_KF = 0.00000166;
+                public static final double LOWER_KP = 0;//0.000187;
                 public static final double LOWER_KI = 0.0;
-                public static final double LOWER_KD = 0.000090;
+                public static final double LOWER_KD = 0;//0.000090;
                 public static final double LOWER_MIN_VEL = 0.0;
                 public static final double LOWER_MAX_VEL = 500;
                 public static final double LOWER_MAX_ACCEL = 250;
