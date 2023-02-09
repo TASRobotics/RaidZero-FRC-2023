@@ -8,7 +8,14 @@ import org.opencv.ml.LogisticRegression;
 import org.opencv.ml.Ml;
 import org.opencv.ml.TrainData;
 
-import com.revrobotics.MotorFeedbackSensor;
+import java.util.stream.IntStream;
+
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.ml.LogisticRegression;
+import org.opencv.ml.Ml;
+import org.opencv.ml.TrainData;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -18,7 +25,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
-import edu.wpi.first.util.CircularBuffer;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
@@ -51,6 +59,7 @@ public class Wrist extends Submodule {
     private Mat limitSwitchTriggerData = new Mat(WristConstants.LIMITSWITCHBUFFERSIZE, 1, CvType.CV_16F);
     private Mat limitSwitchEncoderData = new Mat(WristConstants.LIMITSWITCHBUFFERSIZE, 1, CvType.CV_16F);
     private int indexPosition;
+    private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
 
@@ -64,6 +73,7 @@ public class Wrist extends Submodule {
     public void onInit() {
         mMotor.restoreFactoryDefaults();
         configWristSparkMax();
+        mMotor.burnFlash();
         zero();
         limitSwitchModel.setLearningRate(0.01);
         limitSwitchModel.setIterations(10);
@@ -106,7 +116,7 @@ public class Wrist extends Submodule {
                     mDesiredAngle,
                     ControlType.kSmartMotion,
                     WristConstants.SMART_MOTION_SLOT,
-                    mDesiredAngle,
+                    mFeedforward.calculate(getAngle().getRadians(), 0),
                     ArbFFUnits.kPercentOut);
         }
     }
@@ -132,22 +142,43 @@ public class Wrist extends Submodule {
     }
 
     /**
-     * Set desired wrist angle [0, 360]
+     * Set desired wrist angle (degrees) [0, 360]
      * 
      * @param angle desired angle
      */
     public void setDesiredAngle(double angle) {
         mControlState = ControlState.CLOSED_LOOP;
         mDesiredAngle = angle;
+        mEncoder.getVelocity();
+    }
+
+    /**
+     * Get current wrist angle
+     * 
+     * @return current angle
+     */
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(mEncoder.getPosition());
+    }
+
+    /**
+     * Get current wrist velocity
+     * 
+     * @return current velocity
+     */
+    public Rotation2d getVelocity() {
+        return Rotation2d.fromDegrees(mEncoder.getVelocity());
     }
 
     private void configWristSparkMax() {
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
+        mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
         mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);
+        mEncoder.setVelocityConversionFactor(WristConstants.VELOCITY_CONVERSION_FACTOR);
 
         mPIDController.setFeedbackDevice(mEncoder);
         mPIDController.setFF(WristConstants.KF, WristConstants.SMART_MOTION_SLOT);

@@ -30,6 +30,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 import raidzero.robot.Constants;
+import raidzero.robot.submodules.SwerveModule;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;

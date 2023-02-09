@@ -76,6 +76,9 @@ public class Arm extends Submodule {
 
         configLowerSparkMax();
         configUpperSparkMax();
+
+        mLowerLeader.burnFlash();
+        mUpperLeader.burnFlash();
     }
 
     @Override
