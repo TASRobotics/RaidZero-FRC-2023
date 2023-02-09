@@ -33,7 +33,7 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
-    public double driftTolerance = 3.0;
+    public double driftTolerance = 10.0; //degrees
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
@@ -109,15 +109,21 @@ public class Arm extends Submodule {
     @Override
     public void update(double timestamp) {
         Rotation2d[] q = {
-                lowerSanityCheck(Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
-                        Rotation2d.fromDegrees(90)
-                                .minus(Rotation2d
-                                        .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
-                Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES).unaryMinus() };
+                // Rotation2d.fromDegrees(90).minus(Rotation2d
+                // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
+                lowerSanityCheck(
+                        Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
+                        Rotation2d.fromDegrees(90).minus(Rotation2d
+                                .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
+                upperSanityCheck(
+                        Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                                .unaryMinus(),
+                        Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                                .unaryMinus()) };
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-        SmartDashboard.putNumber("Absolute Angle", mLowerAbsoluteEncoder.getPosition());
+        SmartDashboard.putNumber("Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()));
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
@@ -170,7 +176,6 @@ public class Arm extends Submodule {
         mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_POSITION_CONVERSION_FACTOR);
         mLowerAbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
 
-        // mLowerPIDController.setFeedbackDevice(mLowerEncoder);
         mLowerPIDController.setFeedbackDevice(mLowerEncoder);
         mLowerPIDController.setPositionPIDWrappingEnabled(true);
         mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
@@ -235,7 +240,7 @@ public class Arm extends Submodule {
         return state;
     }
 
-    // TODO: Add Kalman Filter to sanityCheck here:
+    // TODO: Add Kalman Filter to sanity check here:
     public Rotation2d lowerSanityCheck(Rotation2d rel, Rotation2d abs) {
         if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance) {
             mLowerEncoder.setPosition(abs.getDegrees());
@@ -244,9 +249,9 @@ public class Arm extends Submodule {
         return rel;
     }
 
-    // TODO: Add Kalman Filter to sanityCheck here:
-    public Rotation2d upperSanityCheck(Rotation2d rel, Rotation2d abs) {
-        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance) {
+    // TODO: Add Kalman Filter to sanity check here:
+    public Rotation2d upperSanityCheck(Rotation2d abs, Rotation2d rel) {
+        if (Math.abs(abs.minus(rel).getDegrees()) > driftTolerance) {
             mUpperEncoder.setPosition(abs.getDegrees());
             return abs;
         }
@@ -303,8 +308,8 @@ public class Arm extends Submodule {
         double[] s2 = { Math.toDegrees(theta + alpha), Math.toDegrees(elbow_supplement - Math.PI) };
 
         // Check for wacko solutions
-        if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) < 0)
-                || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) > 0)) {
+        if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) > 0)
+                || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) < 0)) {
             return s2;
         } else
             return s1;

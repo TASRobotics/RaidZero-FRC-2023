@@ -82,31 +82,13 @@ public class Constants {
 
                 public static final double TICKS_TO_DEGREES = 3.0;
 
-                // public static final double LOWER_KF = 0.000166;
-                // public static final double LOWER_KP = 0.000187;
-                // public static final double LOWER_KI = 0.0;
-                // public static final double LOWER_KD = 0.000090;
-                // public static final double LOWER_MIN_VEL = 0.0;
-                // public static final double LOWER_MAX_VEL = 3760; 
-                // public static final double LOWER_MAX_ACCEL = 1960;
-                // public static final double LOWER_MIN_ERROR = 0.0;
-                
-                // public static final double UPPER_KF = 0.000166;
-                // public static final double UPPER_KP = 0.000106;
-                // public static final double UPPER_KI = 0.0;
-                // public static final double UPPER_KD = 0.000009;
-                // public static final double UPPER_MIN_VEL = 0.0;
-                // public static final double UPPER_MAX_VEL = 3760;
-                // public static final double UPPER_MAX_ACCEL = 1960;
-                // public static final double UPPER_MIN_ERROR = 0.0;
-
-                public static final double LOWER_KF = 0.00000166;
-                public static final double LOWER_KP = 0;//0.000187;
+                public static final double LOWER_KF = 0.000166;
+                public static final double LOWER_KP = 0.000187;
                 public static final double LOWER_KI = 0.0;
-                public static final double LOWER_KD = 0;//0.000090;
+                public static final double LOWER_KD = 0.000090;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 500;
-                public static final double LOWER_MAX_ACCEL = 250;
+                public static final double LOWER_MAX_VEL = 3760; 
+                public static final double LOWER_MAX_ACCEL = 1960;
                 public static final double LOWER_MIN_ERROR = 0.0;
                 
                 public static final double UPPER_KF = 0.000166;
@@ -114,9 +96,27 @@ public class Constants {
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.000009;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 500;
-                public static final double UPPER_MAX_ACCEL = 250;
+                public static final double UPPER_MAX_VEL = 3760;
+                public static final double UPPER_MAX_ACCEL = 1960;
                 public static final double UPPER_MIN_ERROR = 0.0;
+
+                // public static final double LOWER_KF = 0.00000166;
+                // public static final double LOWER_KP = 0;//0.000187;
+                // public static final double LOWER_KI = 0.0;
+                // public static final double LOWER_KD = 0;//0.000090;
+                // public static final double LOWER_MIN_VEL = 0.0;
+                // public static final double LOWER_MAX_VEL = 500;
+                // public static final double LOWER_MAX_ACCEL = 250;
+                // public static final double LOWER_MIN_ERROR = 0.0;
+                
+                // public static final double UPPER_KF = 0.000166;
+                // public static final double UPPER_KP = 0.000106;
+                // public static final double UPPER_KI = 0.0;
+                // public static final double UPPER_KD = 0.000009;
+                // public static final double UPPER_MIN_VEL = 0.0;
+                // public static final double UPPER_MAX_VEL = 500;
+                // public static final double UPPER_MAX_ACCEL = 250;
+                // public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
