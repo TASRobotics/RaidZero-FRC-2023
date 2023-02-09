@@ -253,8 +253,16 @@ public class Constants {
                 public static final double MAX_ACCEL = 0.0;
                 public static final double MIN_ERROR = 0.0;
 
+                public static final double MAXWINDS = 1.0;
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
+
+                public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
+                public static final int LIMITSWITCHOFFSET = 40;
+
+                public static final int LIMITSWITCHBUFFERSIZE = 100;
+
+                public static final double ENCODER_NORMALIZATION = 100.0;
         }
 
         public static final class TOFSensorConstants {
