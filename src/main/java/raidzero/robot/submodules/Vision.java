@@ -1,6 +1,8 @@
 package raidzero.robot.submodules;
 
 import java.nio.file.Path;
+import java.util.EnumSet;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -25,10 +27,12 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.numbers.N3;
 // import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
-import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.CircularBuffer;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.Constants.VisionConstants;
@@ -50,7 +54,7 @@ public class Vision extends Submodule {
     private double[] yawRotationNT;
     // private double timestampNT;
 
-    private NetworkTable table;
+	private NetworkTable table;
     private String[] cameraSubTables;
     private double[] confidenceNT;
 
@@ -90,9 +94,7 @@ public class Vision extends Submodule {
         aprilYawFilter.reset();
         for (String cameraSubTable : cameraSubTables) {
             System.out.println("Setting up triggers");
-            table.getSubTable(cameraSubTable).addEntryListener("Timestamp", (table, key, entry, value, flags) -> {
-                aprilDetect(value.getDouble(), table);
-            }, EntryListenerFlags.kUpdate);
+            table.getSubTable(cameraSubTable).addListener("Timestamp", EnumSet.of(NetworkTableEvent.Kind.kValueAll), (subTable, key, NetworkTableEvent) -> {aprilDetect(subTable);});
         }
     }
 
@@ -112,18 +114,17 @@ public class Vision extends Submodule {
 
     }
 
-    private void aprilDetect(double timestamp, NetworkTable cameraSubTable) {
+    private void aprilDetect(NetworkTable cameraSubTable){
         // System.out.println("Detecting at " + timestamp);
-        // System.out.println("Camera Subtable " +
-        // cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[1])[0]);
-        cameraSubTable.getEntry("timestamp").clearFlags(EntryListenerFlags.kUpdate);
+        // System.out.println("Camera Subtable " + cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[1])[0]);
+        // cameraSubTable.getEntry("timestamp").clearFlags(EntryListenerFlags.kUpdate);
         aprilTagIDs = MathTools.doubleArraytoInt(cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[0]));
         xTranslationNT = cameraSubTable.getEntry("xTranslation").getDoubleArray(new double[aprilTagIDs.length]);
         yTranslationNT = cameraSubTable.getEntry("yTranslation").getDoubleArray(new double[aprilTagIDs.length]);
         zTranslationNT = cameraSubTable.getEntry("zTranslation").getDoubleArray(new double[aprilTagIDs.length]);
         yawRotationNT = cameraSubTable.getEntry("yawRotation").getDoubleArray(new double[aprilTagIDs.length]);
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
-        updatePose(zTranslationNT, xTranslationNT, yawRotationNT, aprilTagIDs, timestamp);
+        updatePose(zTranslationNT, xTranslationNT, yawRotationNT, aprilTagIDs, cameraSubTable.getEntry("Timestemp").getDouble(firsttimestamp));
     }
 
     /**
@@ -153,7 +154,7 @@ public class Vision extends Submodule {
         // Rotation2d robotRelativeAngle;
         Pose2d robotRelativePose;
         Transform2d aprilTagRelativeTransformation;
-        Pose2d newRobotPose;
+        Pose2d newRobotPose = new Pose2d();
         // int foundAngleLocation=-1;
         // for(int i=historyLoc+timestampHistory.length-1;i>historyLoc;i--){
         // if(timestamp>timestampHistory[i%timestampHistory.length]) foundAngleLocation
@@ -165,10 +166,9 @@ public class Vision extends Submodule {
         // (timestamp-timestampHistory[foundAngleLocation])/(timestampHistory[(foundAngleLocation+1)%timestampHistory.length]-timestampHistory[foundAngleLocation]);
         for (int aTagID : aTagIDs) {
             // aTag2int = (int)aTagIDs[i];
-
-            // Create pose of robot with respect to the apriltag;
-            robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID], -cameraTranslationX[aTagID],
-                    new Rotation2d(aTagRotation[aTagID]));
+            boolean canInterpolate = false;
+            //Create pose of robot with respect to the apriltag;
+            robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID], -cameraTranslationX[aTagID],new Rotation2d(aTagRotation[aTagID]));
 
             // Create rotation of apriltag with respect to the robot
             aprilTagYaw = robotRelativePose.getRotation();
@@ -179,29 +179,27 @@ public class Vision extends Submodule {
 
             // Create transformation of robot with respect to the apriltag, angle is the
             // corrected angle based on apriltag relative pose
-            aprilTagRelativeTransformation = new Transform2d(robotRelativePose.getTranslation(),
-                    aprilTagGlobalPoses[aTagID].getRotation().plus(aprilTagYaw)
-                            .minus(angleInterpolate.getSample(timestamp)));
+            if(angleInterpolate.getSample(timestamp).isPresent()){
+                canInterpolate = true;
+                aprilTagRelativeTransformation = new Transform2d(robotRelativePose.getTranslation(),
+                        aprilTagGlobalPoses[aTagID].getRotation().plus(aprilTagYaw)
+                            .minus(angleInterpolate.getSample(timestamp).get()));
 
-            // System.out.println("Calculating Pose: " +
-            // angleInterpolate.getSample(timestamp));
+            // System.out.println("Calculating Pose: " + angleInterpolate.getSample(timestamp));
 
-            newRobotPose = (new Pose2d(aprilTagGlobalPoses[aTagID].getTranslation(),
-                    angleInterpolate.getSample(timestamp))).plus(aprilTagRelativeTransformation);
-            // Transformation that brings the origin to the apriltag position at an angle
-            // that the robot was at
-            // at the particular timestamp the image was taken.
+                newRobotPose = (new Pose2d(aprilTagGlobalPoses[aTagID].getTranslation(), angleInterpolate.getSample(timestamp).get())).plus(aprilTagRelativeTransformation);
+            }
+            
+            //Transformation that brings the origin to the apriltag position at an angle that the robot was at
+            //at the particular timestamp the image was taken.
             // System.out.println("Relative Pose: " + robotRelativePose);
             // System.out.println("Added Pose: " + aprilTagRelativeTransformation);
-            // System.out.println("Interpolated angle "+
-            // angleInterpolate.getSample(timestamp));
-            double angleError = confidenceNT[aTagID] > 0 ? DriveConstants.CONFIDENCE_TO_ERROR / confidenceNT[aTagID]
-                    : 1;
-            double positionError = angleError * cameraTranslationZ[aTagID];
-            if (cameraTranslationZ[aTagID] < VisionConstants.DISTANCETOLERANCE)
-                robotDrive.addVisionMeasurement(newRobotPose, timestamp,
-                        new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError, angleError));
-
+            // System.out.println("Interpolated angle "+ angleInterpolate.getSample(timestamp));
+            double angleError = confidenceNT[aTagID]>0 ? DriveConstants.CONFIDENCE_TO_ERROR/confidenceNT[aTagID] : 1;
+            double positionError = angleError*cameraTranslationZ[aTagID];
+            if (canInterpolate && cameraTranslationZ[aTagID]<VisionConstants.DISTANCETOLERANCE)  robotDrive.addVisionMeasurement(newRobotPose, timestamp,
+                new MatBuilder<N3,N1>(Nat.N3(),Nat.N1()).fill(positionError,positionError,angleError));
+            
         }
     }
 
