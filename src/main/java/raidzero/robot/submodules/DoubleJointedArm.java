@@ -6,8 +6,6 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-import edu.wpi.first.math.system.Discretization;
-
 import raidzero.robot.Constants.ArmConstants;
 
 public class DoubleJointedArm {
@@ -123,12 +121,4 @@ public class DoubleJointedArm {
 
         return B_inv.times(A);
     }
-
-
-    /*
-     * 
-     * 
-     * 
-     */
-    
 }

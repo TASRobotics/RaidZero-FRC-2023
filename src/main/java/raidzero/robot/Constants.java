@@ -1,7 +1,5 @@
 package raidzero.robot;
 
-import java.nio.file.Path;
-
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
 
