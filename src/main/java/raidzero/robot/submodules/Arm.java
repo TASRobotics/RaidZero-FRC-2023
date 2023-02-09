@@ -231,9 +231,10 @@ public class Arm extends Submodule {
         return state;
     }
 
-    public double[] sanityCheck(){
-        
-    }
+    // public boolean sanityCheck(double angle){
+    //     if()
+    //     mLowerEncoder.setPosition(mLowerDesiredPosition)
+    // }
 
     public double[] forKin(Rotation2d[] q) {
 
@@ -284,8 +285,8 @@ public class Arm extends Submodule {
         double[] s1 = { Math.toDegrees(theta - alpha), Math.toDegrees(Math.PI - elbow_supplement) };
         double[] s2 = { Math.toDegrees(theta + alpha), Math.toDegrees(elbow_supplement - Math.PI) };
 
-        // Check for hooked solutions
-        if (Math.signum(s1[1]) <= 0) {
+        // Check for wacko solutions
+        if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) < 0) || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) > 0)) {
             return s2;
         } else
             return s1;
