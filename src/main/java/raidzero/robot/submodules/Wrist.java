@@ -1,20 +1,12 @@
 package raidzero.robot.submodules;
 
-import java.util.stream.IntStream;
-
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.ml.LogisticRegression;
-import org.opencv.ml.Ml;
-import org.opencv.ml.TrainData;
-
-import java.util.stream.IntStream;
-
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.ml.LogisticRegression;
-import org.opencv.ml.Ml;
-import org.opencv.ml.TrainData;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.PubSubOption;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
@@ -55,9 +47,10 @@ public class Wrist extends Submodule {
     private double mDesiredAngle = 0.0;
     private double zeroOffset = 0.0;
 
-    private LogisticRegression limitSwitchModel;
-    private Mat limitSwitchTriggerData = new Mat(WristConstants.LIMITSWITCHBUFFERSIZE, 1, CvType.CV_16F);
-    private Mat limitSwitchEncoderData = new Mat(WristConstants.LIMITSWITCHBUFFERSIZE, 1, CvType.CV_16F);
+
+	private NetworkTable table;
+    private DoubleArrayPublisher limitEncoderDataPub;
+    private DoubleArraySubscriber limitSwitchEdgeSub;
     private int indexPosition;
     private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
@@ -75,8 +68,8 @@ public class Wrist extends Submodule {
         configWristSparkMax();
         mMotor.burnFlash();
         zero();
-        limitSwitchModel.setLearningRate(0.01);
-        limitSwitchModel.setIterations(10);
+        limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
+        limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS);
         indexPosition = 0;
     }
 
@@ -86,25 +79,15 @@ public class Wrist extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        limitSwitchTriggerData.put(indexPosition, 1, inZoneLimitSwitch.isPressed() ? 1 : 0);
-        limitSwitchEncoderData.put(indexPosition, 1, mMotor.getEncoder().getPosition()/WristConstants.ENCODER_NORMALIZATION);
-        indexPosition++;
-        indexPosition %= WristConstants.LIMITSWITCHBUFFERSIZE;
-        double howBalanced = 0;
-        for(int bufferIndex = 0; bufferIndex < WristConstants.LIMITSWITCHBUFFERSIZE; bufferIndex++){
-            howBalanced += limitSwitchTriggerData.get(bufferIndex,1)[0]/WristConstants.LIMITSWITCHBUFFERSIZE;
-        }
-        howBalanced = howBalanced/WristConstants.LIMITSWITCHBUFFERSIZE;
-        if (Math.pow(howBalanced-0.5, 2)< 0.2 && timestamp > WristConstants.LIMITSWITCHBUFFERSIZE*Constants.TIMEOUT_S){
-            align();
-        }
+        double limitSwitchEncoderData[] = {inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition()};
+        limitEncoderDataPub.set(limitSwitchEncoderData);
+        align();
     }
 
     private void align() {
-        limitSwitchModel.train(limitSwitchTriggerData, Ml.COL_SAMPLE, limitSwitchEncoderData);
-        Mat thetas = limitSwitchModel.get_learnt_thetas();
-        int edge = (int) (thetas.get(0, 0)[0]/thetas.get(1,0)[0]);
-        mEncoder.setPosition(mEncoder.getPosition() + edge-WristConstants.LIMITSWITCHOFFSET);
+        double edges[] = limitSwitchEdgeSub.get();
+        double positiveEdge = edges[0]>edges[1] ? edges[0] : edges[1];
+        mEncoder.setPosition(mEncoder.getPosition() + positiveEdge-WristConstants.LIMITSWITCHPOSITIONS[1]);
     }
 
     @Override
@@ -194,4 +177,13 @@ public class Wrist extends Submodule {
         mPIDController.setPositionPIDWrappingMinInput(WristConstants.PID_WRAPPING_MIN);
         mPIDController.setPositionPIDWrappingMaxInput(WristConstants.PID_WRAPPING_MAX);
     }
+
+    private DoubleArrayTopic getDoubleArrayTopic(String key){
+        if (table == null) {
+            NetworkTableInstance.getDefault();
+            table = NetworkTableInstance.getDefault().getTable(Constants.NETWORKTABLESNAME);
+        }
+        return table.getDoubleArrayTopic(key);
+    }
+
 }

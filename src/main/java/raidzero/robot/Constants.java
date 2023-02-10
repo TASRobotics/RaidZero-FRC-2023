@@ -127,7 +127,6 @@ public class Constants {
         }
 
     public static final class VisionConstants{
-        public static final String NAME = "SmartDashboard";
         public static final String APRILTAGFAMILY = "tag36h11";
         private static final String APRILTAGFILENAME = "AprilTagPoses.json";
         public static final Path APRILTAGPATH = Filesystem.getDeployDirectory().toPath().resolve(APRILTAGFILENAME);
@@ -186,10 +185,10 @@ public class Constants {
                 public static final double GRAVITY = 9.81;
 
                 /** Regular Constants */
-                public static final int LOWER_LEADER_ID = 0;
-                public static final int LOWER_FOLLOWER_ID = 0;
-                public static final int UPPER_LEADER_ID = 0;
-                public static final int UPPER_FOLLOWER_ID = 0;
+                public static final int LOWER_LEADER_ID = 11;
+                public static final int LOWER_FOLLOWER_ID = 12;
+                public static final int UPPER_LEADER_ID = 13;
+                public static final int UPPER_FOLLOWER_ID = 14;
 
                 public static final boolean LOWER_MOTOR_INVERSION = false;
                 public static final boolean UPPER_MOTOR_INVERSION = false;
@@ -231,7 +230,7 @@ public class Constants {
         }
 
         public static final class WristConstants {
-                public static final int ID = 0;
+                public static final int ID = 15;
 
                 public static final boolean INVERSION = false;
 
@@ -254,21 +253,24 @@ public class Constants {
                 public static final double MAX_ACCEL = 0.0;
                 public static final double MIN_ERROR = 0.0;
 
-                public static final double MAXWINDS = 1.0;
+                public static final double MAXWINDS = 0.6;
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
 
                 public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
-                public static final int LIMITSWITCHOFFSET = 40;
+                public static final double LIMITSWITCHPOSITIONS[] = {-40.0,40.0};
 
                 public static final int LIMITSWITCHBUFFERSIZE = 100;
 
                 public static final double ENCODER_NORMALIZATION = 100.0;
+
+                public static final String NAME = null;
         }
 
         public static final class TOFSensorConstants {
                 public static final int SENSOR_ID = 0;
         }
+        public static final String NETWORKTABLESNAME = "SmartDashboard";
 
         public static final double JOYSTICK_DEADBAND = 0.07;
         public static final int TIMEOUT_MS = 20;
