@@ -28,29 +28,35 @@ public class Constants {
         public static final double kClosedLoopRampRate = 0.0;
 
         /** Device IDs */
-        public static final int TOP_LEFT_THROTTLE_ID = 0;
-        public static final int TOP_RIGHT_THROTTLE_ID = 0;
-        public static final int REAR_LEFT_THROTTLE_ID = 0;
-        public static final int REAR_RIGHT_THROTTLE_ID = 0;
+        public static final int FRONT_LEFT_THROTTLE_ID = 1;
+        public static final int FRONT_RIGHT_THROTTLE_ID = 7;
+        public static final int REAR_LEFT_THROTTLE_ID = 3;
+        public static final int REAR_RIGHT_THROTTLE_ID = 5;
 
-        public static final int TOP_LEFT_ROTOR_ID = 0;
-        public static final int TOP_RIGHT_ROTOR_ID = 0;
-        public static final int REAR_LEFT_ROTOR_ID = 0;
-        public static final int REAR_RIGHT_ROTOR_ID = 0;
+        public static final int FRONT_LEFT_ROTOR_ID = 2;
+        public static final int FRONT_RIGHT_ROTOR_ID = 8;
+        public static final int REAR_LEFT_ROTOR_ID = 4;
+        public static final int REAR_RIGHT_ROTOR_ID = 6;
 
-        public static final int TOP_LEFT_ROTOR_OFFSET = 0;
-        public static final int TOP_RIGHT_ROTOR_OFFSET = 0;
-        public static final int REAR_LEFT_ROTOR_OFFSET = 0;
-        public static final int REAR_RIGHT_ROTOR_OFFSET = 0;
+        public static final int FRONT_LEFT_ENCODER_ID = 1;
+        public static final int FRONT_RIGHT_ENCODER_ID = 4;
+        public static final int REAR_LEFT_ENCODER_ID = 2;
+        public static final int REAR_RIGHT_ENCODER_ID = 3;
+
+        public static final int IMU_ID = 0;
+
+        public static final double FRONT_LEFT_ROTOR_OFFSET = 121.326171875;
+        public static final double FRONT_RIGHT_ROTOR_OFFSET = 135.087890625;
+        public static final double REAR_LEFT_ROTOR_OFFSET = 82.79296875;
+        public static final double REAR_RIGHT_ROTOR_OFFSET = -5.361328125;
 
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
         public static final double WHEEL_DIAMETER_METERS = 0.1016; 
         public static final double MAX_VEL_MPS = 4.959668;
 
-        // 20.75 OR 22.75 inches
-        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(20.75); 
-        public static final double WHEELBASE_METERS = Units.inchesToMeters(20.75); 
+        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75); 
+        public static final double WHEELBASE_METERS = Units.inchesToMeters(22.75); 
 
         public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
             // Front left
@@ -76,9 +82,9 @@ public class Constants {
         
         /** 254 Module Constants */
         public static final int ROTOR_POSITION_PID_SLOT = 0;
-        public static final double ROTOR_KP = 0.75;
+        public static final double ROTOR_KP = 1;//.75
         public static final double ROTOR_KI = 0;
-        public static final double ROTOR_KD = 15;
+        public static final double ROTOR_KD = 5;//15
 
         public static final int THROTTLE_VELOCITY_PID_SLOT = 0;
         public static final double THROTTLE_KP = 0.1;
@@ -90,8 +96,6 @@ public class Constants {
         public static final double XCONTROLLER_KP = 1;
         public static final double YCONTROLLER_KP = 1;
         public static final double THETACONTROLLER_KP = 5;
-        public static final TrapezoidProfile.Constraints THETACONTROLLER_CONSTRAINTS = 
-            new TrapezoidProfile.Constraints(MAX_ANGULAR_VEL_RPS, MAX_ANGULAR_ACCEL_RPSPS);
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS / (2048 * (1/THROTTLE_REDUCTION));
@@ -115,7 +119,7 @@ public class Constants {
         private static final double GYRO_ERROR_DEGREES_TIMEOUT = (0.4/SECONDS_IN_MINUTE)*TIMEOUT_S;
         public static final double CONFIDENCE_TO_ERROR = 1.0;
         public static final Matrix<N3,N1> STATE_STDEVS_MATRIX = new MatBuilder<N3,N1>(Nat.N3(),Nat.N1()).fill(
-            MAX_ACCEL_DISTANCE,MAX_ACCEL_DISTANCE, MAX_ACCEL_DISTANCE/SwerveConstants.ROBOT_RADIUS_METERS);
+            MAX_ACCEL_DISTANCE,MAX_ACCEL_DISTANCE, MAX_ACCEL_DISTANCE/SwerveConstants.TRACKWIDTH_METERS/2);
         public static final Matrix<N1,N1> ANGLE_STDEVS_MATRIX = new MatBuilder<N1,N1>(Nat.N1(),Nat.N1()).fill(GYRO_ERROR_DEGREES_TIMEOUT);
         public static final Matrix<N3,N1> VISION_STDEVS_MATRIX = new MatBuilder<N3,N1>(Nat.N3(),Nat.N1()).fill(1.0,1.0,1.0);
     }
@@ -148,10 +152,10 @@ public class Constants {
     }
 
     public static final class ArmConstants {
-        public static final int LOWER_LEADER_ID = 0;
-        public static final int LOWER_FOLLOWER_ID = 0;
-        public static final int UPPER_LEADER_ID = 0;
-        public static final int UPPER_FOLLOWER_ID = 0;
+        public static final int LOWER_LEADER_ID = 1;
+        public static final int LOWER_FOLLOWER_ID = 2;
+        public static final int UPPER_LEADER_ID = 3;
+        public static final int UPPER_FOLLOWER_ID = 4;
 
         public static final boolean LOWER_MOTOR_INVERSION = false;
         public static final boolean UPPER_MOTOR_INVERSION = false;
@@ -193,7 +197,7 @@ public class Constants {
     }
 
     public static final class WristConstants {
-        public static final int ID = 0;
+        public static final int ID = 6;
 
         public static final boolean INVERSION = false;
 
@@ -221,7 +225,7 @@ public class Constants {
     }
 
     public static final class IntakeConstants {
-        public static final int ID = 0;
+        public static final int ID = 5;
 
         public static final boolean INVERSION = false;
 

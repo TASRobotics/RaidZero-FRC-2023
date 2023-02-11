@@ -50,12 +50,23 @@ public class Teleop {
         */
 
         swerve.drive(
-            JoystickUtils.deadband(-p.getLeftY()) * SwerveConstants.MAX_SPEED_MPS,
-            JoystickUtils.deadband(-p.getLeftX()) * SwerveConstants.MAX_SPEED_MPS,
-            JoystickUtils.deadband(-p.getRightX() * SwerveConstants.MAX_SPEED_MPS),
+            JoystickUtils.deadband(-p.getLeftY()),
+            JoystickUtils.deadband(-p.getLeftX()),
+            JoystickUtils.deadband(-p.getRightX()),
             true
         );
 
+        // if(p.getYButton()) {
+        //     swerve.testModule(1, 0.25, 0.25);
+        // } else if(p.getAButton()) {
+        //     swerve.testModule(2, 0.25, 0.25);
+        // } else if(p.getXButton()) {
+        //     swerve.testModule(3, 0.25, 0.25);
+        // } else if(p.getBButton()) {
+        //     swerve.testModule(4, 0.25, 0.25);
+        // } else {
+        //     swerve.stop();
+        // }
     }
 
     private int mode = 0;
