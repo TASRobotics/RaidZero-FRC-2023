@@ -9,15 +9,15 @@ public abstract class AutoSequence {
 
     protected boolean isSequenceRunning = false;
 
-    /* 
-     * Queue for the actions. Should be manipulated by 
+    /*
+     * Queue for the actions. Should be manipulated by
      * {@link #addAction(Action)}.
      */
     protected Queue<Action> actions = new LinkedList<>();
     protected Action currentAction = null;
 
     /**
-     * Should provide a sequence of {@link Action}s using 
+     * Should provide a sequence of {@link Action}s using
      * {@link #addAction(Action)} to execute during autonomous.
      */
     protected abstract void sequence();
@@ -25,7 +25,7 @@ public abstract class AutoSequence {
     /**
      * Runs at the start of the sequence.
      * 
-     * Note: This should never be called by user code, only by 
+     * Note: This should never be called by user code, only by
      * {@link AutoRunner}.
      */
     public final void run() {

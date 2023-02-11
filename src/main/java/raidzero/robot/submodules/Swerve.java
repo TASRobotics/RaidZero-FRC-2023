@@ -23,19 +23,20 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 import raidzero.robot.Constants;
+import raidzero.robot.submodules.SwerveModule;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;
 
 public class Swerve extends Submodule {
 
-    private class WPI_Pigeon2_Helper extends WPI_Pigeon2{
-        public WPI_Pigeon2_Helper(int deviceNumber, String canbus){
+    private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
+        public WPI_Pigeon2_Helper(int deviceNumber, String canbus) {
             super(deviceNumber, canbus);
         }
-        public double getAngle(){
+
+        public double getAngle() {
             return -super.getAngle();
         }
     }
@@ -45,9 +46,9 @@ public class Swerve extends Submodule {
     };
 
     public enum AutoAimLocation {
-        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR, 
-        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR, 
-        B_LOAD, 
+        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
+        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
+        B_LOAD,
         R_LOAD
     };
 
@@ -60,7 +61,8 @@ public class Swerve extends Submodule {
         return instance;
     }
 
-    private Swerve() {}
+    private Swerve() {
+    }
 
     private SwerveModule topRightModule = new SwerveModule();
     private SwerveModule topLeftModule = new SwerveModule();
@@ -80,9 +82,8 @@ public class Swerve extends Submodule {
     private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
 
-    private Pose2d desiredAutoAimPose; 
+    private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
-
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -129,13 +130,12 @@ public class Swerve extends Submodule {
             DriveConstants.VISION_STDEVS_MATRIX
         );
 
-        
         // pathController = new HolonomicDriveController(
-        //     new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0), 
-        //     new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0),
-        //     new ProfiledPIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0,
-        //         SwerveConstants.THETACONTROLLER_CONSTRAINTS
-        //     )
+        // new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0),
+        // new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0),
+        // new ProfiledPIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0,
+        // SwerveConstants.THETACONTROLLER_CONSTRAINTS
+        // )
         // );
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
@@ -159,7 +159,7 @@ public class Swerve extends Submodule {
             updatePathing();
         } else if (controlState == ControlState.AUTO_AIM) {
             updateAutoAim();
-        } 
+        }
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -215,10 +215,10 @@ public class Swerve extends Submodule {
 
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-            topLeftModule.getModulePosition(), 
-            topRightModule.getModulePosition(), 
-            bottomLeftModule.getModulePosition(), 
-            bottomRightModule.getModulePosition()
+                topLeftModule.getModulePosition(),
+                topRightModule.getModulePosition(),
+                bottomLeftModule.getModulePosition(),
+                bottomRightModule.getModulePosition()
         };
     }
 
@@ -241,11 +241,12 @@ public class Swerve extends Submodule {
         return odometry;
     }
 
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3,N1> visionMeasurementStdDevs) {
-        try{
-            visionMeasurementStdDevs = new MatBuilder<N3,N1>(Nat.N3(),Nat.N1()).fill(0.2,0.2,0.1);
+    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
+            Matrix<N3, N1> visionMeasurementStdDevs) {
+        try {
+            visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1);
             odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
             setPose(visionRobotPoseMeters);
@@ -261,13 +262,11 @@ public class Swerve extends Submodule {
     }
 
     private Pose2d updateOdometry() {
-        try{
+        try {
             return odometry.update(
-                Rotation2d.fromDegrees(pigeon.getAngle()),
-                getModulePositions()
-            );
-        }
-        catch(Exception e){
+                    Rotation2d.fromDegrees(pigeon.getAngle()),
+                    getModulePositions());
+        } catch (Exception e) {
             System.out.println(e);
             return odometry.getEstimatedPosition();
         }
@@ -278,8 +277,7 @@ public class Swerve extends Submodule {
         if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
             ignoreAngle = true;
         }
-        var targetState =
-            SwerveConstants.KINEMATICS.toSwerveModuleStates(
+        var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
                     xSpeed, ySpeed, angularSpeed, 
@@ -312,7 +310,7 @@ public class Swerve extends Submodule {
      * - fully feedback, no more weird feedforward stuff that doesnt actually work
      */
     private void updatePathing() {
-        PathPlannerState state = (PathPlannerState)currentTrajectory.sample(timer.get());
+        PathPlannerState state = (PathPlannerState) currentTrajectory.sample(timer.get());
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             xController.calculate(getPose().getX(), state.poseMeters.getX()), 
             yController.calculate(getPose().getY(), state.poseMeters.getY()), 
@@ -333,7 +331,7 @@ public class Swerve extends Submodule {
 
     public void autoAim(AutoAimLocation location) {
         controlState = ControlState.AUTO_AIM;
-        switch(location) {
+        switch (location) {
             case BLL:
                 break;
             case BLM:
@@ -361,11 +359,11 @@ public class Swerve extends Submodule {
 
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xController.calculate(getPose().getX(), desiredAutoAimPose.getX()), 
-            yController.calculate(getPose().getY(), desiredAutoAimPose.getY()), 
-            thetaController.calculate(getPose().getRotation().getDegrees(), desiredAutoAimPose.getRotation().getDegrees()), 
-            getPose().getRotation()
-        );
+                xController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
+                yController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
+                thetaController.calculate(getPose().getRotation().getDegrees(),
+                        desiredAutoAimPose.getRotation().getDegrees()),
+                getPose().getRotation());
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
         topLeftModule.setTargetState(desiredState[0], false, true, false);
         topRightModule.setTargetState(desiredState[1], false, true, false);
@@ -383,5 +381,12 @@ public class Swerve extends Submodule {
         } else { 
             topRightModule.testThrottleAndRotor(throttleOutput, rotorOutput);
         }
+    }
+
+    public void setThrottleRampRate(double val) {
+        topRightModule.setRotorRampRate(val);
+        topLeftModule.setRotorRampRate(val);
+        bottomRightModule.setRotorRampRate(val);
+        bottomLeftModule.setRotorRampRate(val);
     }
 }

@@ -49,7 +49,7 @@ public class Limelight extends Submodule {
 
 	private Limelight(String tableName) {
 		this.tableName = tableName;
-		
+
 		HttpCamera cameraStream = new HttpCamera("limelight", "http://10.42.53.11:5800/stream.mjpg");
 		Shuffleboard.getTab(Tab.MAIN)
 				.add("Limelight", cameraStream)
@@ -90,7 +90,8 @@ public class Limelight extends Submodule {
 	}
 
 	// public double getEstimatedDistance() {
-	// 	return LimelightConstants.DIST_ESTIMATOR.getInterpolated(new InterpolatingDouble(getTy())).value;
+	// return LimelightConstants.DIST_ESTIMATOR.getInterpolated(new
+	// InterpolatingDouble(getTy())).value;
 	// }
 
 	/**
