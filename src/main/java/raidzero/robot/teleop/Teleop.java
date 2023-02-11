@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.submodules.Arm;
+import raidzero.robot.submodules.Swerve;
 import raidzero.robot.utils.JoystickUtils;
 
 public class Teleop {
@@ -19,6 +20,7 @@ public class Teleop {
   private static XboxController p2 = new XboxController(1);
 
   private static final Arm arm = Arm.getInstance();
+  private static final Swerve swerve = Swerve.getInstance();
   private double rampRate = 0.0;
 
   public static Teleop getInstance() {
@@ -118,5 +120,5 @@ public class Teleop {
       target[3] = arm.invKin(target)[1];
       arm.moveToAngle(target[2], target[3]);
     }
-
+  }
 }
