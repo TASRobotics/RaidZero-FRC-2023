@@ -16,7 +16,8 @@ public class TestSequence extends AutoSequence {
     @Override
     public void sequence() {
         addAction(
-                new DrivePath(mTrajectory));
+            new DrivePath(mTrajectory)
+        );
     }
 
     @Override
