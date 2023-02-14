@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
+import com.pathplanner.lib.server.PathPlannerServer;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
@@ -24,7 +25,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
-import raidzero.robot.submodules.SwerveModule;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;
@@ -78,6 +78,7 @@ public class Swerve extends Submodule {
 
     // private HolonomicDriveController pathController;
     private PathPlannerTrajectory currentTrajectory;
+    private boolean firstPath = true;
     // private Rotation2d targetAngle;
     private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
@@ -89,6 +90,10 @@ public class Swerve extends Submodule {
 
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
+
+        // check!!
+        zero();
+        firstPath = true;
     }
 
     public void onInit() {
@@ -140,6 +145,10 @@ public class Swerve extends Submodule {
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
         thetaController = new PIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0);
+        xController.setTolerance(SwerveConstants.XCONTROLLER_TOLERANCE);
+        yController.setTolerance(SwerveConstants.YCONTROLLER_TOLERANCE);
+        thetaController.setTolerance(SwerveConstants.THETACONTROLLER_TOLERANCE);
+        thetaController.enableContinuousInput(-180, 180);
 
         autoAimXController = new PIDController(0, 0, 0);
         autoAimYController = new PIDController(0, 0, 0);
@@ -151,6 +160,8 @@ public class Swerve extends Submodule {
 
         zero();
         prevPose = new Pose2d();
+
+        PathPlannerServer.startServer(5811);
     }
 
     @Override
@@ -172,12 +183,9 @@ public class Swerve extends Submodule {
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
 
-        SmartDashboard.putNumber("left front", topLeftModule.getRotorAngle());
-        SmartDashboard.putNumber("right front", topRightModule.getRotorAngle());
-        SmartDashboard.putNumber("left back", bottomLeftModule.getRotorAngle());
-        SmartDashboard.putNumber("right back", bottomRightModule.getRotorAngle());
-
-
+        SmartDashboard.putNumber("X pose", odometry.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("Y pose", odometry.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("Theta pose", odometry.getEstimatedPosition().getRotation().getDegrees());
     }
 
     /**
@@ -296,6 +304,10 @@ public class Swerve extends Submodule {
         if (controlState == ControlState.PATHING) {
             return;
         }
+        if(firstPath) {
+            setPose(trajectory.getInitialHolonomicPose());
+            firstPath = false;
+        }
         controlState = ControlState.PATHING;
         currentTrajectory = trajectory;
 
@@ -311,22 +323,32 @@ public class Swerve extends Submodule {
      */
     private void updatePathing() {
         PathPlannerState state = (PathPlannerState) currentTrajectory.sample(timer.get());
+        double xSpeed = xController.calculate(getPose().getX(), state.poseMeters.getX());
+        double ySpeed = yController.calculate(getPose().getY(), state.poseMeters.getY());
+        double thetaSpeed = thetaController.calculate(getPose().getRotation().getRadians(), state.holonomicRotation.getRadians());
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xController.calculate(getPose().getX(), state.poseMeters.getX()), 
-            yController.calculate(getPose().getY(), state.poseMeters.getY()), 
-            thetaController.calculate(getPose().getRotation().getRadians(), state.holonomicRotation.getRadians()), 
+            xSpeed, 
+            ySpeed, 
+            thetaSpeed, 
             getPose().getRotation()
         );
+        PathPlannerServer.sendPathFollowingData(state.poseMeters, getPose());
+        
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, SwerveConstants.MAX_DRIVE_VEL_MPS);
-        topLeftModule.setTargetState(desiredState[0], false, true, false);
-        topRightModule.setTargetState(desiredState[1], false, true, false);
-        bottomLeftModule.setTargetState(desiredState[2], false, true, false);
-        bottomRightModule.setTargetState(desiredState[3], false, true, false);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
     public boolean isFinishedPathing() {
-        return timer.hasElapsed(currentTrajectory.getTotalTimeSeconds());
+        if(xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint()) {
+            if(timer.hasElapsed(currentTrajectory.getTotalTimeSeconds()*1.5)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void autoAim(AutoAimLocation location) {

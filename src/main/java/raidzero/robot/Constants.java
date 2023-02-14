@@ -1,5 +1,7 @@
 package raidzero.robot;
 
+import java.nio.file.Path;
+
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.math.MatBuilder;
@@ -46,7 +48,7 @@ public class Constants {
 
     public static final double FRONT_LEFT_ROTOR_OFFSET = 121.326171875;
     public static final double FRONT_RIGHT_ROTOR_OFFSET = 135.087890625;
-    public static final double REAR_LEFT_ROTOR_OFFSET = 82.79296875;
+    public static final double REAR_LEFT_ROTOR_OFFSET = -98.79296875;
     public static final double REAR_RIGHT_ROTOR_OFFSET = -5.361328125;
 
     
@@ -69,8 +71,8 @@ public class Constants {
       new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0)
     );
     /** 254 Pathing Constants (smooth): */
-    public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.7;
-    public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS;
+    public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS*0.75;
+    public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS*0.75;
     public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
     public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(
       MAX_ANGULAR_VEL_RPS,
@@ -99,11 +101,11 @@ public class Constants {
     /** 1678 Pathing Constants */
     public static final double XCONTROLLER_KP = 1;
     public static final double YCONTROLLER_KP = 1;
-    public static final double THETACONTROLLER_KP = 5;
-    public static final TrapezoidProfile.Constraints THETACONTROLLER_CONSTRAINTS = new TrapezoidProfile.Constraints(
-      MAX_ANGULAR_VEL_RPS,
-      MAX_ANGULAR_ACCEL_RPSPS
-    );
+    public static final double THETACONTROLLER_KP = 2;
+    public static final double XCONTROLLER_TOLERANCE = 0.05;
+    public static final double YCONTROLLER_TOLERANCE = 0.05;
+    public static final double THETACONTROLLER_TOLERANCE = 1;
+
     // Using SDS 6.75 ratio
     public static final double THROTTLE_TICKS_TO_METERS =
       Math.PI * WHEEL_DIAMETER_METERS / (2048 * (1 / THROTTLE_REDUCTION));
@@ -154,7 +156,7 @@ public class Constants {
  
   public static final class IntakeConstants {
 
-    public static final int ID = 0;
+    public static final int ID = 5;
 
     public static final boolean INVERSION = false;
 
@@ -232,9 +234,9 @@ public class Constants {
         
     /** Regular Constants */
     public static final int LOWER_LEADER_ID = 1;
-    public static final int LOWER_FOLLOWER_ID = 0;
-    public static final int UPPER_LEADER_ID = 2;
-    public static final int UPPER_FOLLOWER_ID = 0;
+    public static final int LOWER_FOLLOWER_ID = 2;
+    public static final int UPPER_LEADER_ID = 3;
+    public static final int UPPER_FOLLOWER_ID = 4;
 
     public static final boolean LOWER_MOTOR_INVERSION = true;
     public static final boolean UPPER_MOTOR_INVERSION = true;
@@ -307,7 +309,7 @@ public class Constants {
   }
 
     public static final class WristConstants {
-        public static final int ID = 0;
+        public static final int ID = 6;
         
         public static final boolean INVERSION = false;
         
