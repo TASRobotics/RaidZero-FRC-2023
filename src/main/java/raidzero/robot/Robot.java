@@ -42,7 +42,8 @@ public class Robot extends TimedRobot {
         // Register all submodules here
         submoduleManager.setSubmodules(
                 swerve,
-                vision);
+                vision,
+                wrist);
         submoduleManager.onInit();
 
         autoRunner = new AutoRunner();

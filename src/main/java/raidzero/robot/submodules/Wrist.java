@@ -51,6 +51,7 @@ public class Wrist extends Submodule {
 	private NetworkTable table;
     private DoubleArrayPublisher limitEncoderDataPub;
     private DoubleArraySubscriber limitSwitchEdgeSub;
+    private double lastPositiveEdge = WristConstants.LIMITSWITCHPOSITIONS[0];
     private int indexPosition;
     private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
@@ -69,7 +70,7 @@ public class Wrist extends Submodule {
         mMotor.burnFlash();
         zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
-        limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS);
+        limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS);  //FIX THIS!!
         indexPosition = 0;
     }
 
@@ -79,15 +80,17 @@ public class Wrist extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        double limitSwitchEncoderData[] = {inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition()};
-        limitEncoderDataPub.set(limitSwitchEncoderData);
-        align();
+        
     }
 
     private void align() {
-        double edges[] = limitSwitchEdgeSub.get();
-        double positiveEdge = edges[0]>edges[1] ? edges[0] : edges[1];
-        mEncoder.setPosition(mEncoder.getPosition() + positiveEdge-WristConstants.LIMITSWITCHPOSITIONS[1]);
+        double[] defaultEdgeData = {lastPositiveEdge,1.0};
+        double[] edgeData = limitSwitchEdgeSub.get(defaultEdgeData);
+        double positiveEdge = edgeData[1]>0 ? edgeData[0] : edgeData[0]+WristConstants.LIMITSWITCHDIFFERENCE ;
+        System.out.println(positiveEdge);
+        mEncoder.setPosition(mEncoder.getPosition() -(WristConstants.LIMITSWITCHPOSITIONS[0] - positiveEdge));
+        lastPositiveEdge = positiveEdge;
+
     }
 
     @Override
@@ -102,6 +105,11 @@ public class Wrist extends Submodule {
                     mFeedforward.calculate(getAngle().getRadians(), 0),
                     ArbFFUnits.kPercentOut);
         }
+        double limitSwitchEncoderData[] = {inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition()};
+        // System.out.println(mMotor.getEncoder().getPosition());
+
+        limitEncoderDataPub.set(limitSwitchEncoderData);
+        align();
     }
 
     @Override
@@ -154,13 +162,15 @@ public class Wrist extends Submodule {
     }
 
     private void configWristSparkMax() {
+        mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
-        mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
-        mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);
+        // mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
+        // mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);
+        //mEncoder.setPositionConversionFactor(1.0);
         mEncoder.setVelocityConversionFactor(WristConstants.VELOCITY_CONVERSION_FACTOR);
 
         mPIDController.setFeedbackDevice(mEncoder);

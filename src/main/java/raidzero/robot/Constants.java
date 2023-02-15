@@ -238,7 +238,7 @@ public class Constants {
 
                 public static final boolean ENCODER_INVERSION = false;
                 // 1:75 ratio, in degrees
-                public static final double POSITION_CONVERSION_FACTOR = 1 / 75 * 360;
+                public static final double POSITION_CONVERSION_FACTOR = 1.0/75.0 * 360.0;
                 public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
                 public static final int SMART_MOTION_SLOT = 0;
@@ -258,7 +258,8 @@ public class Constants {
                 public static final double PID_WRAPPING_MAX = 360.0;
 
                 public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
-                public static final double LIMITSWITCHPOSITIONS[] = {-40.0,40.0};
+                public static final double LIMITSWITCHPOSITIONS[] = {-19.0,6.0};
+                public static final double LIMITSWITCHDIFFERENCE = LIMITSWITCHPOSITIONS[1]-LIMITSWITCHPOSITIONS[0];
 
                 public static final int LIMITSWITCHBUFFERSIZE = 100;
 
