@@ -2,7 +2,9 @@ package raidzero.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import raidzero.robot.submodules.SubmoduleManager;
 import raidzero.robot.submodules.Swerve;
+import raidzero.robot.submodules.Wrist;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.utils.JoystickUtils;
 
@@ -13,6 +15,7 @@ public class Teleop {
     private static XboxController p2 = new XboxController(1);
 
     private static final Swerve swerve = Swerve.getInstance();
+    private static final Wrist wrist = Wrist.getInstance();
     private double rampRate = 0.0;
 
     public static Teleop getInstance() {
@@ -23,6 +26,7 @@ public class Teleop {
     }
 
     public void onStart() {
+        
         swerve.zero();
     }
 
@@ -51,6 +55,7 @@ public class Teleop {
         boolean turning = p.getRawButton(12);
         //System.out.println(p.getLeftY());
 
+        wrist.setPercentSpeed(p.getRightY()*.1);
         rampRate = SmartDashboard.getNumber("Ramp Rate", 0);
         SmartDashboard.putNumber("Ramp Rate", rampRate);
         swerve.setThrottleRampRate(rampRate);
