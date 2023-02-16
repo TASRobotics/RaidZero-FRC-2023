@@ -8,6 +8,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.utils.JoystickUtils;
 import edu.wpi.first.math.MathUtil;
@@ -43,7 +44,7 @@ public class Teleop {
     }
 
     private int mode = 0;
-    private double[] target = { 0, 1.8, 0, 0 };
+    private double[] target = { 0, 0.15, 0, 0 };
 
     private void p1Loop(XboxController p) {
 
@@ -57,45 +58,47 @@ public class Teleop {
         // arm.setArmRampRate(rampRate);
 
         if (p.getRightBumperPressed())
-            mode = 1; //Joystick
+            mode = 1; // Joystick
         else if (p.getBackButtonPressed())
-            mode = 2; //Setpoint SM
+            mode = 2; // Setpoint SM
         else if (p.getStartButtonPressed())
-            mode = 3; //Joystick with Inv Kin.
+            mode = 3; // Joystick with Inv Kin.
 
         if (mode == 1)
-            arm.moveArm(p.getRightX() * 0.2, p.getLeftX() * 0.2);
+            arm.moveArm(p.getLeftX() * 0.2, p.getRightX() * 0.2);
         else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.moveToAngle(36.7, 36.7);
+                arm.moveToAngle(90, -180);
+            } else if (p.getBButtonPressed()) {
+                arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
-                arm.moveToAngle(135.7, -36.7);
+                arm.moveToAngle(110, -250);
             } else if (p.getAButtonPressed()) {
-                arm.moveToAngle(90, 0);
+                arm.moveToAngle(110, -270);
             }
         } else if (mode == 3) {
-            if (Math.abs(target[0]) <= 1.8 && target[1] <= 1.8 && target[1] >= 0) {
-                target[0] += MathUtil.applyDeadband(p.getRightX() * 0.07, 0.05);
-                target[1] += MathUtil.applyDeadband(p.getLeftY() * -0.06, 0.05);
-            } 
+            if (Math.abs(target[0]) <= ArmConstants.X_EXTENSION_LIMIT && target[1] <= ArmConstants.Y_EXTENSION_LIMIT && target[1] >= 0) {
+                target[0] = arm.getState()[1].getX() + MathUtil.applyDeadband(p.getLeftX() * 0.06, 0.05);
+                target[1] = arm.getState()[1].getY() + MathUtil.applyDeadband(p.getRightY() * -0.07, 0.05);
+            }
             // Soft Joystick Limits
-            else if (Math.abs(target[0]) > 1.8) {
+            else if (Math.abs(target[0]) > ArmConstants.X_EXTENSION_LIMIT) {
                 if (Math.signum(target[0]) == -1)
-                    target[0] = -1.8;
+                    target[0] = -ArmConstants.X_EXTENSION_LIMIT;
                 else
-                    target[0] = 1.8;
-            } else if (target[1] > 1.8)
-                target[1] = 1.8;
+                    target[0] = ArmConstants.X_EXTENSION_LIMIT;
+            } else if (target[1] > ArmConstants.Y_EXTENSION_LIMIT)
+                target[1] = ArmConstants.Y_EXTENSION_LIMIT;
             else if (target[1] < 0)
                 target[1] = 0;
 
             // Reset Pose
             if (p.getLeftBumperPressed()) {
                 target[0] = 0;
-                target[1] = 1.8;
+                target[1] = 0.15;
             }
 
-            // Update Target 
+            // Update Target
             target[2] = arm.invKin(target)[0];
             target[3] = arm.invKin(target)[1];
             arm.moveToAngle(target[2], target[3]);

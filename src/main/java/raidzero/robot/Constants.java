@@ -21,8 +21,8 @@ public class Constants {
 
         public static final class ArmConstants {
                 /** Arm Kinematics Constants */
-                public static final double LOWER_ARM_LENGTH = 0.91; // in meters
-                public static final double UPPER_ARM_LENGTH = 0.91;
+                public static final double LOWER_ARM_LENGTH = 1.0; // in meters
+                public static final double UPPER_ARM_LENGTH = 0.85;
 
                 public static final double BASE_PIVOT_COG = 0.0; // in meters
                 public static final double JOINT_COM = 0.0;
@@ -53,51 +53,56 @@ public class Constants {
                 public static final double GRAVITY = 9.81;
 
                 /** Regular Constants */
-                public static final int LOWER_LEADER_ID = 1;
-                public static final int LOWER_FOLLOWER_ID = 0;
-                public static final int UPPER_LEADER_ID = 2;
-                public static final int UPPER_FOLLOWER_ID = 0;
+                public static final int LOWER_LEADER_ID = 11;
+                public static final int LOWER_FOLLOWER_ID = 12;
+                public static final int UPPER_LEADER_ID = 13;
+                public static final int UPPER_FOLLOWER_ID = 14;
 
-                public static final boolean LOWER_MOTOR_INVERSION = true;
-                public static final boolean UPPER_MOTOR_INVERSION = true;
+                public static final boolean LOWER_MOTOR_INVERSION = false;
+                public static final boolean UPPER_MOTOR_INVERSION = false;
 
-                public static final int LOWER_CURRENT_LIMIT = 200;
-                public static final int UPPER_CURRENT_LIMIT = 200;
+                public static final int LOWER_CURRENT_LIMIT = 600;
+                public static final int UPPER_CURRENT_LIMIT = 600;
 
                 public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
                 public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
 
-                public static final double LOWER_ZERO_OFFSET = 5.6360036;
+                public static final SparkMaxLimitSwitch.Type UPPER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+                public static final SparkMaxLimitSwitch.Type UPPER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+
+                public static final double LOWER_ZERO_OFFSET = 5.9092043;
                 public static final double UPPER_ZERO_OFFSET = 0.0;
 
-                public static final double LOWER_ABS_POSITION_CONVERSION_FACTOR = 6.28318;
+                public static final double LOWER_ABS_POSITION_CONVERSION_FACTOR = 6.283;
                 public static final double UPPER_ABS_POSITION_CONVERSION_FACTOR = 0.0;
 
                 public static final boolean LOWER_ENCODER_INVERSION = false;
                 public static final boolean UPPER_ENCODER_INVERSION = false;
-                public static final boolean ABSOLUTE_ENCODER_INVERSION = false;
+                public static final boolean ABSOLUTE_ENCODER_INVERSION = true;
 
                 public static final int LOWER_SMART_MOTION_SLOT = 0;
                 public static final int UPPER_SMART_MOTION_SLOT = 0;
 
-                public static final double TICKS_TO_DEGREES = 3.0;
+                public static final double TICKS_TO_DEGREES = 2.45;
+                public static final double X_EXTENSION_LIMIT = 1.4;
+                public static final double Y_EXTENSION_LIMIT = 1.4;
 
                 public static final double LOWER_KF = 0.000166;
-                public static final double LOWER_KP = 0.000187;
+                public static final double LOWER_KP = 0.000092;
                 public static final double LOWER_KI = 0.0;
-                public static final double LOWER_KD = 0.000090;
+                public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 3760; 
-                public static final double LOWER_MAX_ACCEL = 1960;
+                public static final double LOWER_MAX_VEL = 700; 
+                public static final double LOWER_MAX_ACCEL = 350;
                 public static final double LOWER_MIN_ERROR = 0.0;
                 
                 public static final double UPPER_KF = 0.000166;
-                public static final double UPPER_KP = 0.000106;
+                public static final double UPPER_KP = 0.000092;
                 public static final double UPPER_KI = 0.0;
-                public static final double UPPER_KD = 0.000009;
+                public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 3760;
-                public static final double UPPER_MAX_ACCEL = 1960;
+                public static final double UPPER_MAX_VEL = 1600;
+                public static final double UPPER_MAX_ACCEL = 700;
                 public static final double UPPER_MIN_ERROR = 0.0;
 
                 // public static final double LOWER_KF = 0.000166;

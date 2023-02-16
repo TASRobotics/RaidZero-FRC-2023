@@ -39,6 +39,9 @@ public class Arm extends Submodule {
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
+    private Rotation2d[] q = {
+            Rotation2d.fromDegrees(90),
+            Rotation2d.fromDegrees(0) };
 
     private Arm() {
         int numLinkages = ArmConstants.LINKAGES;
@@ -60,19 +63,22 @@ public class Arm extends Submodule {
 
     private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
             MotorType.kBrushless);
-    // private final LazyCANSparkMax mLowerFollower = new
-    // LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
-    // MotorType.kBrushless);
+    private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
+            MotorType.kBrushless);
     private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID,
             MotorType.kBrushless);
-    // private final LazyCANSparkMax mUpperFollower = new
-    // LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
-    // MotorType.kBrushless);
+    private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
+            MotorType.kBrushless);
 
-    // private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
-    // .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
-    // private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
-    // .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
+            .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
+
+    private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
+            .getForwardLimitSwitch(ArmConstants.UPPER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
+            .getReverseLimitSwitch(ArmConstants.UPPER_REVERSE_LIMIT_TYPE);
 
     private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -88,12 +94,12 @@ public class Arm extends Submodule {
     @Override
     public void onInit() {
         mLowerLeader.restoreFactoryDefaults();
-        // mLowerFollower.restoreFactoryDefaults();
+        mLowerFollower.restoreFactoryDefaults();
         mUpperLeader.restoreFactoryDefaults();
-        // mUpperFollower.restoreFactoryDefaults();
+        mUpperFollower.restoreFactoryDefaults();
 
-        // mLowerFollower.follow(mLowerLeader, false);
-        // mUpperFollower.follow(mUpperLeader, false);
+        mLowerFollower.follow(mLowerLeader, false);
+        mUpperFollower.follow(mUpperLeader, false);
 
         configLowerSparkMax();
         configUpperSparkMax();
@@ -110,18 +116,28 @@ public class Arm extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        Rotation2d[] q = {
-                // Rotation2d.fromDegrees(90).minus(Rotation2d
-                // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
-                lowerSanityCheck(
-                        Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
-                        Rotation2d.fromDegrees(90).minus(Rotation2d
-                                .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
-                upperSanityCheck(
-                        Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
-                                .unaryMinus(),
-                        Rotation2d.fromDegrees(mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
-                                .unaryMinus()) };
+        // Proximal Angle Update
+        q[0] = Rotation2d.fromDegrees(90).minus(Rotation2d
+                .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES));
+        // Distal Angle Update
+        q[1] = Rotation2d
+                .fromDegrees(90 + q[0].getDegrees() - mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                .unaryMinus();
+
+        // Rotation2d[] q = {
+        // Rotation2d.fromDegrees(90).minus(Rotation2d
+        // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
+        // lowerSanityCheck(
+        // Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
+        // Rotation2d.fromDegrees(90).minus(Rotation2d
+        // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
+        // upperSanityCheck(
+        // Rotation2d.fromDegrees(mUpperEncoder.getPosition()
+        // *ArmConstants.TICKS_TO_DEGREES)
+        // .unaryMinus(),
+        // Rotation2d.fromDegrees(mUpperEncoder.getPosition() *
+        // ArmConstants.TICKS_TO_DEGREES)
+        // .unaryMinus()) };
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
@@ -136,6 +152,10 @@ public class Arm extends Submodule {
                 Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) - state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Resets", dResets);
 
+        SmartDashboard.putNumber("Proximal Rotations", mLowerEncoder.getPosition() *
+                ArmConstants.TICKS_TO_DEGREES);
+        SmartDashboard.putNumber("Distal Rotations", mUpperEncoder.getPosition() *
+                ArmConstants.TICKS_TO_DEGREES);
     }
 
     @Override
@@ -175,8 +195,8 @@ public class Arm extends Submodule {
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
         mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
         mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
-        // mLowerForwardLimitSwitch.enableLimitSwitch(true);
-        // mLowerReverseLimitSwitch.enableLimitSwitch(true);
+        mLowerForwardLimitSwitch.enableLimitSwitch(true);
+        mLowerReverseLimitSwitch.enableLimitSwitch(true);
 
         mLowerAbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
         mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_ABS_POSITION_CONVERSION_FACTOR);
@@ -205,8 +225,18 @@ public class Arm extends Submodule {
         mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
         mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
         mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+        mUpperForwardLimitSwitch.enableLimitSwitch(false);
+        mUpperReverseLimitSwitch.enableLimitSwitch(false);
+
         // mUpperEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
         // mUpperEncoder.setInverted(ArmConstants.UPPER_ENCODER_INVERSION);
+
+        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
+        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
+
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) (-50));
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) (50));
+
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
         mUpperPIDController.setPositionPIDWrappingEnabled(true);
         mUpperPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
@@ -238,8 +268,14 @@ public class Arm extends Submodule {
 
     public void moveToAngle(double lowerAngle, double upperAngle) {
         mControlState = ControlState.CLOSED_LOOP;
+        // mLowerDesiredPosition = lowerAngle;
+        // mUpperDesiredPosition = upperAngle;
+        // mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
+        // mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
+
         mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
-        mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
+        mUpperDesiredPosition = (90 + lowerAngle + upperAngle) / ArmConstants.TICKS_TO_DEGREES;
+
     }
 
     public Pose2d[] getState() {
@@ -250,7 +286,8 @@ public class Arm extends Submodule {
     public Rotation2d lowerSanityCheck(Rotation2d abs, Rotation2d rel) {
         if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance && abs.getRadians() <= Math.PI
                 && abs.getRadians() >= 0) {
-            mLowerEncoder.setPosition(Rotation2d.fromDegrees(90).minus(abs).getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+            mLowerEncoder
+                    .setPosition(Rotation2d.fromDegrees(90).minus(abs).getDegrees() / ArmConstants.TICKS_TO_DEGREES);
             dResets++;
             return abs;
         }
@@ -264,6 +301,13 @@ public class Arm extends Submodule {
             return abs;
         }
         return rel;
+    }
+
+    public double angleConv(double og) {
+        if (Math.signum(og) > 0)
+            return -360 + og;
+        else
+            return og;
     }
 
     public double[] forKin(Rotation2d[] q) {
@@ -312,15 +356,21 @@ public class Arm extends Submodule {
             alpha = 0.0;
 
         // Compute the two solutions with opposite elbow sign
-        double[] s1 = { Math.toDegrees(theta - alpha), Math.toDegrees(Math.PI - elbow_supplement) };
-        double[] s2 = { Math.toDegrees(theta + alpha), Math.toDegrees(elbow_supplement - Math.PI) };
+        double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
+        double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
         // Check for wacko solutions
-        if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) > 0)
-                || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) < 0)) {
+        if (Math.signum(s1[0]) < 0) {
             return s2;
         } else
             return s1;
+
+        // // Check for wacko solutions
+        // if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) > 0)
+        // || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) < 0)) {
+        // return s2;
+        // } else
+        // return s1;
 
         // Compare elbow angle solutions, find closest angle to move to
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
@@ -328,6 +378,10 @@ public class Arm extends Submodule {
         // return s1;
         // } else
         // return s2;
-
     }
+
+    public void idle() {
+        if()
+    }
+
 }
