@@ -35,7 +35,9 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         // Register all submodules here
-        submoduleManager.setSubmodules(arm);
+        submoduleManager.setSubmodules(
+            arm
+            );
         submoduleManager.onInit();
 
         autoRunner = new AutoRunner();

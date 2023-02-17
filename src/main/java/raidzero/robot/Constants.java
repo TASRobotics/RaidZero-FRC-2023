@@ -88,7 +88,7 @@ public class Constants {
                 public static final double Y_EXTENSION_LIMIT = 1.4;
 
                 public static final double LOWER_KF = 0.000166;
-                public static final double LOWER_KP = 0.000092;
+                public static final double LOWER_KP = 0.000106;
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
@@ -97,7 +97,7 @@ public class Constants {
                 public static final double LOWER_MIN_ERROR = 0.0;
                 
                 public static final double UPPER_KF = 0.000166;
-                public static final double UPPER_KP = 0.000092;
+                public static final double UPPER_KP = 0.000106;
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;

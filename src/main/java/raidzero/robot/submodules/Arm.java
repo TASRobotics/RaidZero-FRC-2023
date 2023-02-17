@@ -9,11 +9,15 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
+
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.math.util.Units;
 
 import raidzero.robot.Constants;
@@ -33,9 +37,16 @@ public class Arm extends Submodule {
     private double mLowerDesiredPosition = 0.0;
     private double mUpperDesiredPosition = 0.0;
 
+    // Absolute Encoder Adjustment Constants
     public double drift = 0.0; // degrees
     public double driftTolerance = 5.0;
     public double dResets = 0.0;
+
+    // Intermediate State Constants
+    public boolean interState = false;
+    public boolean dbMove = false;
+    public double db_inter[] = { 0, 0 };
+    public double db_target[] = { 0, 0 };
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
@@ -82,8 +93,8 @@ public class Arm extends Submodule {
 
     private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-    // private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
-    // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder mUpperAbsoluteEncoder = mUpperLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
     private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
     private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
@@ -107,7 +118,6 @@ public class Arm extends Submodule {
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
-
     }
 
     @Override
@@ -138,12 +148,16 @@ public class Arm extends Submodule {
         // Rotation2d.fromDegrees(mUpperEncoder.getPosition() *
         // ArmConstants.TICKS_TO_DEGREES)
         // .unaryMinus()) };
+
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
+        // Link Angles
         SmartDashboard.putNumber("Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()));
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
+
+        // Link Positions
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
         SmartDashboard.putNumber("Distal X", state[1].getX());
@@ -152,10 +166,23 @@ public class Arm extends Submodule {
                 Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) - state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Resets", dResets);
 
-        SmartDashboard.putNumber("Proximal Rotations", mLowerEncoder.getPosition() *
-                ArmConstants.TICKS_TO_DEGREES);
-        SmartDashboard.putNumber("Distal Rotations", mUpperEncoder.getPosition() *
-                ArmConstants.TICKS_TO_DEGREES);
+        // SmartDashboard.putNumber("Proximal Rotations", mLowerEncoder.getPosition() *
+        // ArmConstants.TICKS_TO_DEGREES);
+        // SmartDashboard.putNumber("Distal Rotations", mUpperEncoder.getPosition() *
+        // ArmConstants.TICKS_TO_DEGREES);
+
+        // Two Pronged Movement
+        if (dbMove) {
+            // Move to Intermediate Position
+            moveToPoint(db_inter[0], db_inter[1]);
+            // Check for Intermediate Error and proceed to Target
+            if (Math.abs(state[1].getX() - db_inter[0]) > 0.1 && Math.abs(state[1].getY() - db_inter[1]) > 0.1) {
+                moveToPoint(db_target[0], db_target[1]);
+                dbMove = false;
+            }
+        }
+
+        SmartDashboard.putBoolean("Two-Pronged Movement Triggered", dbMove);
     }
 
     @Override
@@ -233,7 +260,6 @@ public class Arm extends Submodule {
 
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-
         mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) (-50));
         mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) (50));
 
@@ -260,6 +286,17 @@ public class Arm extends Submodule {
         mLowerLeader.setClosedLoopRampRate(val);
     }
 
+    public Pose2d[] getState() {
+        return state;
+    }
+
+    public double angleConv(double og) {
+        if (Math.signum(og) > 0)
+            return -360 + og;
+        else
+            return og;
+    }
+
     public void moveArm(double lowerOut, double upperOut) {
         mControlState = ControlState.OPEN_LOOP;
         mLowerPercentOut = lowerOut;
@@ -270,16 +307,19 @@ public class Arm extends Submodule {
         mControlState = ControlState.CLOSED_LOOP;
         // mLowerDesiredPosition = lowerAngle;
         // mUpperDesiredPosition = upperAngle;
-        // mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
-        // mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
-
         mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = (90 + lowerAngle + upperAngle) / ArmConstants.TICKS_TO_DEGREES;
-
     }
 
-    public Pose2d[] getState() {
-        return state;
+    public void moveToAngle(double[] angles) {
+        mControlState = ControlState.CLOSED_LOOP;
+        mLowerDesiredPosition = (90 - angles[0]) / ArmConstants.TICKS_TO_DEGREES;
+        mUpperDesiredPosition = (90 + angles[0] + angles[1]) / ArmConstants.TICKS_TO_DEGREES;
+    }
+
+    public void moveToPoint(double target_x, double target_y) {
+        mControlState = ControlState.CLOSED_LOOP;
+        moveToAngle(invKin(target_x, target_y));
     }
 
     // TODO: Add Kalman Filter to sanity check here:
@@ -303,15 +343,7 @@ public class Arm extends Submodule {
         return rel;
     }
 
-    public double angleConv(double og) {
-        if (Math.signum(og) > 0)
-            return -360 + og;
-        else
-            return og;
-    }
-
     public double[] forKin(Rotation2d[] q) {
-
         double[] pos = new double[state.length * 2];
 
         // Proximal Position
@@ -327,13 +359,13 @@ public class Arm extends Submodule {
         return pos;
     }
 
-    public double[] invKin(double[] target) {
+    public double[] invKin(double target_x, double target_y) {
         // Position of target end-effector state
-        double radius_sq = target[0] * target[0] + target[1] * target[1];
+        double radius_sq = target_x * target_x + target_y * target_y;
         double radius = Math.sqrt(radius_sq);
 
         // Angle of target State
-        double theta = Math.atan2(target[1], target[0]);
+        double theta = Math.atan2(target_y, target_x);
 
         // Use law of cosines to compute elbow angle
         double elbow_supplement = 0.0;
@@ -365,13 +397,6 @@ public class Arm extends Submodule {
         } else
             return s1;
 
-        // // Check for wacko solutions
-        // if ((Math.signum(s1[0]) > 90 && Math.signum(s1[1]) > 0)
-        // || (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) < 0)) {
-        // return s2;
-        // } else
-        // return s1;
-
         // Compare elbow angle solutions, find closest angle to move to
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
         // .abs(s2[0] - state[0].getRotation().getDegrees())) {
@@ -380,8 +405,21 @@ public class Arm extends Submodule {
         // return s2;
     }
 
-    public void idle() {
-        if()
+    public void moveTwoPronged(double inter_x, double inter_y, double target_x, double target_y) {
+        dbMove = true;
+        db_inter[0] = inter_x;
+        db_inter[1] = inter_y;
+        db_target[0] = target_x;
+        db_target[1] = target_y;
     }
 
+    public void goHome() {
+        if (state[1].getY() < 0.1 && Math.signum(state[1].getX()) < 0) {
+            moveTwoPronged(-0.5, 0.5, 0, 0.15);
+        } else if (state[1].getY() < 0.1 && Math.signum(state[1].getX()) > 0) {
+            moveTwoPronged(0.5, 0.5, 0, 0.15);
+        } else {
+            moveToAngle(90, -180);
+        }
+    }
 }
