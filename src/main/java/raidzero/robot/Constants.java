@@ -287,8 +287,8 @@ public class Constants {
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 3000.0;
-                public static final double MAX_ACCEL = 3000.0;
+                public static final double MAX_VEL = 500.0;
+                public static final double MAX_ACCEL = 250.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;
