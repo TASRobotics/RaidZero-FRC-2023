@@ -166,6 +166,16 @@ public class Constants {
 
                 public static final int LINKAGES = 2;
 
+                /** Constants for arm Distal endpoint locations for different
+                 *  arm positions.  Constants are measured in meters
+                 */
+
+                 public static final double[] HUMAN_PICKUP_STATION = {0.5,0.85};
+                 public static final double[] GRID_LOW = {0.6,0.0};
+                 public static final double[] GRID_MEDIUM = {0.9,0.85};
+                 public static final double[] GRID_HIGH = {1.3,1.15};
+                 public static final double[] FLOOR_INTAKE = {0.7,-0.1};
+
                 /**
                  * Constants for a DC brushed motor.
                  * nominal_voltage -- voltage at which the motor constants were measured
