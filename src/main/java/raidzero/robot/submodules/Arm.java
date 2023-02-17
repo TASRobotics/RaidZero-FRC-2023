@@ -214,7 +214,7 @@ public class Arm extends Submodule {
     @Override
     public void run() {
         if (mControlState == ControlState.OPEN_LOOP) {
-            if (stage > 0){
+            if (stage > 0) {
                 mLowerLeader.stopMotor();
                 mUpperLeader.stopMotor();
                 stage = 0;
@@ -356,7 +356,7 @@ public class Arm extends Submodule {
         mLowerDesiredPosition = (90 - angles[0]) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = (90 + angles[0] + angles[1]) / ArmConstants.TICKS_TO_DEGREES;
         wrist.setDesiredAngle(
-            -180-(-180-angles[1]) + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
+                -180 - (-180 - angles[1]) + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
     }
 
     public void profileToAngle(double[] lowerAngles, double[] upperAngles) {
@@ -370,7 +370,8 @@ public class Arm extends Submodule {
 
     public void wristToAngle(double wristAngle) {
         wrist.setDesiredAngle(
-                (-180-mUpperEncoder.getPosition()*ArmConstants.TICKS_TO_DEGREES) + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
+                (-180 - mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                        + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
     }
 
     public void moveToPoint(double target_x, double target_y, double wristAngle) {
