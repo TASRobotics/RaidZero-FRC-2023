@@ -279,8 +279,8 @@ public class Constants {
 
                 public static final int SMART_MOTION_SLOT = 0;
 
-                public static final double KF = 1.0/11000.0;
-                public static final double KP = 0.0003;
+                public static final double KF = 0.00009;
+                public static final double KP = 0.000106;
                 public static final double KI = 0.0;
                 public static final double KD = 0.0;
 

@@ -9,20 +9,18 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
-
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.math.util.Units;
 
 import raidzero.robot.Constants;
 import raidzero.robot.submodules.DoubleJointedArm;
+import raidzero.robot.submodules.Wrist;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {
@@ -32,17 +30,17 @@ public class Arm extends Submodule {
     private ControlState mControlState = ControlState.OPEN_LOOP;
     private double outputOpenLoop = 0.0;
 
-  private double mLowerPercentOut = 0.0;
-  private double mUpperPercentOut = 0.0;
-  private double mLowerDesiredPosition = 0.0;
-  private double mUpperDesiredPosition = 0.0;
-  private double mLowerWaypointPositions[] = {0.0,0.0};
-  private double mUpperWaypointPositions[] = {0.0,0.0};
-  
-  //Code for running two stages
-  private boolean isMoving = false;
-  private boolean eStop = false;
-  private int stage = 0;
+    private double mLowerPercentOut = 0.0;
+    private double mUpperPercentOut = 0.0;
+    private double mLowerDesiredPosition = 0.0;
+    private double mUpperDesiredPosition = 0.0;
+    private double mLowerWaypointPositions[] = { 0.0, 0.0 };
+    private double mUpperWaypointPositions[] = { 0.0, 0.0 };
+
+    // Code for running two stages
+    private boolean isMoving = false;
+    private boolean eStop = false;
+    private int stage = 0;
 
     // Absolute Encoder Adjustment Constants
     public double drift = 0.0; // degrees
@@ -50,13 +48,9 @@ public class Arm extends Submodule {
     public double dResets = 0.0;
 
     // Intermediate State Constants
-    public boolean interState = false;
-    public boolean dbMove = false;
-    public double db_inter[] = { 0, 0 };
-    public double db_target[] = { 0, 0 };
-    
-    private double[] xWaypointPositions = {0,0};
-    private double[] yWaypointPositions = {0,0};
+    private double[] xWaypointPositions = { 0, 0 };
+    private double[] yWaypointPositions = { 0, 0 };
+    private double[] wristWaypointPositions = { 0, 0 };
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
@@ -94,29 +88,29 @@ public class Arm extends Submodule {
     private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
             .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
     private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
-            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);    
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
     private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
             .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
     private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
             .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
     // private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
-    //         .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    // .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
     // private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
-    //         .getReverseLimitSwitch(ArmConstants.UPPER_REVERSE_LIMIT_TYPE);
+    // .getReverseLimitSwitch(ArmConstants.UPPER_REVERSE_LIMIT_TYPE);
 
     private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     private final SparkMaxAbsoluteEncoder mUpperAbsoluteEncoder = mUpperLeader
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
 
+    private Wrist wrist = Wrist.getInstance();
+
     private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
     private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
 
     private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
     private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
-
-
 
     @Override
     public void onInit() {
@@ -131,12 +125,13 @@ public class Arm extends Submodule {
         configLowerSparkMax();
         configUpperSparkMax();
 
-        zero();
-        stage=0;
-
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+
+        zero();
+        stage = 0;
+        wrist.onInit();
     }
 
     @Override
@@ -172,7 +167,7 @@ public class Arm extends Submodule {
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
         // Link Angles
-        SmartDashboard.putNumber("Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()));
+        SmartDashboard.putNumber("Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
 
@@ -182,8 +177,11 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Distal X", state[1].getX());
         SmartDashboard.putNumber("Distal Y", state[1].getY());
         SmartDashboard.putNumber("Drift",
-                Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) - state[0].getRotation().getDegrees());
+                Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90 - state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Resets", dResets);
+
+        SmartDashboard.putNumber("Wrist Rotations", wrist.getRotations());
+        SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
 
         // SmartDashboard.putNumber("Proximal Rotations", mLowerEncoder.getPosition() *
         // ArmConstants.TICKS_TO_DEGREES);
@@ -195,34 +193,23 @@ public class Arm extends Submodule {
             // System.out.println("Stage greater than zero");
             // Move to Intermediate Position
             // Check for Intermediate Error and proceed to Target
-            System.out.println(Math.abs(state[1].getX() - xWaypointPositions[stage-1]));
-            System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage-1]));
-            if (Math.abs(state[1].getX() - xWaypointPositions[stage-1]) < 0.1 && Math.abs(state[1].getY() - yWaypointPositions[stage-1]) < 0.1) {
-                
+            System.out.println(Math.abs(state[1].getX() - xWaypointPositions[stage - 1]));
+            System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage - 1]));
+            if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
+                    && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.1) {
+
                 // System.out.println("Within Range");
-                if(stage < mLowerWaypointPositions.length){
-                  moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage]);
-                  
-                  System.out.println("Moving to point");
-                  stage++;
-                  stage %= xWaypointPositions.length;
+                if (stage < mLowerWaypointPositions.length) {
+                    moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]);
+
+                    System.out.println("Moving to point");
+                    stage++;
+                    stage %= xWaypointPositions.length;
                 }
-                    
+
             }
         }
-
-        SmartDashboard.putBoolean("Two-Pronged Movement Triggered", dbMove);
-      // if(stage>0){
-      //   boolean reachedEnd = (Math.abs(mLowerEncoder.getPosition()-mLowerDesiredPosition)<1)
-      //     && (Math.abs(mUpperEncoder.getPosition()-mUpperDesiredPosition)<1);
-      //   if (reachedEnd){
-      //     if(mLowerWaypointPositions.length<stage){
-      //       moveToAngle(mLowerWaypointPositions[stage], mUpperWaypointPositions[stage]);
-      //       stage++;
-      //     }
-      //   }
     }
-  
 
     @Override
     public void run() {
@@ -243,19 +230,22 @@ public class Arm extends Submodule {
                     0,
                     ArbFFUnits.kPercentOut);
         }
+        wrist.run();
     }
 
-  @Override
-  public void stop() {
-    mLowerLeader.stopMotor();
-    mUpperLeader.stopMotor();
-    stage=0;
-  }
+    @Override
+    public void stop() {
+        mLowerLeader.stopMotor();
+        mUpperLeader.stopMotor();
+        stage = 0;
+        wrist.stop();
+    }
 
     @Override
     public void zero() {
-      // mLowerEncoder.setPosition(0);
-      // mUpperEncoder.setPosition(0);
+        // mLowerEncoder.setPosition(0);
+        // mUpperEncoder.setPosition(0);
+        wrist.zero();
     }
 
     private void configLowerSparkMax() {
@@ -331,6 +321,10 @@ public class Arm extends Submodule {
         return state;
     }
 
+    public Wrist getWrist() {
+        return wrist;
+    }
+
     public double angleConv(double og) {
         if (Math.signum(og) > 0)
             return -360 + og;
@@ -352,24 +346,31 @@ public class Arm extends Submodule {
         mUpperDesiredPosition = (90 + lowerAngle + upperAngle) / ArmConstants.TICKS_TO_DEGREES;
     }
 
-    public void moveToAngle(double[] angles) {
+    public void moveToAngle(double[] angles, double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
         mLowerDesiredPosition = (90 - angles[0]) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = (90 + angles[0] + angles[1]) / ArmConstants.TICKS_TO_DEGREES;
+        wrist.setDesiredAngle(
+            -180-(-180-angles[1]) + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
     }
 
-  public void profileToAngle(double[] lowerAngles, double[] upperAngles){
-    mLowerWaypointPositions = lowerAngles;
-    mUpperWaypointPositions = upperAngles;
-    if (lowerAngles.length>0){
-      moveToAngle(mLowerWaypointPositions[0], mUpperWaypointPositions[1]);
-      stage = 1;
+    public void profileToAngle(double[] lowerAngles, double[] upperAngles) {
+        mLowerWaypointPositions = lowerAngles;
+        mUpperWaypointPositions = upperAngles;
+        if (lowerAngles.length > 0) {
+            moveToAngle(mLowerWaypointPositions[0], mUpperWaypointPositions[1]);
+            stage = 1;
+        }
     }
-  }
 
-    public void moveToPoint(double target_x, double target_y) {
+    public void wristToAngle(double wristAngle) {
+        wrist.setDesiredAngle(
+                (-180-mUpperEncoder.getPosition()*ArmConstants.TICKS_TO_DEGREES) + wristAngle * WristConstants.POSITION_CONVERSION_FACTOR);
+    }
+
+    public void moveToPoint(double target_x, double target_y, double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
-        moveToAngle(invKin(target_x, target_y));
+        moveToAngle(invKin(target_x, target_y), wristAngle);
     }
 
     // TODO: Add Kalman Filter to sanity check here:
@@ -442,7 +443,7 @@ public class Arm extends Submodule {
         double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
         // Check for wacko solutions
-        if (Math.signum(s1[0]) < 0) {
+        if (Math.signum(s1[0]) < 0 || s1[0] < 50 || s1[0] > 140) {
             return s2;
         } else
             return s1;
@@ -455,33 +456,32 @@ public class Arm extends Submodule {
         // return s2;
     }
 
-    public void moveTwoPronged(double inter_x, double inter_y, double target_x, double target_y) {
-        // dbMove = true;
+    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist, double target_x, double target_y,
+            double target_wrist) {
         stage = 1;
         xWaypointPositions[0] = inter_x;
         xWaypointPositions[1] = target_x;
         yWaypointPositions[0] = inter_y;
         yWaypointPositions[1] = target_y;
-        moveToPoint(inter_x, inter_y);
-        // db_inter[0] = inter_x;
-        // db_inter[1] = inter_y;
-        // db_target[0] = target_x;
-        // db_target[1] = target_y;
+        wristWaypointPositions[0] = inter_wrist;
+        wristWaypointPositions[1] = target_wrist;
+        moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
     public void goHome() {
         if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) < 0) {
-            moveTwoPronged(-0.5, 0.25, 0, 0.15);
+            moveTwoPronged(-0.5, 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) > 0) {
-            moveTwoPronged(0.5, 0.25, 0, 0.15);
+            moveTwoPronged(0.5, 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one");
-            moveTwoPronged(0.3*Math.signum(state[1].getX()), state[1].getY()+.1, 0.0, 0.15);
+            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
         } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-            moveTwoPronged(0.3*Math.signum(state[1].getX()), state[1].getY()+.1, 0.0, 0.15);
+            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
             System.out.println("Safety two");
         } else {
             moveToAngle(90, -180);
+            wristToAngle(0);
         }
     }
 }

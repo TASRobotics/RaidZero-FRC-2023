@@ -41,19 +41,17 @@ public class Wrist extends Submodule {
         OPEN_LOOP, CLOSED_LOOP
     }
 
-    
     private ControlState mControlState = ControlState.OPEN_LOOP;
 
     private double mPercentOut = 0.0;
     private double mDesiredAngle = 0.0;
     private double zeroOffset = 0.0;
 
-
-	private NetworkTable table;
+    private NetworkTable table;
     private DoubleArrayPublisher limitEncoderDataPub;
     private DoubleArraySubscriber limitSwitchEdgeSub;
     private double lastFallingEdge = WristConstants.LIMITSWITCHPOSITIONS[0];
-    
+
     private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
@@ -62,17 +60,18 @@ public class Wrist extends Submodule {
 
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
-    private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor.getForwardLimitSwitch(Constants.WristConstants.LIMITSWITCHPOLARITY);
+    private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor
+            .getForwardLimitSwitch(Constants.WristConstants.LIMITSWITCHPOLARITY);
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
     @Override
     public void onInit() {
         mMotor.restoreFactoryDefaults();
         configWristSparkMax();
-        mMotor.burnFlash();
         zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
-        limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS);  //FIX THIS!!
+        limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS); // FIX
+                                                                                                             // THIS!!
     }
 
     @Override
@@ -81,15 +80,16 @@ public class Wrist extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        
+
     }
 
     private void align() {
-        double[] defaultEdgeData = {WristConstants.LIMITSWITCHPOSITIONS[0],1.0};
+        double[] defaultEdgeData = { WristConstants.LIMITSWITCHPOSITIONS[0], 1.0 };
         double[] edgeData = limitSwitchEdgeSub.get(defaultEdgeData);
-        double fallingEdge = edgeData[1]>0 ? edgeData[0] : edgeData[0]+WristConstants.LIMITSWITCHDIFFERENCE ;
+        double fallingEdge = edgeData[1] > 0 ? edgeData[0] : edgeData[0] + WristConstants.LIMITSWITCHDIFFERENCE;
         // System.out.println(fallingEdge);
-        if (Math.abs(fallingEdge - lastFallingEdge)>.1) mEncoder.setPosition(mEncoder.getPosition() - (fallingEdge - WristConstants.LIMITSWITCHPOSITIONS[0]));
+        if (Math.abs(fallingEdge - lastFallingEdge) > .1)
+            mEncoder.setPosition(mEncoder.getPosition() - (fallingEdge - WristConstants.LIMITSWITCHPOSITIONS[0]));
 
         lastFallingEdge = fallingEdge;
 
@@ -104,15 +104,15 @@ public class Wrist extends Submodule {
                     mDesiredAngle,
                     ControlType.kSmartMotion,
                     WristConstants.SMART_MOTION_SLOT,
-                    mDesiredAngle,
+                    0,
                     ArbFFUnits.kPercentOut);
         }
-        double limitSwitchEncoderData[] = {inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition()};
+        double limitSwitchEncoderData[] = { inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition() };
         // System.out.println(mMotor.getEncoder().getPosition());
 
         limitEncoderDataPub.set(limitSwitchEncoderData);
 
-        align();
+        // align();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class Wrist extends Submodule {
     @Override
     public void zero() {
         mEncoder.setPosition(0);
-        wristAngle= Rotation2d.fromDegrees(0);
+        wristAngle = Rotation2d.fromDegrees(0);
     }
 
     /**
@@ -136,8 +136,6 @@ public class Wrist extends Submodule {
         mPercentOut = speed;
     }
 
-
-
     /**
      * Set desired wrist angle (degrees) [0, 360]
      * 
@@ -146,7 +144,6 @@ public class Wrist extends Submodule {
     public void setDesiredAngle(double angle) {
         mControlState = ControlState.CLOSED_LOOP;
         mDesiredAngle = angle;
-        mEncoder.getVelocity();
     }
 
     /**
@@ -154,8 +151,8 @@ public class Wrist extends Submodule {
      * 
      * @return current angle
      */
-    public Rotation2d getAngle() {
-        return Rotation2d.fromDegrees(mEncoder.getPosition());
+    public double getRotations() {
+        return mEncoder.getPosition();
     }
 
     /**
@@ -163,8 +160,12 @@ public class Wrist extends Submodule {
      * 
      * @return current velocity
      */
-    public Rotation2d getVelocity() {
-        return Rotation2d.fromDegrees(mEncoder.getVelocity());
+    public double getVelocity() {
+        return mEncoder.getVelocity();
+    }
+
+    public Rotation2d getAngle() {
+        return Rotation2d.fromDegrees(mEncoder.getPosition() * WristConstants.POSITION_CONVERSION_FACTOR);
     }
 
     private void configWristSparkMax() {
@@ -175,14 +176,18 @@ public class Wrist extends Submodule {
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         inZoneLimitSwitch.enableLimitSwitch(false);
-        mMotor.enableSoftLimit(SoftLimitDirection.kForward, WristConstants.ENABLEFORWARDLIMIT);
-        mMotor.enableSoftLimit(SoftLimitDirection.kReverse, WristConstants.ENABLEREVERSELIMIT);
-        mMotor.setSoftLimit(SoftLimitDirection.kForward, WristConstants.FORWARDLIMIT);
-        mMotor.setSoftLimit(SoftLimitDirection.kReverse, WristConstants.REVERSELIMIT);
+        // mMotor.enableSoftLimit(SoftLimitDirection.kForward,
+        // WristConstants.ENABLEFORWARDLIMIT);
+        // mMotor.enableSoftLimit(SoftLimitDirection.kReverse,
+        // WristConstants.ENABLEREVERSELIMIT);
+        // mMotor.setSoftLimit(SoftLimitDirection.kForward,
+        // WristConstants.FORWARDLIMIT);
+        // mMotor.setSoftLimit(SoftLimitDirection.kReverse,
+        // WristConstants.REVERSELIMIT);
 
         // mEncoder.setInverted(WristConstants.ENCODER_INVERSION);
         // mEncoder.setPositionConversionFactor(WristConstants.POSITION_CONVERSION_FACTOR);
-        //mEncoder.setPositionConversionFactor(1.0);
+        // mEncoder.setPositionConversionFactor(1.0);
         // mEncoder.setVelocityConversionFactor(WristConstants.VELOCITY_CONVERSION_FACTOR);
 
         mPIDController.setFeedbackDevice(mEncoder);
@@ -200,7 +205,7 @@ public class Wrist extends Submodule {
         mPIDController.setPositionPIDWrappingMaxInput(WristConstants.PID_WRAPPING_MAX);
     }
 
-    private DoubleArrayTopic getDoubleArrayTopic(String key){
+    private DoubleArrayTopic getDoubleArrayTopic(String key) {
         if (table == null) {
             NetworkTableInstance.getDefault();
             table = NetworkTableInstance.getDefault().getTable(Constants.NETWORKTABLESNAME);

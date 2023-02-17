@@ -64,18 +64,19 @@ public class Teleop {
         else if (p.getLeftBumperPressed())
             mode = 4; // Go Home
 
-        if (mode == 1)
+        if (mode == 1) {
             arm.moveArm(p.getLeftX() * 0.2, p.getRightX() * 0.2);
-        else if (mode == 2) {
+            arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
+        } else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.moveToAngle(90, -180);
+                arm.wristToAngle(0);
             } else if (p.getBButtonPressed()) {
                 arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
                 arm.moveToAngle(110, -250);
             } else if (p.getAButtonPressed()) {
-                //arm.moveToAngle(110, -270);
-                arm.moveTwoPronged(-0.7, 0.7, -0.5, 0.5);
+                // arm.moveToAngle(110, -270);
+                arm.moveTwoPronged(-0.7, 0.7, 0, -0.5, 0.5, 0);
             }
         } else if (mode == 3) {
             if (Math.abs(target[0]) <= ArmConstants.X_EXTENSION_LIMIT && target[1] <= ArmConstants.Y_EXTENSION_LIMIT
@@ -94,10 +95,10 @@ public class Teleop {
             else if (target[1] < 0)
                 target[1] = 0;
 
-            arm.moveToPoint(target[0], target[1]);
-        } else if (mode == 4){
+            arm.moveToPoint(target[0], target[1], 0);
+        } else if (mode == 4) {
             arm.goHome();
-            mode=0;
+            mode = 0;
         }
 
     }
