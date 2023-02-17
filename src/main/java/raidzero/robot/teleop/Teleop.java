@@ -97,6 +97,7 @@ public class Teleop {
             arm.moveToPoint(target[0], target[1]);
         } else if (mode == 4){
             arm.goHome();
+            mode=0;
         }
 
     }

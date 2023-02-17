@@ -32,10 +32,17 @@ public class Arm extends Submodule {
     private ControlState mControlState = ControlState.OPEN_LOOP;
     private double outputOpenLoop = 0.0;
 
-    private double mLowerPercentOut = 0.0;
-    private double mUpperPercentOut = 0.0;
-    private double mLowerDesiredPosition = 0.0;
-    private double mUpperDesiredPosition = 0.0;
+  private double mLowerPercentOut = 0.0;
+  private double mUpperPercentOut = 0.0;
+  private double mLowerDesiredPosition = 0.0;
+  private double mUpperDesiredPosition = 0.0;
+  private double mLowerWaypointPositions[] = {0.0,0.0};
+  private double mUpperWaypointPositions[] = {0.0,0.0};
+  
+  //Code for running two stages
+  private boolean isMoving = false;
+  private boolean eStop = false;
+  private int stage = 0;
 
     // Absolute Encoder Adjustment Constants
     public double drift = 0.0; // degrees
@@ -47,6 +54,9 @@ public class Arm extends Submodule {
     public boolean dbMove = false;
     public double db_inter[] = { 0, 0 };
     public double db_target[] = { 0, 0 };
+    
+    private double[] xWaypointPositions = {0,0};
+    private double[] yWaypointPositions = {0,0};
 
     // State of Proximal and Distal Links
     private Pose2d[] state;
@@ -84,12 +94,16 @@ public class Arm extends Submodule {
     private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
             .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
     private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);    
+    private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
+            .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
             .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
-    private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
-            .getForwardLimitSwitch(ArmConstants.UPPER_FORWARD_LIMIT_TYPE);
-    private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
-            .getReverseLimitSwitch(ArmConstants.UPPER_REVERSE_LIMIT_TYPE);
+    // private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
+    //         .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    // private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
+    //         .getReverseLimitSwitch(ArmConstants.UPPER_REVERSE_LIMIT_TYPE);
 
     private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -101,6 +115,8 @@ public class Arm extends Submodule {
 
     private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
     private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
+
+
 
     @Override
     public void onInit() {
@@ -114,6 +130,9 @@ public class Arm extends Submodule {
 
         configLowerSparkMax();
         configUpperSparkMax();
+
+        zero();
+        stage=0;
 
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
         mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
@@ -172,18 +191,38 @@ public class Arm extends Submodule {
         // ArmConstants.TICKS_TO_DEGREES);
 
         // Two Pronged Movement
-        if (dbMove) {
+        if (stage > 0) {
+            // System.out.println("Stage greater than zero");
             // Move to Intermediate Position
-            moveToPoint(db_inter[0], db_inter[1]);
             // Check for Intermediate Error and proceed to Target
-            if (Math.abs(state[1].getX() - db_inter[0]) > 0.1 && Math.abs(state[1].getY() - db_inter[1]) > 0.1) {
-                moveToPoint(db_target[0], db_target[1]);
-                dbMove = false;
+            System.out.println(Math.abs(state[1].getX() - xWaypointPositions[stage-1]));
+            System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage-1]));
+            if (Math.abs(state[1].getX() - xWaypointPositions[stage-1]) < 0.1 && Math.abs(state[1].getY() - yWaypointPositions[stage-1]) < 0.1) {
+                
+                // System.out.println("Within Range");
+                if(stage < mLowerWaypointPositions.length){
+                  moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage]);
+                  
+                  System.out.println("Moving to point");
+                  stage++;
+                  stage %= xWaypointPositions.length;
+                }
+                    
             }
         }
 
         SmartDashboard.putBoolean("Two-Pronged Movement Triggered", dbMove);
+      // if(stage>0){
+      //   boolean reachedEnd = (Math.abs(mLowerEncoder.getPosition()-mLowerDesiredPosition)<1)
+      //     && (Math.abs(mUpperEncoder.getPosition()-mUpperDesiredPosition)<1);
+      //   if (reachedEnd){
+      //     if(mLowerWaypointPositions.length<stage){
+      //       moveToAngle(mLowerWaypointPositions[stage], mUpperWaypointPositions[stage]);
+      //       stage++;
+      //     }
+      //   }
     }
+  
 
     @Override
     public void run() {
@@ -206,15 +245,17 @@ public class Arm extends Submodule {
         }
     }
 
-    @Override
-    public void stop() {
-        mLowerLeader.stopMotor();
-        mUpperLeader.stopMotor();
-    }
+  @Override
+  public void stop() {
+    mLowerLeader.stopMotor();
+    mUpperLeader.stopMotor();
+    stage=0;
+  }
 
     @Override
     public void zero() {
-
+      // mLowerEncoder.setPosition(0);
+      // mUpperEncoder.setPosition(0);
     }
 
     private void configLowerSparkMax() {
@@ -252,8 +293,8 @@ public class Arm extends Submodule {
         mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
         mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
         mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
-        mUpperForwardLimitSwitch.enableLimitSwitch(false);
-        mUpperReverseLimitSwitch.enableLimitSwitch(false);
+        mUpperForwardLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
+        mUpperReverseLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
 
         // mUpperEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
         // mUpperEncoder.setInverted(ArmConstants.UPPER_ENCODER_INVERSION);
@@ -316,6 +357,15 @@ public class Arm extends Submodule {
         mLowerDesiredPosition = (90 - angles[0]) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = (90 + angles[0] + angles[1]) / ArmConstants.TICKS_TO_DEGREES;
     }
+
+  public void profileToAngle(double[] lowerAngles, double[] upperAngles){
+    mLowerWaypointPositions = lowerAngles;
+    mUpperWaypointPositions = upperAngles;
+    if (lowerAngles.length>0){
+      moveToAngle(mLowerWaypointPositions[0], mUpperWaypointPositions[1]);
+      stage = 1;
+    }
+  }
 
     public void moveToPoint(double target_x, double target_y) {
         mControlState = ControlState.CLOSED_LOOP;
@@ -406,18 +456,30 @@ public class Arm extends Submodule {
     }
 
     public void moveTwoPronged(double inter_x, double inter_y, double target_x, double target_y) {
-        dbMove = true;
-        db_inter[0] = inter_x;
-        db_inter[1] = inter_y;
-        db_target[0] = target_x;
-        db_target[1] = target_y;
+        // dbMove = true;
+        stage = 1;
+        xWaypointPositions[0] = inter_x;
+        xWaypointPositions[1] = target_x;
+        yWaypointPositions[0] = inter_y;
+        yWaypointPositions[1] = target_y;
+        moveToPoint(inter_x, inter_y);
+        // db_inter[0] = inter_x;
+        // db_inter[1] = inter_y;
+        // db_target[0] = target_x;
+        // db_target[1] = target_y;
     }
 
     public void goHome() {
-        if (state[1].getY() < 0.1 && Math.signum(state[1].getX()) < 0) {
-            moveTwoPronged(-0.5, 0.5, 0, 0.15);
-        } else if (state[1].getY() < 0.1 && Math.signum(state[1].getX()) > 0) {
-            moveTwoPronged(0.5, 0.5, 0, 0.15);
+        if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) < 0) {
+            moveTwoPronged(-0.5, 0.25, 0, 0.15);
+        } else if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) > 0) {
+            moveTwoPronged(0.5, 0.25, 0, 0.15);
+        } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
+            System.out.println("Safety one");
+            moveTwoPronged(0.3*Math.signum(state[1].getX()), state[1].getY()+.1, 0.0, 0.15);
+        } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+            moveTwoPronged(0.3*Math.signum(state[1].getX()), state[1].getY()+.1, 0.0, 0.15);
+            System.out.println("Safety two");
         } else {
             moveToAngle(90, -180);
         }
