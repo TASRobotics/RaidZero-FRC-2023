@@ -214,6 +214,11 @@ public class Arm extends Submodule {
     @Override
     public void run() {
         if (mControlState == ControlState.OPEN_LOOP) {
+            if (stage > 0){
+                mLowerLeader.stopMotor();
+                mUpperLeader.stopMotor();
+                stage = 0;
+            }
             mLowerLeader.set(mLowerPercentOut);
             mUpperLeader.set(mUpperPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -291,8 +296,8 @@ public class Arm extends Submodule {
 
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) (-50));
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) (50));
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) (-70));
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) (70));
 
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
         mUpperPIDController.setPositionPIDWrappingEnabled(true);

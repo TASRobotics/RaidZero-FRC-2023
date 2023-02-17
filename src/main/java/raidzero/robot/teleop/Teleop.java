@@ -69,9 +69,11 @@ public class Teleop {
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.wristToAngle(0);
+                arm.moveTwoPronged(-.05, 1.3, -1.0, 1.3);
+                // arm.moveToAngle(90, -180);
             } else if (p.getBButtonPressed()) {
-                arm.moveToAngle(70, -90);
+                arm.moveTwoPronged(-.8, .2, -1.0, 0);
+                // arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
                 arm.moveToAngle(110, -250);
             } else if (p.getAButtonPressed()) {
