@@ -8,8 +8,7 @@ import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Intake extends Submodule {
-    private Intake() {
-    }
+    private Intake() {}
 
     private static Intake instance = null;
 
@@ -36,12 +35,10 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {
-    }
+    public void onStart(double timestamp) {}
 
     @Override
-    public void update(double timestamp) {
-    }
+    public void update(double timestamp) {}
 
     @Override
     public void run() {
@@ -54,15 +51,29 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void zero() {
-    }
+    public void zero() {}
 
+    /**
+     * Runs intake
+     * 
+     * @param gamePiece game piece type
+     * @param speed intake speed
+     */
     public void intake(GamePiece gamePiece, double speed) {
         if (gamePiece == GamePiece.CUBE) {
             mPercentOut = speed;
         } else if (gamePiece == GamePiece.CONE) {
             mPercentOut = -speed;
         }
+    }
+
+    /**
+     * Set percent output of intake 
+     * 
+     * @param speed percent output
+     */
+    public void set(double speed) {
+        mPercentOut = speed;
     }
 
     private void configIntakeSparkMax() {

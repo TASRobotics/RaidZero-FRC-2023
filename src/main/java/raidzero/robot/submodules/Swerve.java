@@ -342,6 +342,10 @@ public class Swerve extends Submodule {
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
+    public double getPathingTime() {
+        return timer.get();
+    }
+
     public boolean isFinishedPathing() {
         if(xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint()) {
             if(timer.hasElapsed(currentTrajectory.getTotalTimeSeconds()*1.5)) {
