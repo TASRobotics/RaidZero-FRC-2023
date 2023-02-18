@@ -26,7 +26,6 @@ public class Constants {
                 public static final double kOpenLoopRampRate = 0.0;
                 public static final double kClosedLoopRampRate = 0.0;
                 /** Device IDs */
-                /** Device IDs */
                 public static final int FRONT_LEFT_THROTTLE_ID = 1;
                 public static final int FRONT_RIGHT_THROTTLE_ID = 7;
                 public static final int REAR_LEFT_THROTTLE_ID = 3;
@@ -183,8 +182,8 @@ public class Constants {
         public static final class ArmConstants {
 
                 /** Arm Kinematics Constants */
-                public static final double LOWER_ARM_LENGTH = 0.91; // in meters
-                public static final double UPPER_ARM_LENGTH = 0.91;
+                public static final double LOWER_ARM_LENGTH = 1.0; // in meters
+                public static final double UPPER_ARM_LENGTH = 0.85;
 
                 public static final double BASE_PIVOT_COG = 0.0; // in meters
                 public static final double JOINT_COM = 0.0;
@@ -196,6 +195,16 @@ public class Constants {
                 public static final double UPPER_ARM_MOI = 0.0;
 
                 public static final int LINKAGES = 2;
+
+                /**
+                 * Constants for arm Distal endpoint locations for different
+                 * arm positions. Constants are measured in meters
+                 */
+                public static final double[] HUMAN_PICKUP_STATION = { 0.5, 0.85 };
+                public static final double[] GRID_LOW = { 0.6, 0.0 };
+                public static final double[] GRID_MEDIUM = { 0.9, 0.85 };
+                public static final double[] GRID_HIGH = { 1.3, 1.15 };
+                public static final double[] FLOOR_INTAKE = { 0.7, -0.1 };
 
                 /**
                  * Constants for a DC brushed motor.
@@ -215,102 +224,116 @@ public class Constants {
                 public static final double GRAVITY = 9.81;
 
                 /** Regular Constants */
-                public static final int LOWER_LEADER_ID = 1;
-                public static final int LOWER_FOLLOWER_ID = 2;
-                public static final int UPPER_LEADER_ID = 3;
-                public static final int UPPER_FOLLOWER_ID = 4;
+                public static final int LOWER_LEADER_ID = 11;
+                public static final int LOWER_FOLLOWER_ID = 12;
+                public static final int UPPER_LEADER_ID = 13;
+                public static final int UPPER_FOLLOWER_ID = 14;
 
-                public static final boolean LOWER_MOTOR_INVERSION = true;
-                public static final boolean UPPER_MOTOR_INVERSION = true;
+                public static final boolean LOWER_MOTOR_INVERSION = false;
+                public static final boolean UPPER_MOTOR_INVERSION = false;
 
-                public static final int LOWER_CURRENT_LIMIT = 200;
-                public static final int UPPER_CURRENT_LIMIT = 200;
+                public static final int LOWER_CURRENT_LIMIT = 600;
+                public static final int UPPER_CURRENT_LIMIT = 600;
 
                 public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
                 public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
 
-                public static final double LOWER_ZERO_OFFSET = 5.6360036;
+                public static final SparkMaxLimitSwitch.Type UPPER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+                public static final SparkMaxLimitSwitch.Type UPPER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
+
+                public static final double LOWER_ZERO_OFFSET = 5.9092043;
                 public static final double UPPER_ZERO_OFFSET = 0.0;
 
-                public static final double LOWER_ABS_POSITION_CONVERSION_FACTOR = 6.28318;
+                public static final double LOWER_ABS_POSITION_CONVERSION_FACTOR = 6.283;
                 public static final double UPPER_ABS_POSITION_CONVERSION_FACTOR = 0.0;
 
                 public static final boolean LOWER_ENCODER_INVERSION = false;
                 public static final boolean UPPER_ENCODER_INVERSION = false;
-                public static final boolean ABSOLUTE_ENCODER_INVERSION = false;
+                public static final boolean LOWER_ABSOLUTE_ENCODER_INVERSION = true;
+                public static final boolean UPPER_ABSOLUTE_ENCODER_INVERSION = false;
 
                 public static final int LOWER_SMART_MOTION_SLOT = 0;
                 public static final int UPPER_SMART_MOTION_SLOT = 0;
 
-                public static final double TICKS_TO_DEGREES = 3.0;
+                public static final double TICKS_TO_DEGREES = 2.45;
+                public static final double UPPER_FWD_SOFTLIMIT = 70;
+                public static final double UPPER_REV_SOFTLIMIT = -70;
+                public static final double X_EXTENSION_LIMIT = 1.4;
+                public static final double Y_EXTENSION_LIMIT = 1.4;
 
                 public static final double LOWER_KF = 0.000166;
-                public static final double LOWER_KP = 0.000187;
+                public static final double LOWER_KP = 0.000156;
                 public static final double LOWER_KI = 0.0;
-                public static final double LOWER_KD = 0.000090;
+                public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 3760;
-                public static final double LOWER_MAX_ACCEL = 1960;
+                public static final double LOWER_MAX_VEL = 700;
+                public static final double LOWER_MAX_ACCEL = 350;
                 public static final double LOWER_MIN_ERROR = 0.0;
 
                 public static final double UPPER_KF = 0.000166;
-                public static final double UPPER_KP = 0.000106;
+                public static final double UPPER_KP = 0.000156;
                 public static final double UPPER_KI = 0.0;
-                public static final double UPPER_KD = 0.000009;
+                public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 3760;
-                public static final double UPPER_MAX_ACCEL = 1960;
+                public static final double UPPER_MAX_VEL = 1600;
+                public static final double UPPER_MAX_ACCEL = 700;
                 public static final double UPPER_MIN_ERROR = 0.0;
-
-                // public static final double LOWER_KF = 0.000166;
-                // public static final double LOWER_KP = 0;//0.000187;
-                // public static final double LOWER_KI = 0.0;
-                // public static final double LOWER_KD = 0;//0.000090;
-                // public static final double LOWER_MIN_VEL = 0.0;
-                // public static final double LOWER_MAX_VEL = 500;
-                // public static final double LOWER_MAX_ACCEL = 250;
-                // public static final double LOWER_MIN_ERROR = 0.0;
-
-                // public static final double UPPER_KF = 0.000166;
-                // public static final double UPPER_KP = 0.000106;
-                // public static final double UPPER_KI = 0.0;
-                // public static final double UPPER_KD = 0.000009;
-                // public static final double UPPER_MIN_VEL = 0.0;
-                // public static final double UPPER_MAX_VEL = 500;
-                // public static final double UPPER_MAX_ACCEL = 250;
-                // public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
+                public static final boolean UPPER_LIMIT_ENABLED = false;
         }
 
         public static final class WristConstants {
-                public static final int ID = 6;
+                public static final int ID = 15;
+                public static final int INTAKEID = 16;
 
-                public static final boolean INVERSION = false;
+                public static final boolean INVERSION = true;
 
                 public static final int CURRENT_LIMIT = 25;
 
-                public static final boolean ENCODER_INVERSION = false;
+                // public static final boolean ENCODER_INVERSION = false;
                 // 1:75 ratio, in degrees
-                public static final double POSITION_CONVERSION_FACTOR = 1 / 75 * 360;
+                public static final double POSITION_CONVERSION_FACTOR = 1.0 / 75.0 * 360.0;
                 public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
+
+                public static final boolean ENABLEREVERSELIMIT = true;
+                public static final boolean ENABLEFORWARDLIMIT = true;
+                public static final float FORWARDLIMIT = 50;
+                public static final float REVERSELIMIT = -50;
 
                 public static final int SMART_MOTION_SLOT = 0;
 
-                public static final double KF = 0.0;
-                public static final double KP = 0.0;
+                public static final double KF = 0.00009;
+                public static final double KP = 0.000106;
                 public static final double KI = 0.0;
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 0.0;
-                public static final double MAX_ACCEL = 0.0;
+                public static final double MAX_VEL = 500.0;
+                public static final double MAX_ACCEL = 250.0;
                 public static final double MIN_ERROR = 0.0;
 
+                public static final double MAXWINDS = 0.6;
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
+
+                public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
+                public static final double LIMITSWITCHPOSITIONS[] = { 35.5, -22.5 };
+                public static final double LIMITSWITCHDIFFERENCE = LIMITSWITCHPOSITIONS[1] - LIMITSWITCHPOSITIONS[0];
+
+                public static final int LIMITSWITCHBUFFERSIZE = 100;
+
+                public static final double ENCODER_NORMALIZATION = 100.0;
+
+                public static final String NAME = null;
         }
+
+        public static final class TOFSensorConstants {
+                public static final int SENSOR_ID = 0;
+        }
+
+        public static final String NETWORKTABLESNAME = "SmartDashboard";
 
         public static final double JOYSTICK_DEADBAND = 0.07;
         public static final int TIMEOUT_MS = 20;
