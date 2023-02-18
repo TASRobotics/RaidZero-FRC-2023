@@ -1,435 +1,496 @@
 package raidzero.robot.submodules;
 
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxLimitSwitch;
+import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAbsoluteEncoder;
-import com.revrobotics.SparkMaxLimitSwitch;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
+import com.revrobotics.RelativeEncoder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.util.Units;
+
 import raidzero.robot.Constants;
-import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.DoubleJointedArm;
+import raidzero.robot.submodules.Wrist;
+import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {
 
-  private DoubleJointedArm Controller = new DoubleJointedArm();
+    // Motor Control Constants
+    private DoubleJointedArm Controller = new DoubleJointedArm();
+    private ControlState mControlState = ControlState.OPEN_LOOP;
+    private double outputOpenLoop = 0.0;
+    private double mLowerPercentOut = 0.0;
+    private double mUpperPercentOut = 0.0;
+    private double mLowerDesiredPosition = 0.0;
+    private double mUpperDesiredPosition = 0.0;
 
-  private ControlState mControlState = ControlState.OPEN_LOOP;
-  private double outputOpenLoop = 0.0;
+    // Multi-Staged Movement Constants
+    private boolean isMoving = false;
+    private boolean eStop = false;
+    private int stage = 0;
+    private double mLowerWaypointPositions[] = { 0.0, 0.0 };
+    private double mUpperWaypointPositions[] = { 0.0, 0.0 };
+    // Intermediate State Constants
+    private double[] xWaypointPositions = { 0, 0 };
+    private double[] yWaypointPositions = { 0, 0 };
+    private double[] wristWaypointPositions = { 0, 0 };
 
-  private double mLowerPercentOut = 0.0;
-  private double mUpperPercentOut = 0.0;
-  private double mLowerDesiredPosition = 0.0;
-  private double mUpperDesiredPosition = 0.0;
+    // Absolute Encoder Adjustment Constants
+    public double drift = 0.0; // degrees
+    public double driftTolerance = 10.0;
+    public double dResets = 0.0;
 
-  public double drift = 0.0; // degrees
-  public double driftTolerance = 5.0;
-  public double dResets = 0.0;
+    // State of Proximal and Distal Links
+    private Pose2d[] state;
+    private Rotation2d[] q = {
+            Rotation2d.fromDegrees(90),
+            Rotation2d.fromDegrees(0) };
 
-  // State of Proximal and Distal Links
-  private Pose2d[] state;
+    // Motor Declaration
+    private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID,
+            MotorType.kBrushless);
+    private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
+            MotorType.kBrushless);
+    private Wrist wrist = Wrist.getInstance();
+    private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
+    private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
 
-  private Arm() {
-    int numLinkages = ArmConstants.LINKAGES;
-    state = new Pose2d[numLinkages];
-  }
+    // Limit Switches
+    private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
+            .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mUpperForwardLimitSwitch = mUpperLeader
+            .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
+    private final SparkMaxLimitSwitch mUpperReverseLimitSwitch = mUpperLeader
+            .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
 
-  private static Arm instance = null;
+    // Motor Encoders
+    private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final SparkMaxAbsoluteEncoder mUpperAbsoluteEncoder = mUpperLeader
+            .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
+    private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
 
-  public static Arm getInstance() {
-    if (instance == null) {
-      instance = new Arm();
+    private Arm() {
+        int numLinkages = ArmConstants.LINKAGES;
+        state = new Pose2d[numLinkages];
     }
-    return instance;
-  }
 
-  private enum ControlState {
-    OPEN_LOOP,
-    CLOSED_LOOP,
-  }
+    private static Arm instance = null;
 
-  private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(
-    ArmConstants.LOWER_LEADER_ID,
-    MotorType.kBrushless
-  );
-  // private final LazyCANSparkMax mLowerFollower = new
-  // LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
-  // MotorType.kBrushless);
-  private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(
-    ArmConstants.UPPER_LEADER_ID,
-    MotorType.kBrushless
-  );
-  // private final LazyCANSparkMax mUpperFollower = new
-  // LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
-  // MotorType.kBrushless);
-
-  // private final SparkMaxLimitSwitch mLowerForwardLimitSwitch = mLowerLeader
-  // .getForwardLimitSwitch(ArmConstants.LOWER_FORWARD_LIMIT_TYPE);
-  // private final SparkMaxLimitSwitch mLowerReverseLimitSwitch = mLowerLeader
-  // .getReverseLimitSwitch(ArmConstants.LOWER_REVERSE_LIMIT_TYPE);
-
-  private final SparkMaxAbsoluteEncoder mLowerAbsoluteEncoder = mLowerLeader.getAbsoluteEncoder(
-    SparkMaxAbsoluteEncoder.Type.kDutyCycle
-  );
-  // private final SparkMaxAbsoluteEncoder mUpperEncoder = mUpperLeader
-  // .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-
-  private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
-  private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
-
-  private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
-  private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
-
-  @Override
-  public void onInit() {
-    mLowerLeader.restoreFactoryDefaults();
-    // mLowerFollower.restoreFactoryDefaults();
-    mUpperLeader.restoreFactoryDefaults();
-    // mUpperFollower.restoreFactoryDefaults();
-
-    // mLowerFollower.follow(mLowerLeader, false);
-    // mUpperFollower.follow(mUpperLeader, false);
-
-    configLowerSparkMax();
-    configUpperSparkMax();
-
-    mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
-    mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
-    mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
-
-    mLowerLeader.burnFlash();
-    mUpperLeader.burnFlash();
-  }
-
-  @Override
-  public void onStart(double timestamp) {}
-
-  @Override
-  public void update(double timestamp) {
-    Rotation2d[] q = {
-      // Rotation2d.fromDegrees(90).minus(Rotation2d
-      // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
-      lowerSanityCheck(
-        Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
-        Rotation2d
-          .fromDegrees(90)
-          .minus(
-            Rotation2d.fromDegrees(
-              mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES
-            )
-          )
-      ),
-      upperSanityCheck(
-        Rotation2d
-          .fromDegrees(
-            mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES
-          )
-          .unaryMinus(),
-        Rotation2d
-          .fromDegrees(
-            mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES
-          )
-          .unaryMinus()
-      ),
-    };
-    state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
-    state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
-
-    SmartDashboard.putNumber(
-      "Absolute Angle",
-      Math.toDegrees(mLowerAbsoluteEncoder.getPosition())
-    );
-    SmartDashboard.putNumber(
-      "Proximal Angle",
-      state[0].getRotation().getDegrees()
-    );
-    SmartDashboard.putNumber(
-      "Distal Angle",
-      state[1].getRotation().getDegrees()
-    );
-    SmartDashboard.putNumber("Proximal X ", state[0].getX());
-    SmartDashboard.putNumber("Proximal Y ", state[0].getY());
-    SmartDashboard.putNumber("Distal X", state[1].getX());
-    SmartDashboard.putNumber("Distal Y", state[1].getY());
-    SmartDashboard.putNumber(
-      "Drift",
-      Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) -
-      state[0].getRotation().getDegrees()
-    );
-    SmartDashboard.putNumber("Resets", dResets);
-  }
-
-  @Override
-  public void run() {
-    if (mControlState == ControlState.OPEN_LOOP) {
-      mLowerLeader.set(mLowerPercentOut);
-      mUpperLeader.set(mUpperPercentOut);
-    } else if (mControlState == ControlState.CLOSED_LOOP) {
-      mLowerPIDController.setReference(
-        mLowerDesiredPosition,
-        ControlType.kSmartMotion,
-        ArmConstants.LOWER_SMART_MOTION_SLOT,
-        0,
-        ArbFFUnits.kPercentOut
-      );
-      mUpperPIDController.setReference(
-        mUpperDesiredPosition,
-        ControlType.kSmartMotion,
-        ArmConstants.UPPER_SMART_MOTION_SLOT,
-        0,
-        ArbFFUnits.kPercentOut
-      );
+    public static Arm getInstance() {
+        if (instance == null) {
+            instance = new Arm();
+        }
+        return instance;
     }
-  }
 
-  @Override
-  public void stop() {
-    mLowerLeader.stopMotor();
-    mUpperLeader.stopMotor();
-  }
-
-  @Override
-  public void zero() {}
-
-  private void configLowerSparkMax() {
-    mLowerLeader.setIdleMode(IdleMode.kBrake);
-    mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
-    mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
-    mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
-    // mLowerForwardLimitSwitch.enableLimitSwitch(true);
-    // mLowerReverseLimitSwitch.enableLimitSwitch(true);
-
-    mLowerAbsoluteEncoder.setInverted(ArmConstants.ABSOLUTE_ENCODER_INVERSION);
-    mLowerAbsoluteEncoder.setPositionConversionFactor(
-      ArmConstants.LOWER_ABS_POSITION_CONVERSION_FACTOR
-    );
-    mLowerAbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
-
-    mLowerPIDController.setFeedbackDevice(mLowerEncoder);
-    mLowerPIDController.setPositionPIDWrappingEnabled(true);
-    mLowerPIDController.setPositionPIDWrappingMinInput(
-      ArmConstants.PID_WRAPPING_MIN
-    );
-    mLowerPIDController.setPositionPIDWrappingMinInput(
-      ArmConstants.PID_WRAPPING_MAX
-    );
-    mLowerPIDController.setFF(
-      ArmConstants.LOWER_KF,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setP(
-      ArmConstants.LOWER_KP,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setI(
-      ArmConstants.LOWER_KI,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setD(
-      ArmConstants.LOWER_KD,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setSmartMotionAccelStrategy(
-      AccelStrategy.kTrapezoidal,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setSmartMotionAllowedClosedLoopError(
-      ArmConstants.LOWER_MIN_ERROR,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setSmartMotionMinOutputVelocity(
-      ArmConstants.LOWER_MIN_VEL,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setSmartMotionMaxVelocity(
-      ArmConstants.LOWER_MAX_VEL,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-    mLowerPIDController.setSmartMotionMaxAccel(
-      ArmConstants.LOWER_MAX_ACCEL,
-      ArmConstants.LOWER_SMART_MOTION_SLOT
-    );
-  }
-
-  private void configUpperSparkMax() {
-    mUpperLeader.setIdleMode(IdleMode.kBrake);
-    mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
-    mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
-    mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
-    // mUpperEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
-    // mUpperEncoder.setInverted(ArmConstants.UPPER_ENCODER_INVERSION);
-    mUpperPIDController.setFeedbackDevice(mUpperEncoder);
-    mUpperPIDController.setPositionPIDWrappingEnabled(true);
-    mUpperPIDController.setPositionPIDWrappingMinInput(
-      ArmConstants.PID_WRAPPING_MIN
-    );
-    mUpperPIDController.setPositionPIDWrappingMinInput(
-      ArmConstants.PID_WRAPPING_MAX
-    );
-    mUpperPIDController.setFF(
-      ArmConstants.UPPER_KF,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setP(
-      ArmConstants.UPPER_KP,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setI(
-      ArmConstants.UPPER_KI,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setD(
-      ArmConstants.UPPER_KD,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setSmartMotionAccelStrategy(
-      AccelStrategy.kTrapezoidal,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setSmartMotionAllowedClosedLoopError(
-      ArmConstants.UPPER_MIN_ERROR,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setSmartMotionMinOutputVelocity(
-      ArmConstants.UPPER_MIN_VEL,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setSmartMotionMaxVelocity(
-      ArmConstants.UPPER_MAX_VEL,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-    mUpperPIDController.setSmartMotionMaxAccel(
-      ArmConstants.UPPER_MAX_ACCEL,
-      ArmConstants.UPPER_SMART_MOTION_SLOT
-    );
-  }
-
-  public void setArmRampRate(double val) {
-    mUpperLeader.setClosedLoopRampRate(val);
-    mLowerLeader.setClosedLoopRampRate(val);
-  }
-
-  public void moveArm(double lowerOut, double upperOut) {
-    mControlState = ControlState.OPEN_LOOP;
-    mLowerPercentOut = lowerOut;
-    mUpperPercentOut = upperOut;
-  }
-
-  public void moveToAngle(double lowerAngle, double upperAngle) {
-    mControlState = ControlState.CLOSED_LOOP;
-    mLowerDesiredPosition = (90 - lowerAngle) / ArmConstants.TICKS_TO_DEGREES;
-    mUpperDesiredPosition = -upperAngle / ArmConstants.TICKS_TO_DEGREES;
-  }
-
-  public Pose2d[] getState() {
-    return state;
-  }
-
-  // TODO: Add Kalman Filter to sanity check here:
-  public Rotation2d lowerSanityCheck(Rotation2d abs, Rotation2d rel) {
-    if (
-      Math.abs(rel.minus(abs).getDegrees()) > driftTolerance &&
-      abs.getRadians() <= Math.PI &&
-      abs.getRadians() >= 0
-    ) {
-      mLowerEncoder.setPosition(
-        Rotation2d.fromDegrees(90).minus(abs).getDegrees() /
-        ArmConstants.TICKS_TO_DEGREES
-      );
-      dResets++;
-      return abs;
+    private enum ControlState {
+        OPEN_LOOP, CLOSED_LOOP
     }
-    return rel;
-  }
 
-  // TODO: Add Kalman Filter to sanity check here:
-  public Rotation2d upperSanityCheck(Rotation2d abs, Rotation2d rel) {
-    if (Math.abs(abs.minus(rel).getDegrees()) > driftTolerance) {
-      mUpperEncoder.setPosition(
-        abs.unaryMinus().getDegrees() / ArmConstants.TICKS_TO_DEGREES
-      );
-      return abs;
+    @Override
+    public void onInit() {
+        mLowerLeader.restoreFactoryDefaults();
+        mLowerFollower.restoreFactoryDefaults();
+        mUpperLeader.restoreFactoryDefaults();
+        mUpperFollower.restoreFactoryDefaults();
+
+        mLowerFollower.follow(mLowerLeader, false);
+        mUpperFollower.follow(mUpperLeader, false);
+
+        configLowerSparkMax();
+        configUpperSparkMax();
+
+        zero();
+        stage = 0;
+        wrist.onInit();
     }
-    return rel;
-  }
 
-  public double[] forKin(Rotation2d[] q) {
-    double[] pos = new double[state.length * 2];
+    @Override
+    public void onStart(double timestamp) {
+    }
 
-    // Proximal Position
-    pos[0] = ArmConstants.LOWER_ARM_LENGTH * q[0].getCos();
-    pos[1] = ArmConstants.LOWER_ARM_LENGTH * q[0].getSin();
+    @Override
+    public void update(double timestamp) {
+        // Proximal Angle Update
+        q[0] = Rotation2d.fromDegrees(90).minus(Rotation2d
+                .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES));
+        // Distal Angle Update
+        q[1] = Rotation2d
+                .fromDegrees(90 + q[0].getDegrees() - mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                .unaryMinus();
 
-    // Distal Position
-    pos[2] = pos[0] + ArmConstants.UPPER_ARM_LENGTH * q[0].plus(q[1]).getCos();
-    pos[3] = pos[1] + ArmConstants.UPPER_ARM_LENGTH * q[0].plus(q[1]).getSin();
+        // Absolute Encoder Sanity Checks
+        // Rotation2d[] q = {
+        // Rotation2d.fromDegrees(90).minus(Rotation2d
+        // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)),
+        // lowerSanityCheck(
+        // Rotation2d.fromRadians(mLowerAbsoluteEncoder.getPosition()),
+        // Rotation2d.fromDegrees(90).minus(Rotation2d
+        // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
+        // upperSanityCheck(
+        // Rotation2d.fromDegrees(mUpperEncoder.getPosition()
+        // *ArmConstants.TICKS_TO_DEGREES)
+        // .unaryMinus(),
+        // Rotation2d.fromDegrees(mUpperEncoder.getPosition() *
+        // ArmConstants.TICKS_TO_DEGREES)
+        // .unaryMinus()) };
 
-    return pos;
-  }
+        state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
+        state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-  public double[] invKin(double[] target) {
-    // Position of target end-effector state
-    double radius_sq = target[0] * target[0] + target[1] * target[1];
-    double radius = Math.sqrt(radius_sq);
+        // Link Angles
+        SmartDashboard.putNumber("Proximal Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
+        SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
+        SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
 
-    // Angle of target State
-    double theta = Math.atan2(target[1], target[0]);
+        // Link Positions
+        SmartDashboard.putNumber("Proximal X ", state[0].getX());
+        SmartDashboard.putNumber("Proximal Y ", state[0].getY());
+        SmartDashboard.putNumber("Distal X", state[1].getX());
+        SmartDashboard.putNumber("Distal Y", state[1].getY());
+        SmartDashboard.putNumber("Drift",
+                Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90 - state[0].getRotation().getDegrees());
+        SmartDashboard.putNumber("Resets", dResets);
 
-    // Use law of cosines to compute elbow angle
-    double elbow_supplement = 0.0;
-    double acosarg =
-      (
-        radius_sq -
-        ArmConstants.LOWER_ARM_LENGTH *
-        ArmConstants.LOWER_ARM_LENGTH -
-        ArmConstants.UPPER_ARM_LENGTH *
-        ArmConstants.UPPER_ARM_LENGTH
-      ) /
-      (-2 * ArmConstants.LOWER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH);
-    if (acosarg < -1.0) elbow_supplement = Math.PI; else if (
-      acosarg > 1.0
-    ) elbow_supplement = 0.0; else elbow_supplement = Math.acos(acosarg);
+        SmartDashboard.putNumber("Wrist Rotations", wrist.getRotations());
+        SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
 
-    // Use law of sines to compute angle at the bottom vertex of the triangle
-    // defined by the links
-    double alpha = 0;
-    if (radius > 0.0) alpha =
-      Math.asin(
-        ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius
-      ); else alpha = 0.0;
+        // Two Pronged Movement
+        if (stage > 0) {
+            // System.out.println(Math.abs(state[1].getX() - xWaypointPositions[stage -
+            // 1]));
+            // System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage -
+            // 1]));
 
-    // Compute the two solutions with opposite elbow sign
-    double[] s1 = {
-      Math.toDegrees(theta - alpha),
-      Math.toDegrees(Math.PI - elbow_supplement),
-    };
-    double[] s2 = {
-      Math.toDegrees(theta + alpha),
-      Math.toDegrees(elbow_supplement - Math.PI),
-    };
+            // Check for Intermediate Error and Proceed to Staged Target
+            if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
+                    && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.1) {
+                // Stage Check: Within Range, Proceed to Following Stage
+                if (stage < mLowerWaypointPositions.length) {
+                    moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]);
+                    System.out.println("Moving to point");
+                    stage++;
+                    stage %= xWaypointPositions.length;
+                }
+            }
+        }
+    }
 
-    // Check for wacko solutions
-    if (
-      (Math.signum(s1[0]) > 90 && Math.signum(s1[1]) > 0) ||
-      (Math.signum(s1[0]) < 90 && Math.signum(s1[1]) < 0)
-    ) {
-      return s2;
-    } else return s1;
-    // Compare elbow angle solutions, find closest angle to move to
-    // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
-    // .abs(s2[0] - state[0].getRotation().getDegrees())) {
-    // return s1;
-    // } else
-    // return s2;
+    @Override
+    public void run() {
+        if (mControlState == ControlState.OPEN_LOOP) {
+            if (stage > 0) {
+                mLowerLeader.stopMotor();
+                mUpperLeader.stopMotor();
+                stage = 0;
+            }
+            mLowerLeader.set(mLowerPercentOut);
+            mUpperLeader.set(mUpperPercentOut);
+        } else if (mControlState == ControlState.CLOSED_LOOP) {
+            mLowerPIDController.setReference(
+                    mLowerDesiredPosition,
+                    ControlType.kSmartMotion,
+                    ArmConstants.LOWER_SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
+            mUpperPIDController.setReference(
+                    mUpperDesiredPosition,
+                    ControlType.kSmartMotion,
+                    ArmConstants.UPPER_SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
+        }
+        wrist.run();
+    }
 
-  }
+    @Override
+    public void stop() {
+        mLowerLeader.stopMotor();
+        mUpperLeader.stopMotor();
+        stage = 0;
+        wrist.stop();
+    }
+
+    @Override
+    public void zero() {
+        // mLowerEncoder.setPosition(0);
+        // mUpperEncoder.setPosition(0);
+        wrist.zero();
+    }
+
+    private void configLowerSparkMax() {
+        mLowerLeader.setIdleMode(IdleMode.kBrake);
+        mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
+        mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
+        mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+        mLowerForwardLimitSwitch.enableLimitSwitch(true);
+        mLowerReverseLimitSwitch.enableLimitSwitch(true);
+
+        mLowerAbsoluteEncoder.setInverted(ArmConstants.LOWER_ABSOLUTE_ENCODER_INVERSION);
+        mLowerAbsoluteEncoder.setPositionConversionFactor(ArmConstants.LOWER_ABS_POSITION_CONVERSION_FACTOR);
+        mLowerAbsoluteEncoder.setZeroOffset(ArmConstants.LOWER_ZERO_OFFSET);
+
+        mLowerPIDController.setFeedbackDevice(mLowerEncoder);
+        mLowerPIDController.setPositionPIDWrappingEnabled(true);
+        mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
+        mLowerPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MAX);
+        mLowerPIDController.setFF(ArmConstants.LOWER_KF, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setP(ArmConstants.LOWER_KP, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setI(ArmConstants.LOWER_KI, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setD(ArmConstants.LOWER_KD, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.LOWER_MIN_ERROR,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMinOutputVelocity(ArmConstants.LOWER_MIN_VEL,
+                ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMaxVelocity(ArmConstants.LOWER_MAX_VEL, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMaxAccel(ArmConstants.LOWER_MAX_ACCEL, ArmConstants.LOWER_SMART_MOTION_SLOT);
+
+        // Periodic Frame Period
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        mLowerLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+    }
+
+    private void configUpperSparkMax() {
+        mUpperLeader.setIdleMode(IdleMode.kBrake);
+        mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
+        mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
+        mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+        mUpperForwardLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
+        mUpperReverseLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
+
+        mUpperAbsoluteEncoder.setInverted(ArmConstants.UPPER_ABSOLUTE_ENCODER_INVERSION);
+        mUpperAbsoluteEncoder.setPositionConversionFactor(ArmConstants.UPPER_ABS_POSITION_CONVERSION_FACTOR);
+        mUpperAbsoluteEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
+
+        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
+        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse,
+                (float) ArmConstants.UPPER_REV_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward,
+                (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
+
+        mUpperPIDController.setFeedbackDevice(mUpperEncoder);
+        mUpperPIDController.setPositionPIDWrappingEnabled(true);
+        mUpperPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MIN);
+        mUpperPIDController.setPositionPIDWrappingMinInput(ArmConstants.PID_WRAPPING_MAX);
+        mUpperPIDController.setFF(ArmConstants.UPPER_KF, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setP(ArmConstants.UPPER_KP, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setI(ArmConstants.UPPER_KI, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setD(ArmConstants.UPPER_KD, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionAllowedClosedLoopError(ArmConstants.UPPER_MIN_ERROR,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMinOutputVelocity(ArmConstants.UPPER_MIN_VEL,
+                ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxVelocity(ArmConstants.UPPER_MAX_VEL, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxAccel(ArmConstants.UPPER_MAX_ACCEL, ArmConstants.UPPER_SMART_MOTION_SLOT);
+
+        // Periodic Frame Period
+        mUpperLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 20);
+        mUpperLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
+        mUpperLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
+    }
+
+    public void setArmRampRate(double val) {
+        mUpperLeader.setClosedLoopRampRate(val);
+        mLowerLeader.setClosedLoopRampRate(val);
+    }
+
+    public Pose2d[] getState() {
+        return state;
+    }
+
+    public Wrist getWrist() {
+        return wrist;
+    }
+
+    /**
+     * Converts angle such that result is bound between -2pi and 0
+     */
+    public double angleConv(double org) {
+        if (Math.signum(org) > 0)
+            return -360 + org;
+        else
+            return org;
+    }
+
+    /**
+     * Open loop Arm Control
+     */
+    public void moveArm(double lowerOut, double upperOut) {
+        mControlState = ControlState.OPEN_LOOP;
+        mLowerPercentOut = lowerOut;
+        mUpperPercentOut = upperOut;
+    }
+
+    /**
+     * Closed loop Arm + Wrist Control (Target Angle Array, Target Wrist Angle)
+     */
+    public void moveToAngle(double targetAngles[], double wristAngle) {
+        mControlState = ControlState.CLOSED_LOOP;
+        mLowerDesiredPosition = (90 - targetAngles[0]) / ArmConstants.TICKS_TO_DEGREES;
+        mUpperDesiredPosition = (90 + targetAngles[0] + targetAngles[1]) / ArmConstants.TICKS_TO_DEGREES;
+
+        wrist.setDesiredAngle(calculateWristRelativeAngle(wristAngle));
+    }
+
+    /**
+     * Closed loop Arm + Wrist Control (Target Lower Angle, Target Upper Angle,
+     * Associated Parallel Wrist Angle)
+     */
+    public void moveToAngle(double lowerAngle, double upperAngle) {
+        mControlState = ControlState.CLOSED_LOOP;
+        double targetWristAngle = calculateWristAbsoluteAngle(wrist.getAngle().getDegrees());
+        double[] targetAngles = { lowerAngle, upperAngle };
+        moveToAngle(targetAngles, targetWristAngle);
+    }
+
+    public double calculateWristAbsoluteAngle(double relativeAngle) {
+        return relativeAngle - (mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES);
+    }
+
+    public double calculateWristRelativeAngle(double targetAngle) {
+        double relativeAngle = targetAngle - (mUpperDesiredPosition * ArmConstants.TICKS_TO_DEGREES);
+        System.out.println(relativeAngle);
+        return relativeAngle;
+    }
+
+    public void moveToPoint(double target_x, double target_y, double wristAngle) {
+        mControlState = ControlState.CLOSED_LOOP;
+        moveToAngle(invKin(target_x, target_y), wristAngle);
+    }
+
+    // TODO: Add Kalman Filter to sanity check here:
+    public Rotation2d lowerSanityCheck(Rotation2d abs, Rotation2d rel) {
+        if (Math.abs(rel.minus(abs).getDegrees()) > driftTolerance && abs.getRadians() <= Math.PI
+                && abs.getRadians() >= 0) {
+            mLowerEncoder
+                    .setPosition(Rotation2d.fromDegrees(90).minus(abs).getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+            dResets++;
+            return abs;
+        }
+        return rel;
+    }
+
+    // TODO: Add Kalman Filter to sanity check here:
+    public Rotation2d upperSanityCheck(Rotation2d abs, Rotation2d rel) {
+        if (Math.abs(abs.minus(rel).getDegrees()) > driftTolerance) {
+            mUpperEncoder.setPosition(abs.unaryMinus().getDegrees() / ArmConstants.TICKS_TO_DEGREES);
+            return abs;
+        }
+        return rel;
+    }
+
+    public double[] forKin(Rotation2d[] q) {
+        double[] pos = new double[state.length * 2];
+
+        // Proximal Position
+        pos[0] = ArmConstants.LOWER_ARM_LENGTH * q[0].getCos();
+        pos[1] = ArmConstants.LOWER_ARM_LENGTH * q[0].getSin();
+
+        // Distal Position
+        pos[2] = pos[0] + ArmConstants.UPPER_ARM_LENGTH
+                * q[0].plus(q[1]).getCos();
+        pos[3] = pos[1] + ArmConstants.UPPER_ARM_LENGTH
+                * q[0].plus(q[1]).getSin();
+
+        return pos;
+    }
+
+    public double[] invKin(double target_x, double target_y) {
+        // Position of target end-effector state
+        double radius_sq = target_x * target_x + target_y * target_y;
+        double radius = Math.sqrt(radius_sq);
+
+        // Angle of target State
+        double theta = Math.atan2(target_y, target_x);
+
+        // Use law of cosines to compute elbow angle
+        double elbow_supplement = 0.0;
+        double acosarg = (radius_sq - ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH)
+                / (-2 * ArmConstants.LOWER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH);
+        if (acosarg < -1.0)
+            elbow_supplement = Math.PI;
+        else if (acosarg > 1.0)
+            elbow_supplement = 0.0;
+        else
+            elbow_supplement = Math.acos(acosarg);
+
+        // Use law of sines to compute angle at the bottom vertex of the triangle
+        // defined by the links
+        double alpha = 0;
+        if (radius > 0.0)
+            alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
+        else
+            alpha = 0.0;
+
+        // Compute the two solutions with opposite elbow sign
+        double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
+        double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
+
+        // Check for wacko solutions
+        if (Math.signum(s1[0]) < 0 || s1[0] < 50 || s1[0] > 140) {
+            return s2;
+        } else
+            return s1;
+
+        // Compare elbow angle solutions, find closest angle to move to
+        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
+        // .abs(s2[0] - state[0].getRotation().getDegrees())) {
+        // return s1;
+        // } else
+        // return s2;
+    }
+
+    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist, double target_x, double target_y,
+            double target_wrist) {
+        stage = 1;
+        xWaypointPositions[0] = inter_x;
+        xWaypointPositions[1] = target_x;
+        yWaypointPositions[0] = inter_y;
+        yWaypointPositions[1] = target_y;
+        wristWaypointPositions[0] = inter_wrist;
+        wristWaypointPositions[1] = target_wrist;
+        moveToPoint(inter_x, inter_y, inter_wrist);
+    }
+
+    public void goHome() {
+        if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) < 0) {
+            moveTwoPronged(-0.5, 0.25, 0, 0, 0.15, 0);
+        } else if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) > 0) {
+            moveTwoPronged(0.5, 0.25, 0, 0, 0.15, 0);
+        } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
+            System.out.println("Safety one");
+            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
+        } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
+            System.out.println("Safety two");
+        } else {
+            double[] safetyAngles = { 90, -180 };
+            moveToAngle(safetyAngles, 0);
+        }
+    }
 }

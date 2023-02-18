@@ -66,27 +66,27 @@ public class DoubleJointedArm {
     // Define Velocity Product Term
     double hC = -m2 * l1 * r2 * Math.sin(theta2);
     double[][] C = {
-      { hC * omega2, hC * omega1 + hC * omega2 },
-      { -hC * omega1, 0 },
+        { hC * omega2, hC * omega1 + hC * omega2 },
+        { -hC * omega1, 0 },
     };
 
     // Define Gravity Term
     double hG = g * Math.cos(theta1 + theta2) * m2 * r2;
     double[][] G = {
-      { g * Math.cos(theta1) * (m1 * r1 + m2 * l1) + hG },
-      { hG },
+        { g * Math.cos(theta1) * (m1 * r1 + m2 * l1) + hG },
+        { hG },
     };
 
     // Define B Matrix
     double[][] B = {
-      { gr1 * n1 * (t_s / I_s) / (12 / I_s), 0 },
-      { 0, gr2 * n2 * (t_s / I_s) / (12 / I_s) },
+        { gr1 * n1 * (t_s / I_s) / (12 / I_s), 0 },
+        { 0, gr2 * n2 * (t_s / I_s) / (12 / I_s) },
     };
 
     // Define Kb Matrix
     double[][] Kb = {
-      { gr1 * gr1 * n1 * (t_s / I_s) / (w_f / I_s), 0 },
-      { 0, gr2 * gr2 * n2 * (t_s / I_s) / (w_f / I_s) },
+        { gr1 * gr1 * n1 * (t_s / I_s) / (w_f / I_s), 0 },
+        { 0, gr2 * gr2 * n2 * (t_s / I_s) / (w_f / I_s) },
     };
 
     return new double[][][] { M, C, G, B, Kb };
@@ -103,26 +103,26 @@ public class DoubleJointedArm {
     double[][][] dM = getDynamicsMatrices(states);
 
     Matrix<N2, N2> M = new MatBuilder<N2, N2>(Nat.N2(), Nat.N2())
-      .fill(dM[0][0][0], dM[0][0][0], dM[0][1][0], dM[0][1][1]);
+        .fill(dM[0][0][0], dM[0][0][0], dM[0][1][0], dM[0][1][1]);
     Matrix<N2, N2> C = new MatBuilder<N2, N2>(Nat.N2(), Nat.N2())
-      .fill(dM[1][0][0], dM[1][0][1], dM[1][1][0], dM[1][1][1]);
+        .fill(dM[1][0][0], dM[1][0][1], dM[1][1][0], dM[1][1][1]);
     Matrix<N2, N1> G = new MatBuilder<N2, N1>(Nat.N2(), Nat.N1())
-      .fill(dM[2][0][0], dM[2][1][0]);
+        .fill(dM[2][0][0], dM[2][1][0]);
 
     Matrix<N2, N1> omegas = new MatBuilder<N2, N1>(Nat.N2(), Nat.N1())
-      .fill(states[2], states[3]);
+        .fill(states[2], states[3]);
     Matrix<N2, N1> accel = new MatBuilder<N2, N1>(Nat.N2(), Nat.N1())
-      .fill(accels[0][0], accels[1][0]);
+        .fill(accels[0][0], accels[1][0]);
     Matrix<N2, N2> B_inv = new MatBuilder<N2, N2>(Nat.N2(), Nat.N2())
-      .fill(dM[3][0][0], dM[3][0][1], dM[3][1][0], dM[3][1][1]);
+        .fill(dM[3][0][0], dM[3][0][1], dM[3][1][0], dM[3][1][1]);
     Matrix<N2, N2> Kb = new MatBuilder<N2, N2>(Nat.N2(), Nat.N2())
-      .fill(dM[4][0][0], dM[4][0][1], dM[4][1][0], dM[4][1][1]);
+        .fill(dM[4][0][0], dM[4][0][1], dM[4][1][0], dM[4][1][1]);
 
     Matrix<N2, N1> A = M
-      .times(accel)
-      .plus(C.times(omegas))
-      .plus(G)
-      .plus(Kb.times(omegas));
+        .times(accel)
+        .plus(C.times(omegas))
+        .plus(G)
+        .plus(Kb.times(omegas));
 
     return B_inv.times(A);
   }
