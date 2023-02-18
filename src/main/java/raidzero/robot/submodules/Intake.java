@@ -74,6 +74,7 @@ public class Intake extends Submodule {
 
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
+            mDesiredPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
                     mDesiredPosition,
@@ -81,6 +82,8 @@ public class Intake extends Submodule {
                     IntakeConstants.PID_SLOT,
                     0,
                     ArbFFUnits.kPercentOut);
+        } else {
+            mControlState = ControlState.CLOSED_LOOP;
         }
     }
 
@@ -95,10 +98,12 @@ public class Intake extends Submodule {
     }
 
     public void setPercentSpeed(double speed) {
-        mControlState = ControlState.OPEN_LOOP;
-        mPercentOut = speed;
-        inOpenLoop = true;
-        setFinalTarget();
+        if (Math.abs(speed)<0.2){
+            mControlState = ControlState.OPEN_LOOP;
+            mPercentOut = speed;
+        }
+        // inOpenLoop = true;
+        // setFinalTarget();
     }
 
     
@@ -110,22 +115,22 @@ public class Intake extends Submodule {
         inOpenLoop = false;
     }
 
-    public void setFinalTarget() {
-        finalTarget = mEncoder.getPosition();
-    }
+    // public void setFinalTarget() {
+    //     finalTarget = mEncoder.getPosition();
+    // }
 
-    public void setDesiredPosition(double position) {
-        mControlState = ControlState.CLOSED_LOOP;
-        mDesiredPosition = position;
-    }
+    // public void setDesiredPosition(double position) {
+    //     mControlState = ControlState.CLOSED_LOOP;
+    //     mDesiredPosition = position;
+    // }
 
-    public double getPosition() {
-        return mEncoder.getPosition();
-    }
+    // public double getPosition() {
+    //     return mEncoder.getPosition();
+    // }
 
-    public double getFinalTarget() {
-        return finalTarget;
-    }
+    // public double getFinalTarget() {
+    //     return finalTarget;
+    // }
 
     private void configIntakeSparkMax() {
         mMotor.restoreFactoryDefaults();

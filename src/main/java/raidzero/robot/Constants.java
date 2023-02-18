@@ -244,6 +244,7 @@ public class Constants {
                 public static final int UPPER_SMART_MOTION_SLOT = 0;
 
                 public static final double TICKS_TO_DEGREES = 2.45;
+                public static final double LOWER_MAX_ANGLE = 52.0;
                 public static final double UPPER_FWD_SOFTLIMIT = 70;
                 public static final double UPPER_REV_SOFTLIMIT = -70;
                 public static final double X_EXTENSION_LIMIT = 1.4;

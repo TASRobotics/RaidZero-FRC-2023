@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import raidzero.robot.Constants;
 import raidzero.robot.submodules.DoubleJointedArm;
 import raidzero.robot.submodules.Wrist;
+import raidzero.robot.utils.MathTools;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
@@ -420,6 +421,11 @@ public class Arm extends Submodule {
     }
 
     public double[] invKin(double target_x, double target_y) {
+        //Prevent upper arm from crossing the y-axis
+        return invKin(target_x, target_y, q[1].getRadians()>-180.0);
+    }
+
+    public double[] invKin(double target_x, double target_y, boolean positiveElbow) {
         // Position of target end-effector state
         double radius_sq = target_x * target_x + target_y * target_y;
         double radius = Math.sqrt(radius_sq);
@@ -439,23 +445,37 @@ public class Arm extends Submodule {
         else
             elbow_supplement = Math.acos(acosarg);
 
+        //Alternative
+        double abs_elbow_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH, ArmConstants.UPPER_ARM_LENGTH, radius);
+        double lower_interior_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius, ArmConstants.UPPER_ARM_LENGTH);
+
+        //Calculate the two possible lower arm angles
+        double lower_negative = theta - lower_interior_angle > ArmConstants.LOWER_MAX_ANGLE ? theta - lower_interior_angle: theta + lower_interior_angle;
+        double lower_positive = theta + lower_interior_angle > 180 - ArmConstants.LOWER_MAX_ANGLE ? theta - lower_interior_angle: theta + lower_interior_angle;
+
+        //Return the solution given where the elbow is:  Note, if there are not two solutions, the elbow
+        //will go to the only possible location
+        double[] solution = positiveElbow ? new double[] {lower_positive, angleConv(Math.toDegrees(Math.PI - abs_elbow_angle))} : new double[] {lower_negative, angleConv(Math.toDegrees(abs_elbow_angle - Math.PI))} ;
+        //Compare the motion of the upper arm two solutions- we want to avoid having it cross the midline if possible
+        
+        return solution;
         // Use law of sines to compute angle at the bottom vertex of the triangle
         // defined by the links
-        double alpha = 0;
-        if (radius > 0.0)
-            alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
-        else
-            alpha = 0.0;
+        // double alpha = 0;
+        // if (radius > 0.0)
+        //     alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
+        // else
+        //     alpha = 0.0;
 
-        // Compute the two solutions with opposite elbow sign
-        double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
-        double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
+        // // Compute the two solutions with opposite elbow sign
+        // double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
+        // double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
-        // Check for wacko solutions
-        if (Math.signum(s1[0]) < 0) {
-            return s2;
-        } else
-            return s1;
+        // // Check for wacko solutions
+        // if (Math.signum(s1[0]) < 0) {
+        //     return s2;
+        // } else
+        //     return s1;
 
         // Compare elbow angle solutions, find closest angle to move to
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
@@ -463,6 +483,12 @@ public class Arm extends Submodule {
         // return s1;
         // } else
         // return s2;
+    }
+
+    private double calcSpeedRatio(){
+        double radius_sq = state[1].getX()*state[1].getX()+state[1].getY()*state[1].getY();
+        double square_diff = ArmConstants.LOWER_ARM_LENGTH*ArmConstants.LOWER_ARM_LENGTH - ArmConstants.UPPER_ARM_LENGTH*ArmConstants.UPPER_ARM_LENGTH;
+        return ArmConstants.UPPER_ARM_LENGTH/(2*ArmConstants.LOWER_ARM_LENGTH)*(radius_sq)/(radius_sq+square_diff);
     }
 
     public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist, double target_x, double target_y,
@@ -478,20 +504,17 @@ public class Arm extends Submodule {
     }
 
     public void goHome() {
-        if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) < 0) {
-            moveTwoPronged(-0.5, 0.25, 0, 0, 0.15, 0);
-        } else if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) > 0) {
-            moveTwoPronged(0.5, 0.25, 0, 0, 0.15, 0);
-        } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
-            System.out.println("Safety one");
+        if (state[1].getY() < 0.15) {
+            moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
+        } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
+            // System.out.println("Safety one");
             moveTwoPronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, -180, 0.0, 0.15, 0);
             // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
             // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
             // 0.0, 0.15, 0);
             // System.out.println("Safety two");
         } else {
-            double[] safetyAngles = { 90, -180 };
-            moveToAngle(safetyAngles, 0);
+            moveToAngle(new double[] { 90, -180 } , 0);
         }
     }
 }

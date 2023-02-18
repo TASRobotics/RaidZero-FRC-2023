@@ -111,14 +111,15 @@ public class Teleop {
             mode = 0;
         }
 
-        if (p.getRightTriggerAxis() - p.getLeftTriggerAxis() >= 0.2) {
-            arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
-        } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2) {
-            arm.getWrist().getIntake().noOpenLoop();
-            System.out.println("stop");
-        } else if (!arm.getWrist().getIntake().getOpenLoop()) {
-            arm.getWrist().getIntake().setDesiredPosition(arm.getWrist().getIntake().getFinalTarget());
-        }
+        arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        // if (p.getRightTriggerAxis() - p.getLeftTriggerAxis() >= 0.2) {
+        //     arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
+        // } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2) {
+        //     arm.getWrist().getIntake().noOpenLoop();
+        //     System.out.println("stop");
+        // } else if (!arm.getWrist().getIntake().getOpenLoop()) {
+        //     arm.getWrist().getIntake().setDesiredPosition(arm.getWrist().getIntake().getFinalTarget());
+        // }
 
     }
 
