@@ -55,14 +55,17 @@ public class Wrist extends Submodule {
     private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
+    private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
 
-    private Rotation2d wristAngle = new Rotation2d();
+    private Rotation2d wristAngle = new Rotation2d();   
 
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
     private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor
             .getForwardLimitSwitch(Constants.WristConstants.LIMITSWITCHPOLARITY);
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
+
+    private double intakePercentOut = 0;
 
     @Override
     public void onInit() {
@@ -97,6 +100,7 @@ public class Wrist extends Submodule {
 
     @Override
     public void run() {
+        intakeMotor.set(intakePercentOut);
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -134,6 +138,10 @@ public class Wrist extends Submodule {
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
+    }
+
+    public void runIntake(double speed){
+        intakePercentOut = speed;
     }
 
     /**
@@ -174,6 +182,12 @@ public class Wrist extends Submodule {
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+
+        intakeMotor.restoreFactoryDefaults();
+        intakeMotor.setIdleMode(IdleMode.kBrake);
+        intakeMotor.setInverted(WristConstants.INVERSION);
+        intakeMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
+        intakeMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         inZoneLimitSwitch.enableLimitSwitch(false);
         // mMotor.enableSoftLimit(SoftLimitDirection.kForward,

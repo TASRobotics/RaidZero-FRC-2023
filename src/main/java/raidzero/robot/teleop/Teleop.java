@@ -10,6 +10,7 @@ import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
+import raidzero.robot.submodules.Wrist;
 import raidzero.robot.utils.JoystickUtils;
 import edu.wpi.first.math.MathUtil;
 
@@ -20,6 +21,7 @@ public class Teleop {
     private static XboxController p2 = new XboxController(1);
 
     private static final Arm arm = Arm.getInstance();
+    private static final Wrist wrist = Wrist.getInstance();
     private double rampRate = 0.0;
 
     public static Teleop getInstance() {
@@ -53,6 +55,7 @@ public class Teleop {
         SmartDashboard.putNumber("Target EE X", target[0]);
         SmartDashboard.putNumber("Target EE Y", target[1]);
 
+        
         // arm.setArmRampRate(rampRate);
 
         if (p.getRightBumperPressed())
@@ -103,7 +106,8 @@ public class Teleop {
             arm.goHome();
             mode = 0;
         }
-
+        wrist.runIntake(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        
     }
 
     private void p2Loop(XboxController p) {

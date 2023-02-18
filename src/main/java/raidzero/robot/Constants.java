@@ -273,6 +273,7 @@ public class Constants {
 
         public static final class WristConstants {
                 public static final int ID = 15;
+                public static final int INTAKEID = 16;
 
                 public static final boolean INVERSION = true;
 
