@@ -285,8 +285,10 @@ public class Arm extends Submodule {
 
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) ArmConstants.UPPER_REV_SOFTLIMIT);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse,
+                (float) ArmConstants.UPPER_REV_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward,
+                (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
 
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
         mUpperPIDController.setPositionPIDWrappingEnabled(true);
@@ -483,9 +485,10 @@ public class Arm extends Submodule {
         } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one");
             moveTwoPronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, -180, 0.0, 0.15, 0);
-        // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-        //     moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
-        //     System.out.println("Safety two");
+            // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+            // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
+            // 0.0, 0.15, 0);
+            // System.out.println("Safety two");
         } else {
             double[] safetyAngles = { 90, -180 };
             moveToAngle(safetyAngles, 0);

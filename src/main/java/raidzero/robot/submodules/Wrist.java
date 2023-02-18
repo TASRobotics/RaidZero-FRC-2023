@@ -21,7 +21,9 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
+import raidzero.robot.submodules.Intake;
 import raidzero.robot.Constants.WristConstants;
+import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Wrist extends Submodule {
@@ -56,6 +58,7 @@ public class Wrist extends Submodule {
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
     // private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
+    private final Intake intake = Intake.getInstance();
 
     private Rotation2d wristAngle = new Rotation2d();
 
@@ -65,7 +68,6 @@ public class Wrist extends Submodule {
             .getForwardLimitSwitch(Constants.WristConstants.LIMITSWITCHPOLARITY);
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
-    private double intakePercentOut = 0;
 
     @Override
     public void onInit() {
@@ -75,6 +77,7 @@ public class Wrist extends Submodule {
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
         limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS); // FIX
                                                                                                              // THIS!!
+        intake.onInit();
     }
 
     @Override
@@ -117,17 +120,21 @@ public class Wrist extends Submodule {
         limitEncoderDataPub.set(limitSwitchEncoderData);
 
         // align();
+
+        intake.run();
     }
 
     @Override
     public void stop() {
         mMotor.stopMotor();
+        intake.stop();
     }
 
     @Override
     public void zero() {
         mEncoder.setPosition(0);
         wristAngle = Rotation2d.fromDegrees(0);
+        intake.zero();
     }
 
     /**
@@ -140,8 +147,8 @@ public class Wrist extends Submodule {
         mPercentOut = speed;
     }
 
-    public void runIntake(double speed) {
-        intakePercentOut = speed;
+    public Intake getIntake() {
+        return intake;
     }
 
     /**

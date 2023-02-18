@@ -116,11 +116,25 @@ public class Constants {
         }
 
         public static final class IntakeConstants {
-                public static final int ID = 0;
+                public static final int ID = 16;
 
                 public static final boolean INVERSION = false;
 
                 public static final int CURRENT_LIMIT = 20;
+                public static final int PID_SLOT = 0;
+                public static final double KF = 0.00005;
+                public static final double KP = 0.0003;
+                public static final double KI = 0.0;
+                public static final double KD = 0.0;
+
+                public static final double MIN_VEL = 0.0;
+                public static final double MAX_VEL = 750.0;
+                public static final double MAX_ACCEL = 350.0;
+                public static final double MIN_ERROR = 0.0;
+
+                public static final double MAXWINDS = 0.6;
+                public static final double PID_WRAPPING_MIN = 0.0;
+                public static final double PID_WRAPPING_MAX = 360.0;
         }
 
         public static final class VisionConstants {
@@ -237,7 +251,6 @@ public class Constants {
 
                 public static final double LOWER_KF = 0.000166;
                 public static final double LOWER_KP = 0.000156;
-                // public static final double UPPER_KP = 0.000106;
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
@@ -247,7 +260,6 @@ public class Constants {
 
                 public static final double UPPER_KF = 0.000166;
                 public static final double UPPER_KP = 0.000156;
-                // public static final double UPPER_KP = 0.000106;
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
