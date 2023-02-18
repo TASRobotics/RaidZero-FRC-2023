@@ -27,7 +27,7 @@ public class TestSequence extends AutoSequence {
             new ParallelAction(Arrays.asList(
                 new DrivePath(mTrajectory), 
                 new SeriesAction(Arrays.asList(
-                    new WaitForEventMarkerAction(mTrajectory, 0, mSwerve.getPathingTime()), 
+                    new WaitForEventMarkerAction(mTrajectory, "deez nuts", mSwerve.getPathingTime()), 
                     new LambdaAction(() -> mIntake.set(0.5)))
                 ))
             )
