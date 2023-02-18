@@ -174,7 +174,7 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
-                public static final double[] HUMAN_PICKUP_STATION = { 0.5, 0.85 };
+                public static final double[] HUMAN_PICKUP_STATION = { 0.55, 1.20 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.9, 0.85 };
                 public static final double[] GRID_HIGH = { 1.3, 1.15 };
@@ -250,7 +250,7 @@ public class Constants {
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
                 public static final double UPPER_MAX_VEL = 1600;
-                public static final double UPPER_MAX_ACCEL = 700;
+                public static final double UPPER_MAX_ACCEL = 800;
                 public static final double UPPER_MIN_ERROR = 0.0;
 
                 // public static final double LOWER_KF = 0.000166;
@@ -302,8 +302,8 @@ public class Constants {
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 500.0;
-                public static final double MAX_ACCEL = 250.0;
+                public static final double MAX_VEL = 700.0;
+                public static final double MAX_ACCEL = 350.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;

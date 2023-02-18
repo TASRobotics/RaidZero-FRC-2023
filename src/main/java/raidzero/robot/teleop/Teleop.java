@@ -2,6 +2,10 @@ package raidzero.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.Matrix;
+
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.Vector;
@@ -12,6 +16,7 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Wrist;
 import raidzero.robot.utils.JoystickUtils;
+import raidzero.robot.wrappers.LazyCANSparkMax;
 import edu.wpi.first.math.MathUtil;
 
 public class Teleop {
@@ -23,6 +28,9 @@ public class Teleop {
     private static final Arm arm = Arm.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private double rampRate = 0.0;
+
+    private final LazyCANSparkMax intake = new LazyCANSparkMax(16, MotorType.kBrushless);
+    private final RelativeEncoder encoder = intake.getEncoder();
 
     public static Teleop getInstance() {
         if (instance == null) {
@@ -72,7 +80,8 @@ public class Teleop {
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                arm.moveTwoPronged(-.05, 1.3, 0, -1.0, 1.3, 0);
+                //arm.moveTwoPronged(-.05, 1.3, 90, -1.0, 1.3, 0);
+                arm.moveTwoPronged(-.05, 1.4, -90, -ArmConstants.HUMAN_PICKUP_STATION[0], ArmConstants.HUMAN_PICKUP_STATION[1], 160);
                 // arm.moveToAngle(90, -180);
             } else if (p.getBButtonPressed()) {
                 arm.moveTwoPronged(-.8, .2, 0, -1.0, 0, 0);
@@ -105,7 +114,8 @@ public class Teleop {
             arm.goHome();
             mode = 0;
         }
-        wrist.runIntake(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        intake.set(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        System.out.println(encoder.getPosition());
         
     }
 

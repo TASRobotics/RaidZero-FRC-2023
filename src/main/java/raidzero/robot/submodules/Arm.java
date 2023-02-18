@@ -450,7 +450,7 @@ public class Arm extends Submodule {
         double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
         // Check for wacko solutions
-        if (Math.signum(s1[0]) < 0 || s1[0] < 50 || s1[0] > 140) {
+        if (Math.signum(s1[0]) < 0) {
             return s2;
         } else
             return s1;
@@ -482,10 +482,10 @@ public class Arm extends Submodule {
             moveTwoPronged(0.5, 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one");
-            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
-        } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
-            System.out.println("Safety two");
+            moveTwoPronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, -180, 0.0, 0.15, 0);
+        // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+        //     moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
+        //     System.out.println("Safety two");
         } else {
             double[] safetyAngles = { 90, -180 };
             moveToAngle(safetyAngles, 0);

@@ -55,7 +55,7 @@ public class Wrist extends Submodule {
     private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
-    private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
+    // private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
 
     private Rotation2d wristAngle = new Rotation2d();   
 
@@ -71,7 +71,7 @@ public class Wrist extends Submodule {
     public void onInit() {
         mMotor.restoreFactoryDefaults();
         configWristSparkMax();
-        zero();
+        // zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
         limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS); // FIX
                                                                                                              // THIS!!
@@ -100,7 +100,7 @@ public class Wrist extends Submodule {
 
     @Override
     public void run() {
-        intakeMotor.set(intakePercentOut);
+        // intakeMotor.set(intakePercentOut);
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -183,11 +183,11 @@ public class Wrist extends Submodule {
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
-        intakeMotor.restoreFactoryDefaults();
-        intakeMotor.setIdleMode(IdleMode.kBrake);
-        intakeMotor.setInverted(WristConstants.INVERSION);
-        intakeMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
-        intakeMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
+        // intakeMotor.restoreFactoryDefaults();
+        // intakeMotor.setIdleMode(IdleMode.kBrake);
+        // intakeMotor.setInverted(WristConstants.INVERSION);
+        // intakeMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
+        // intakeMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         inZoneLimitSwitch.enableLimitSwitch(false);
         // mMotor.enableSoftLimit(SoftLimitDirection.kForward,
