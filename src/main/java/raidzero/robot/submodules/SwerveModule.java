@@ -54,7 +54,7 @@ public class SwerveModule extends Submodule implements Sendable {
         throttle = new LazyTalonFX(throttleId, Constants.CANBUS_STRING);
         initThrottle(throttle);
 
-        //rotorExternalEncoder = new CANCoder(quadrant);
+        // rotorExternalEncoder = new CANCoder(quadrant);
         rotorExternalEncoder = new CANCoder(rotorEncoderId, Constants.CANBUS_STRING);
         rotorExternalEncoder.configFactoryDefault();
         rotorExternalEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360, Constants.TIMEOUT_MS);

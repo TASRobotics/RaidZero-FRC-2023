@@ -285,8 +285,10 @@ public class Arm extends Submodule {
 
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) ArmConstants.UPPER_REV_SOFTLIMIT);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse,
+                (float) ArmConstants.UPPER_REV_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward,
+                (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
 
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
         mUpperPIDController.setPositionPIDWrappingEnabled(true);

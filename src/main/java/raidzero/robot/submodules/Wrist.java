@@ -161,24 +161,6 @@ public class Wrist extends Submodule {
      * 
      * @return current angle
      */
-    public Rotation2d getAngle() {
-        return Rotation2d.fromDegrees(mEncoder.getPosition());
-    }
-
-    /**
-     * Get current wrist velocity
-     * 
-     * @return current velocity
-     */
-    public Rotation2d getVelocity() {
-        return Rotation2d.fromDegrees(mEncoder.getVelocity());
-    }
-
-    /**
-     * Get current wrist angle
-     * 
-     * @return current angle
-     */
     public double getRotations() {
         return mEncoder.getPosition();
     }
