@@ -71,7 +71,7 @@ public class Wrist extends Submodule {
 
     @Override
     public void onInit() {
-        mMotor.restoreFactoryDefaults();
+        // mMotor.restoreFactoryDefaults();
         configWristSparkMax();
         // zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
@@ -184,7 +184,7 @@ public class Wrist extends Submodule {
     }
 
     private void configWristSparkMax() {
-        mMotor.restoreFactoryDefaults();
+        // mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);

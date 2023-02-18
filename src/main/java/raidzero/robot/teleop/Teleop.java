@@ -80,7 +80,7 @@ public class Teleop {
                         ArmConstants.HUMAN_PICKUP_STATION[1], 160);
                 // arm.moveToAngle(90, -180);
             } else if (p.getBButtonPressed()) {
-                arm.moveTwoPronged(-.8, .2, 0, -1.0, 0, 0);
+                arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
                 // arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
                 arm.moveToAngle(110, -250);
