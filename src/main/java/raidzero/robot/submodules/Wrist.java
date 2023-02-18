@@ -105,7 +105,7 @@ public class Wrist extends Submodule {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                    mDesiredAngle/WristConstants.POSITION_CONVERSION_FACTOR,
+                    mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
                     ControlType.kSmartMotion,
                     WristConstants.SMART_MOTION_SLOT,
                     0,
