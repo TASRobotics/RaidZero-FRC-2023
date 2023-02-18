@@ -47,7 +47,7 @@ public class Arm extends Submodule {
 
     // Absolute Encoder Adjustment Constants
     public double drift = 0.0; // degrees
-    public double driftTolerance = 5.0;
+    public double driftTolerance = 10.0;
     public double dResets = 0.0;
 
     // State of Proximal and Distal Links
@@ -285,8 +285,8 @@ public class Arm extends Submodule {
 
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
         mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) (-70));
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) (70));
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, (float) ArmConstants.UPPER_REV_SOFTLIMIT);
+        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
 
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
         mUpperPIDController.setPositionPIDWrappingEnabled(true);
