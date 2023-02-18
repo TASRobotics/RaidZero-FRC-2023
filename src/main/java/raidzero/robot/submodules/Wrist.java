@@ -57,7 +57,7 @@ public class Wrist extends Submodule {
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
     private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
 
-    private Rotation2d wristAngle = new Rotation2d();   
+    private Rotation2d wristAngle = new Rotation2d();
 
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
@@ -140,7 +140,7 @@ public class Wrist extends Submodule {
         mPercentOut = speed;
     }
 
-    public void runIntake(double speed){
+    public void runIntake(double speed) {
         intakePercentOut = speed;
     }
 

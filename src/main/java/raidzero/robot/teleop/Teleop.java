@@ -55,7 +55,6 @@ public class Teleop {
         SmartDashboard.putNumber("Target EE X", target[0]);
         SmartDashboard.putNumber("Target EE Y", target[1]);
 
-        
         // arm.setArmRampRate(rampRate);
 
         if (p.getRightBumperPressed())
@@ -105,8 +104,8 @@ public class Teleop {
             arm.goHome();
             mode = 0;
         }
-        wrist.runIntake(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
-        
+        wrist.runIntake(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
+
     }
 
     private void p2Loop(XboxController p) {
