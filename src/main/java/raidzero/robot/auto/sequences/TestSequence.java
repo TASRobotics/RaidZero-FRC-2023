@@ -15,7 +15,7 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 
 public class TestSequence extends AutoSequence {
-    private PathPlannerTrajectory mTrajectory = PathPlanner.loadPath("TestPath", SwerveConstants.MAX_DRIVE_VEL_MPS,
+    private PathPlannerTrajectory mTrajectory = PathPlanner.loadPath("Straight Path", SwerveConstants.MAX_DRIVE_VEL_MPS,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
     private Swerve mSwerve = Swerve.getInstance();
     private Intake mIntake = Intake.getInstance();
@@ -23,14 +23,17 @@ public class TestSequence extends AutoSequence {
 
     @Override
     public void sequence() {
+        // addAction(
+        //     new ParallelAction(Arrays.asList(
+        //         new DrivePath(mTrajectory), 
+        //         new SeriesAction(Arrays.asList(
+        //             new WaitForEventMarkerAction(mTrajectory, "deez nuts", mSwerve.getPathingTime()), 
+        //             new LambdaAction(() -> mIntake.set(0.5)))
+        //         ))
+        //     )
+        // );
         addAction(
-            new ParallelAction(Arrays.asList(
-                new DrivePath(mTrajectory), 
-                new SeriesAction(Arrays.asList(
-                    new WaitForEventMarkerAction(mTrajectory, "deez nuts", mSwerve.getPathingTime()), 
-                    new LambdaAction(() -> mIntake.set(0.5)))
-                ))
-            )
+            new DrivePath(mTrajectory)
         );
     }
 

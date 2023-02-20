@@ -42,10 +42,10 @@ public class Constants {
 
                 public static final int IMU_ID = 0;
 
-                public static final double FRONT_LEFT_ROTOR_OFFSET = 121.326171875;
-                public static final double FRONT_RIGHT_ROTOR_OFFSET = 135.087890625;
-                public static final double REAR_LEFT_ROTOR_OFFSET = -98.79296875;
-                public static final double REAR_RIGHT_ROTOR_OFFSET = -5.361328125;
+                public static final double FRONT_LEFT_ROTOR_OFFSET = 118.828;
+                public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
+                public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
+                public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
 
                 public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
                 public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
@@ -64,8 +64,8 @@ public class Constants {
                                 // Back right
                                 new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
                 /** 254 Pathing Constants (smooth): */
-                public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.75;
-                public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 0.75;
+                public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.5;
+                public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.5;
                 public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
                 public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(
                                 MAX_ANGULAR_VEL_RPS,
