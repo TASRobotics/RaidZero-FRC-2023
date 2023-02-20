@@ -19,8 +19,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
@@ -50,16 +48,14 @@ public class Intake extends Submodule {
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
-    private boolean inOpenLoop = false;
 
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
-    private double finalTarget = 0.0;
 
     @Override
     public void onInit() {
         mMotor.restoreFactoryDefaults();
         configIntakeSparkMax();
-        // zero();
+        zero();
     }
 
     @Override
@@ -76,17 +72,15 @@ public class Intake extends Submodule {
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
-        } 
-        else if (mControlState == ControlState.CLOSED_LOOP) {
+        } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredPosition,
-                ControlType.kSmartMotion,
-                IntakeConstants.PID_SLOT,
-                0,
-                ArbFFUnits.kPercentOut
-            );
+                    mDesiredPosition,
+                    ControlType.kSmartMotion,
+                    IntakeConstants.PID_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
             System.out.println("Keeping position at " + mDesiredPosition);
-        } 
+        }
     }
 
     @Override
@@ -100,17 +94,8 @@ public class Intake extends Submodule {
     }
 
     public void setPercentSpeed(double speed) {
-        // if (Math.abs(speed)>0.2){
-        //     mControlState = ControlState.CLOSED_LOOP;
-        //     mPercentOut = speed;
-        //     mDesiredPosition += .1;
-        // } else {
-        //     mControlState = ControlState.CLOSED_LOOP;
-        // }
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
-        // inOpenLoop = true;
-        // setFinalTarget();
     }
 
     public void holdPosition() {
@@ -118,38 +103,13 @@ public class Intake extends Submodule {
         mDesiredPosition = mPrevOpenLoopPosition + 1;
     }
 
-    
-    // public boolean getOpenLoop() {
-    //     return inOpenLoop;
-    // }
-
-    // public void noOpenLoop() {
-    //     inOpenLoop = false;
-    // }
-
-    // public void setFinalTarget() {
-    //     finalTarget = mEncoder.getPosition();
-    // }
-
-    // public void setDesiredPosition(double position) {
-    //     mControlState = ControlState.CLOSED_LOOP;
-    //     mDesiredPosition = position;
-    // }
-
-    // public double getPosition() {
-    //     return mEncoder.getPosition();
-    // }
-
-    // public double getFinalTarget() {
-    //     return finalTarget;
-    // }
-
     private void configIntakeSparkMax() {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(IntakeConstants.INVERSION);
         mMotor.setSmartCurrentLimit(IntakeConstants.FREE_CURRENT_LIMIT);
-        // mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT);
+        // mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT,
+        // IntakeConstants.FREE_CURRENT_LIMIT);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mPIDController.setFeedbackDevice(mEncoder);
@@ -161,7 +121,8 @@ public class Intake extends Submodule {
         mPIDController.setSmartMotionMinOutputVelocity(IntakeConstants.MIN_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxVelocity(IntakeConstants.MAX_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxAccel(IntakeConstants.MAX_ACCEL, IntakeConstants.SMART_MOTION_SLOT);
-        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR, IntakeConstants.SMART_MOTION_SLOT);
+        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR,
+                IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, IntakeConstants.SMART_MOTION_SLOT);
     }
 

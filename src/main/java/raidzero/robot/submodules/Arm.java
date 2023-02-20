@@ -228,7 +228,7 @@ public class Arm extends Submodule {
     public void zero() {
         // mLowerEncoder.setPosition(0);
         // mUpperEncoder.setPosition(0);
-        wrist.zero();
+        // wrist.zero();
     }
 
     private void configLowerSparkMax() {
@@ -381,7 +381,6 @@ public class Arm extends Submodule {
     }
 
     private void attemptLinearMotion() {
-
         double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
                 - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH
                 - state[1].getX() * state[1].getX() - state[1].getY() * state[1].getY();
@@ -470,24 +469,22 @@ public class Arm extends Submodule {
         double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
         double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
-        // if (Math.abs(s1[0]-state[0].getRotation().getDegrees())<5){
-        // return s1;
+        // // Elbow Checks
+        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < 5) {
+        //     return s1;
         // } else {
-        // if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180){
-        // return s1;
+        //     if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180) {
+        //         return s1;
+        //     } else if (s1[1] < -180 && state[1].getRotation().getDegrees() < -180) {
+        //         return s1;
+        //     } else {
+        //         return s2;
+        //     }
         // }
-        // else if (s1[1] < -180 && state[1].getRotation().getDegrees() <-180){
-        // return s1;
-        // }
-        // else{
-        // return s2;
-        // }
-        // }
-
         // if (bq1)
-        // return s1;
+        //     return s1;
         // else
-        // return s2;
+        //     return s2;
 
         // Check for wacko solutions
         if (Math.signum(s1[0]) < 0) {
@@ -534,8 +531,8 @@ public class Arm extends Submodule {
                 / (radius_sq + square_diff);
     }
 
-    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist, double target_x, double target_y,
-            double target_wrist) {
+    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
+            double target_x, double target_y, double target_wrist) {
         stage = 1;
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
@@ -549,8 +546,9 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
-    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist, double inter_x2, double inter_y2,
-            double inter_wrist2, double target_x, double target_y, double target_wrist) {
+    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
+            double inter_x2, double inter_y2, double inter_wrist2,
+            double target_x, double target_y, double target_wrist) {
         stage = 1;
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
@@ -575,6 +573,7 @@ public class Arm extends Submodule {
                 ArmConstants.LOWER_MAX_ACCEL * 2.0,
                 ArmConstants.UPPER_MAX_VEL * 1.25,
                 ArmConstants.UPPER_MAX_ACCEL * 1.25);
+
         if (state[1].getY() < 0.15) {
             moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {

@@ -21,7 +21,6 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
-import raidzero.robot.submodules.Intake;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
@@ -53,31 +52,24 @@ public class Wrist extends Submodule {
     private DoubleArrayPublisher limitEncoderDataPub;
     private DoubleArraySubscriber limitSwitchEdgeSub;
     private double lastFallingEdge = WristConstants.LIMITSWITCHPOSITIONS[0];
-
-    private ArmFeedforward mFeedforward = new ArmFeedforward(0, 0, 0);
+    private Rotation2d wristAngle;
 
     private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
-    // private final LazyCANSparkMax intakeMotor = new LazyCANSparkMax(WristConstants.INTAKEID, MotorType.kBrushless);
-    private final Intake intake = Intake.getInstance();
-
-    private Rotation2d wristAngle = new Rotation2d();
-
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
     private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor
             .getForwardLimitSwitch(Constants.WristConstants.LIMITSWITCHPOLARITY);
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
-
     @Override
     public void onInit() {
-        // mMotor.restoreFactoryDefaults();
+        mMotor.restoreFactoryDefaults();
+
         configWristSparkMax();
-        // zero();
+
+        zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
         limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS); // FIX
-                                                                                                             // THIS!!
-        intake.onInit();
     }
 
     @Override
@@ -103,7 +95,6 @@ public class Wrist extends Submodule {
 
     @Override
     public void run() {
-        // intakeMotor.set(intakePercentOut);
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -120,21 +111,17 @@ public class Wrist extends Submodule {
         limitEncoderDataPub.set(limitSwitchEncoderData);
 
         // align();
-
-        intake.run();
     }
 
     @Override
     public void stop() {
         mMotor.stopMotor();
-        intake.stop();
     }
 
     @Override
     public void zero() {
         mEncoder.setPosition(0);
         wristAngle = Rotation2d.fromDegrees(0);
-        intake.zero();
     }
 
     /**
@@ -145,10 +132,6 @@ public class Wrist extends Submodule {
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
-    }
-
-    public Intake getIntake() {
-        return intake;
     }
 
     /**
@@ -189,12 +172,6 @@ public class Wrist extends Submodule {
         mMotor.setInverted(WristConstants.INVERSION);
         mMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
-
-        // intakeMotor.restoreFactoryDefaults();
-        // intakeMotor.setIdleMode(IdleMode.kBrake);
-        // intakeMotor.setInverted(WristConstants.INVERSION);
-        // intakeMotor.setSmartCurrentLimit(WristConstants.CURRENT_LIMIT);
-        // intakeMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         inZoneLimitSwitch.enableLimitSwitch(false);
         // mMotor.enableSoftLimit(SoftLimitDirection.kForward,

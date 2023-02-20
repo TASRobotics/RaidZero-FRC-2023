@@ -20,7 +20,6 @@ public class Teleop {
     private static XboxController p2 = new XboxController(1);
 
     private static final Arm arm = Arm.getInstance();
-    private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
     private double rampRate = 0.0;
 
@@ -60,7 +59,7 @@ public class Teleop {
         if (p.getRightBumperPressed())
             mode = 1; // Joystick
         else if (p.getBackButtonPressed())
-            mode = 2; // Setpoint SM
+            mode = 2; // Setpoints
         else if (p.getStartButtonPressed())
             mode = 3; // Joystick with Inv Kin.
         else if (p.getLeftBumperPressed())
@@ -71,7 +70,7 @@ public class Teleop {
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             // Human Pckup Station
-            if (p.getYButtonPressed()) { 
+            if (p.getYButtonPressed()) {
                 arm.configSmartMotionConstraints(
                         ArmConstants.LOWER_MAX_VEL * 1.5,
                         ArmConstants.LOWER_MAX_ACCEL * 1.5,
@@ -80,21 +79,23 @@ public class Teleop {
 
                 arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
                         ArmConstants.HUMAN_PICKUP_STATION[1], 170);
-            } 
+            }
             // High Grid
             else if (p.getBButtonPressed()) {
                 arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
-            } 
-            // Floor Intake
-            else if (p.getXButtonPressed()) {
-                arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 180);
-            } 
+            }
             // Medium Grid
             else if (p.getAButtonPressed()) {
                 // arm.moveToAngle(110, -270);
                 arm.moveTwoPronged(-0.05, 0.8, 0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180);
             }
+            // Floor Intake
+            else if (p.getXButtonPressed()) {
+                arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 180);
+            }
+
         } else if (mode == 3) {
+            // Extension Limits
             if (Math.abs(target[0]) <= ArmConstants.X_EXTENSION_LIMIT && target[1] <= ArmConstants.Y_EXTENSION_LIMIT
                     && target[1] >= 0) {
                 target[0] = arm.getState()[1].getX() + MathUtil.applyDeadband(p.getLeftX() * 0.25, 0.05);
@@ -117,22 +118,12 @@ public class Teleop {
             mode = 0;
         }
 
+        // Intake
         if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) >= 0.2) {
             intake.setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
         } else {
             intake.holdPosition();
         }
-
-        // if (p.getRightTriggerAxis() - p.getLeftTriggerAxis() >= 0.2) {
-        // arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() -
-        // p.getLeftTriggerAxis());
-        // } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2)
-        // {
-        // arm.getWrist().getIntake().noOpenLoop();
-        // System.out.println("stop");
-        // } else if (!arm.getWrist().getIntake().getOpenLoop()) {
-        // arm.getWrist().getIntake().setDesiredPosition(arm.getWrist().getIntake().getFinalTarget());
-        // }
 
     }
 
