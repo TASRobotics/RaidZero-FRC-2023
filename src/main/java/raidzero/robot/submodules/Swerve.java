@@ -378,16 +378,16 @@ public class Swerve extends Submodule {
 
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
-                yController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
-                thetaController.calculate(getPose().getRotation().getDegrees(),
-                        desiredAutoAimPose.getRotation().getDegrees()),
-                getPose().getRotation());
+            xController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
+            yController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
+            thetaController.calculate(getPose().getRotation().getDegrees(), desiredAutoAimPose.getRotation().getDegrees()),
+                getPose().getRotation()
+        );
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        topLeftModule.setTargetState(desiredState[0], false, true, false);
-        topRightModule.setTargetState(desiredState[1], false, true, false);
-        bottomLeftModule.setTargetState(desiredState[2], false, true, false);
-        bottomRightModule.setTargetState(desiredState[3], false, true, false);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
     public void testModule(int quadrant, double throttleOutput, double rotorOutput) {
