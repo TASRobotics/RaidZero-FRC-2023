@@ -168,11 +168,11 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
-                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.12 };
+                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.05 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.85, 1.15 };
-                public static final double[] GRID_HIGH = { 1.2, 1.4 };
-                public static final double[] FLOOR_INTAKE = { 0.7, 0.1 };
+                public static final double[] GRID_HIGH = { 1.2, 1.3 };
+                public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
 
                 /**
                  * Constants for a DC brushed motor.

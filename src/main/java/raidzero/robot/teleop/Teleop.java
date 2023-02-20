@@ -71,28 +71,21 @@ public class Teleop {
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             if (p.getYButtonPressed()) {
-                // arm.moveTwoPronged(-.05, 1.3, 90, -1.0, 1.3, 0);
-
                 arm.configSmartMotionConstraints(
-                    ArmConstants.LOWER_MAX_VEL * 1.5, 
-                    ArmConstants.LOWER_MAX_ACCEL * 1.5, 
-                    ArmConstants.UPPER_MAX_VEL * 0.75, 
-                    ArmConstants.UPPER_MAX_ACCEL * 0.75
-                );
-                
-                arm.moveTwoPronged(-.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
+                        ArmConstants.LOWER_MAX_VEL * 1.5,
+                        ArmConstants.LOWER_MAX_ACCEL * 1.5,
+                        ArmConstants.UPPER_MAX_VEL * 0.75,
+                        ArmConstants.UPPER_MAX_ACCEL * 0.75);
+
+                arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
                         ArmConstants.HUMAN_PICKUP_STATION[1], 170);
-                        
-                
+
                 // arm.moveToAngle(42.1085066795, -255.950172901);
-
-
-                // arm.moveToAngle(90, -180);
             } else if (p.getBButtonPressed()) {
                 arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
                 // arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
-                arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 200);
+                arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 180);
             } else if (p.getAButtonPressed()) {
                 // arm.moveToAngle(110, -270);
                 arm.moveTwoPronged(-0.7, 0.7, 0, -0.5, 0.5, 0);
@@ -120,19 +113,21 @@ public class Teleop {
             mode = 0;
         }
 
-        if(Math.abs(p.getRightTriggerAxis()-p.getLeftTriggerAxis()) >= 0.2) {
-            intake.setPercentSpeed(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) >= 0.2) {
+            intake.setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
         } else {
             intake.holdPosition();
         }
-        
+
         // if (p.getRightTriggerAxis() - p.getLeftTriggerAxis() >= 0.2) {
-        //     arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
-        // } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2) {
-        //     arm.getWrist().getIntake().noOpenLoop();
-        //     System.out.println("stop");
+        // arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() -
+        // p.getLeftTriggerAxis());
+        // } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2)
+        // {
+        // arm.getWrist().getIntake().noOpenLoop();
+        // System.out.println("stop");
         // } else if (!arm.getWrist().getIntake().getOpenLoop()) {
-        //     arm.getWrist().getIntake().setDesiredPosition(arm.getWrist().getIntake().getFinalTarget());
+        // arm.getWrist().getIntake().setDesiredPosition(arm.getWrist().getIntake().getFinalTarget());
         // }
 
     }
