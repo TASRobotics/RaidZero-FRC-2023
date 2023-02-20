@@ -135,13 +135,10 @@ public class Constants {
                                 .fill(1.0, 1.0, 1.0);
         }
 
-        public static final class IntakeConstants {
-
-                public static final int ID = 5;
-
-                public static final boolean INVERSION = false;
-
-                public static final int CURRENT_LIMIT = 20;
+        public class PathingConstants {
+                public static final int BASE_TRAJ_PERIOD_MS = 0;
+                public static final int MIN_POINTS_IN_TALON = 10;
+                public static final int TRANSMIT_PERIOD_MS = 20;
         }
 
         public static final class VisionConstants {
@@ -199,11 +196,11 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
-                public static final double[] HUMAN_PICKUP_STATION = { 0.5, 0.85 };
+                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.05 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
-                public static final double[] GRID_MEDIUM = { 0.9, 0.85 };
-                public static final double[] GRID_HIGH = { 1.3, 1.15 };
-                public static final double[] FLOOR_INTAKE = { 0.7, -0.1 };
+                public static final double[] GRID_MEDIUM = { 0.99, 0.87 };
+                public static final double[] GRID_HIGH = { 1.28, 1.25 };
+                public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
 
                 /**
                  * Constants for a DC brushed motor.
@@ -255,6 +252,7 @@ public class Constants {
                 public static final int UPPER_SMART_MOTION_SLOT = 0;
 
                 public static final double TICKS_TO_DEGREES = 2.45;
+                public static final double LOWER_MAX_ANGLE = 52.0;
                 public static final double UPPER_FWD_SOFTLIMIT = 70;
                 public static final double UPPER_REV_SOFTLIMIT = -70;
                 public static final double X_EXTENSION_LIMIT = 1.4;
@@ -275,8 +273,29 @@ public class Constants {
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
                 public static final double UPPER_MAX_VEL = 1600;
-                public static final double UPPER_MAX_ACCEL = 700;
+                public static final double UPPER_MAX_ACCEL = 800;
                 public static final double UPPER_MIN_ERROR = 0.0;
+
+                public static final double TOTAL_MAX_ACCEL = LOWER_MAX_ACCEL + UPPER_MAX_ACCEL;
+                public static final double TOTAL_MAX_VEL = LOWER_MAX_VEL + UPPER_MAX_VEL;
+
+                // public static final double LOWER_KF = 0.000166;
+                // public static final double LOWER_KP = 0;//0.000187;
+                // public static final double LOWER_KI = 0.0;
+                // public static final double LOWER_KD = 0;//0.000090;
+                // public static final double LOWER_MIN_VEL = 0.0;
+                // public static final double LOWER_MAX_VEL = 500;
+                // public static final double LOWER_MAX_ACCEL = 250;
+                // public static final double LOWER_MIN_ERROR = 0.0;
+
+                // public static final double UPPER_KF = 0.000166;
+                // public static final double UPPER_KP = 0.000106;
+                // public static final double UPPER_KI = 0.0;
+                // public static final double UPPER_KD = 0.000009;
+                // public static final double UPPER_MIN_VEL = 0.0;
+                // public static final double UPPER_MAX_VEL = 500;
+                // public static final double UPPER_MAX_ACCEL = 250;
+                // public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double PID_WRAPPING_MIN = 0.0;
                 public static final double PID_WRAPPING_MAX = 360.0;
@@ -285,7 +304,6 @@ public class Constants {
 
         public static final class WristConstants {
                 public static final int ID = 15;
-                public static final int INTAKEID = 16;
 
                 public static final boolean INVERSION = true;
 
@@ -309,8 +327,8 @@ public class Constants {
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 500.0;
-                public static final double MAX_ACCEL = 250.0;
+                public static final double MAX_VEL = 2000.0;
+                public static final double MAX_ACCEL = 1000.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;
@@ -326,6 +344,30 @@ public class Constants {
                 public static final double ENCODER_NORMALIZATION = 100.0;
 
                 public static final String NAME = null;
+        }
+
+        public static final class IntakeConstants {
+                public static final int ID = 16;
+
+                public static final boolean INVERSION = false;
+
+                public static final int STALL_CURRENT_LIMIT = 5;
+                public static final int FREE_CURRENT_LIMIT = 20;
+                public static final int PID_SLOT = 0;
+                public static final int SMART_MOTION_SLOT = 0;
+                public static final double KF = 0.00005;
+                public static final double KP = 0.00005;
+                public static final double KI = 0.0;
+                public static final double KD = 0.0;
+
+                public static final double MIN_VEL = 0.0;
+                public static final double MAX_VEL = 1000.0;
+                public static final double MAX_ACCEL = 1500.0;
+                public static final double MIN_ERROR = 0.0;
+
+                public static final double MAXWINDS = 0.6;
+                public static final double PID_WRAPPING_MIN = 0.0;
+                public static final double PID_WRAPPING_MAX = 360.0;
         }
 
         public static final class TOFSensorConstants {
