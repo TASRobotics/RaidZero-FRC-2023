@@ -19,6 +19,7 @@ import edu.wpi.first.math.util.Units;
 import raidzero.robot.Constants;
 import raidzero.robot.submodules.DoubleJointedArm;
 import raidzero.robot.submodules.Wrist;
+import raidzero.robot.utils.MathTools;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
@@ -35,15 +36,13 @@ public class Arm extends Submodule {
     private double mUpperDesiredPosition = 0.0;
 
     // Multi-Staged Movement Constants
-    private boolean isMoving = false;
-    private boolean eStop = false;
     private int stage = 0;
-    private double mLowerWaypointPositions[] = { 0.0, 0.0 };
-    private double mUpperWaypointPositions[] = { 0.0, 0.0 };
+    private double mLowerWaypointPositions[] = { 0.0, 0.0, 0.0 };
+    private double mUpperWaypointPositions[] = { 0.0, 0.0, 0.0 };
     // Intermediate State Constants
-    private double[] xWaypointPositions = { 0, 0 };
-    private double[] yWaypointPositions = { 0, 0 };
-    private double[] wristWaypointPositions = { 0, 0 };
+    private double[] xWaypointPositions = { 0, 0, 0 };
+    private double[] yWaypointPositions = { 0, 0, 0 };
+    private double[] wristWaypointPositions = { 0, 0, 0 };
 
     // Absolute Encoder Adjustment Constants
     public double drift = 0.0; // degrees
@@ -175,11 +174,7 @@ public class Arm extends Submodule {
 
         // Two Pronged Movement
         if (stage > 0) {
-            // System.out.println(Math.abs(state[1].getX() - xWaypointPositions[stage -
-            // 1]));
-            // System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage -
-            // 1]));
-
+            // Attempt approximate linear motion
             // Check for Intermediate Error and Proceed to Staged Target
             if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
                     && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.1) {
@@ -233,7 +228,7 @@ public class Arm extends Submodule {
     public void zero() {
         // mLowerEncoder.setPosition(0);
         // mUpperEncoder.setPosition(0);
-        wrist.zero();
+        // wrist.zero();
     }
 
     private void configLowerSparkMax() {
@@ -356,6 +351,14 @@ public class Arm extends Submodule {
         wrist.setDesiredAngle(calculateWristRelativeAngle(wristAngle));
     }
 
+    public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel,
+            double upperMaxAccel) {
+        mLowerPIDController.setSmartMotionMaxVelocity(lowerMaxVel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMaxAccel(lowerMaxAccel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxVelocity(upperMaxVel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+    }
+
     /**
      * Closed loop Arm + Wrist Control (Target Lower Angle, Target Upper Angle,
      * Associated Parallel Wrist Angle)
@@ -375,6 +378,16 @@ public class Arm extends Submodule {
         double relativeAngle = targetAngle - (mUpperDesiredPosition * ArmConstants.TICKS_TO_DEGREES);
         System.out.println(relativeAngle);
         return relativeAngle;
+    }
+
+    private void attemptLinearMotion() {
+        double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH
+                - state[1].getX() * state[1].getX() - state[1].getY() * state[1].getY();
+        double R = 1 / (2 * state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY())
+                * rightTriangleDifference;
+        double ratio = Math.max(Math.abs(R / (1 + R)), 3);
+        double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
     }
 
     public void moveToPoint(double target_x, double target_y, double wristAngle) {
@@ -420,6 +433,11 @@ public class Arm extends Submodule {
     }
 
     public double[] invKin(double target_x, double target_y) {
+        // Prevent upper arm from crossing the y-axis
+        return invKin(target_x, target_y, target_x < 0);
+    }
+
+    public double[] invKin(double target_x, double target_y, boolean bq1) {
         // Position of target end-effector state
         double radius_sq = target_x * target_x + target_y * target_y;
         double radius = Math.sqrt(radius_sq);
@@ -451,23 +469,74 @@ public class Arm extends Submodule {
         double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
         double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
+        // // Elbow Checks
+        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < 5) {
+        //     return s1;
+        // } else {
+        //     if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180) {
+        //         return s1;
+        //     } else if (s1[1] < -180 && state[1].getRotation().getDegrees() < -180) {
+        //         return s1;
+        //     } else {
+        //         return s2;
+        //     }
+        // }
+        // if (bq1)
+        //     return s1;
+        // else
+        //     return s2;
+
         // Check for wacko solutions
-        if (Math.signum(s1[0]) < 0 || s1[0] < 50 || s1[0] > 140) {
+        if (Math.signum(s1[0]) < 0) {
             return s2;
         } else
             return s1;
 
-        // Compare elbow angle solutions, find closest angle to move to
-        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math
-        // .abs(s2[0] - state[0].getRotation().getDegrees())) {
-        // return s1;
-        // } else
-        // return s2;
+        // //Alternative
+        // double abs_elbow_angle =
+        // MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,
+        // ArmConstants.UPPER_ARM_LENGTH, radius);
+        // double lower_interior_angle =
+        // MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius,
+        // ArmConstants.UPPER_ARM_LENGTH);
+
+        // //Calculate the two possible lower arm angles, eliminate them for the
+        // alternative
+        // double lower_negative = theta + lower_interior_angle > Math.PI -
+        // Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta - lower_interior_angle:
+        // theta + lower_interior_angle;
+        // double lower_positive = theta - lower_interior_angle <
+        // Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta + lower_interior_angle:
+        // theta - lower_interior_angle;
+
+        // //Return the solution given where the elbow is: Note, if there are not two
+        // solutions, the elbow
+        // //will go to the only possible location
+        // double lower_solution = positiveElbow ? lower_positive : lower_negative;
+        // double upper_solution = lower_solution > Math.PI/2 ? +abs_elbow_angle-Math.PI
+        // : -Math.PI-abs_elbow_angle;
+        // double[] solution = new double[] {Math.toDegrees(lower_solution),
+        // angleConv(Math.toDegrees(upper_solution))} ;
+        // //Compare the motion of the upper arm two solutions- we want to avoid having
+        // it cross the midline if possible
+
+        // return solution;
     }
 
-    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist, double target_x, double target_y,
-            double target_wrist) {
+    private double calcSpeedRatio() {
+        double radius_sq = state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY();
+        double square_diff = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH;
+        return ArmConstants.UPPER_ARM_LENGTH / (2 * ArmConstants.LOWER_ARM_LENGTH) * (radius_sq)
+                / (radius_sq + square_diff);
+    }
+
+    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
+            double target_x, double target_y, double target_wrist) {
         stage = 1;
+        xWaypointPositions = new double[2];
+        yWaypointPositions = new double[2];
+        wristWaypointPositions = new double[2];
         xWaypointPositions[0] = inter_x;
         xWaypointPositions[1] = target_x;
         yWaypointPositions[0] = inter_y;
@@ -477,20 +546,46 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
+    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
+            double inter_x2, double inter_y2, double inter_wrist2,
+            double target_x, double target_y, double target_wrist) {
+        stage = 1;
+        xWaypointPositions = new double[3];
+        yWaypointPositions = new double[3];
+        wristWaypointPositions = new double[3];
+        xWaypointPositions[0] = inter_x;
+        xWaypointPositions[1] = inter_x2;
+        xWaypointPositions[2] = target_x;
+
+        yWaypointPositions[0] = inter_y;
+        yWaypointPositions[1] = inter_y2;
+        yWaypointPositions[2] = target_y;
+
+        wristWaypointPositions[0] = inter_wrist;
+        wristWaypointPositions[1] = inter_wrist2;
+        wristWaypointPositions[2] = target_wrist;
+        moveToPoint(inter_x, inter_y, inter_wrist);
+    }
+
     public void goHome() {
-        if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) < 0) {
-            moveTwoPronged(-0.5, 0.25, 0, 0, 0.15, 0);
-        } else if (state[1].getY() < 0.15 && Math.signum(state[1].getX()) > 0) {
-            moveTwoPronged(0.5, 0.25, 0, 0, 0.15, 0);
-        } else if (state[1].getY() > 0.15 && Math.abs(state[1].getX()) > 0.3) {
-            System.out.println("Safety one");
-            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
-        } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-            moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0, 0.0, 0.15, 0);
-            System.out.println("Safety two");
+        configSmartMotionConstraints(
+                ArmConstants.LOWER_MAX_VEL * 2.0,
+                ArmConstants.LOWER_MAX_ACCEL * 2.0,
+                ArmConstants.UPPER_MAX_VEL * 1.25,
+                ArmConstants.UPPER_MAX_ACCEL * 1.25);
+
+        if (state[1].getY() < 0.15) {
+            moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
+        } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
+            System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
+            moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
+                    0.15 * Math.signum(state[1].getX()), 0.5, -70, 0.0, 0.15, 0);
+            // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+            // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
+            // 0.0, 0.15, 0);
+            // System.out.println("Safety two");
         } else {
-            double[] safetyAngles = { 90, -180 };
-            moveToAngle(safetyAngles, 0);
+            moveToAngle(new double[] { 90, -180 }, 0);
         }
     }
 }
