@@ -101,6 +101,8 @@ public class Intake extends Submodule {
         if (Math.abs(speed)<0.2){
             mControlState = ControlState.OPEN_LOOP;
             mPercentOut = speed;
+        } else {
+            mControlState = ControlState.CLOSED_LOOP;
         }
         // inOpenLoop = true;
         // setFinalTarget();

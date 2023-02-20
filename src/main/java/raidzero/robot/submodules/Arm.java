@@ -180,6 +180,9 @@ public class Arm extends Submodule {
             // 1]));
             // System.out.println(Math.abs(state[1].getY() - yWaypointPositions[stage -
             // 1]));
+            
+            //Attempt approximate linear motion
+            
 
             // Check for Intermediate Error and Proceed to Staged Target
             if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
@@ -378,6 +381,16 @@ public class Arm extends Submodule {
         return relativeAngle;
     }
 
+    private void attemptLinearMotion(){
+
+        double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH*ArmConstants.LOWER_ARM_LENGTH
+            - ArmConstants.UPPER_ARM_LENGTH*ArmConstants.UPPER_ARM_LENGTH
+            - state[1].getX()*state[1].getX() - state[1].getY()*state[1].getY();
+        double R = 1/(2*state[1].getX()*state[1].getX() + state[1].getY()*state[1].getY())*rightTriangleDifference;
+        double ratio = Math.max(Math.abs(R/(1+R)),3);
+        double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
+    }
+
     public void moveToPoint(double target_x, double target_y, double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
         moveToAngle(invKin(target_x, target_y), wristAngle);
@@ -422,7 +435,7 @@ public class Arm extends Submodule {
 
     public double[] invKin(double target_x, double target_y) {
         //Prevent upper arm from crossing the y-axis
-        return invKin(target_x, target_y, q[1].getRadians()>-180.0);
+        return invKin(target_x, target_y, target_x<0);
     }
 
     public double[] invKin(double target_x, double target_y, boolean positiveElbow) {
@@ -450,12 +463,14 @@ public class Arm extends Submodule {
         double lower_interior_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius, ArmConstants.UPPER_ARM_LENGTH);
 
         //Calculate the two possible lower arm angles
-        double lower_negative = theta - lower_interior_angle > ArmConstants.LOWER_MAX_ANGLE ? theta - lower_interior_angle: theta + lower_interior_angle;
-        double lower_positive = theta + lower_interior_angle > 180 - ArmConstants.LOWER_MAX_ANGLE ? theta - lower_interior_angle: theta + lower_interior_angle;
+        double lower_negative = theta - lower_interior_angle > Math.PI -  ArmConstants.LOWER_MAX_ANGLE ? theta + lower_interior_angle: theta - lower_interior_angle;
+        double lower_positive = theta + lower_interior_angle > ArmConstants.LOWER_MAX_ANGLE ? theta + lower_interior_angle: theta - lower_interior_angle;
 
         //Return the solution given where the elbow is:  Note, if there are not two solutions, the elbow
         //will go to the only possible location
-        double[] solution = positiveElbow ? new double[] {lower_positive, angleConv(Math.toDegrees(Math.PI - abs_elbow_angle))} : new double[] {lower_negative, angleConv(Math.toDegrees(abs_elbow_angle - Math.PI))} ;
+        double lower_solution = positiveElbow ? lower_positive : lower_negative;
+        double upper_solution = lower_solution > Math.PI/2 ? abs_elbow_angle-Math.PI : Math.PI-abs_elbow_angle;
+        double[] solution = new double[] {Math.toDegrees(lower_solution), angleConv(Math.toDegrees(upper_solution))} ;
         //Compare the motion of the upper arm two solutions- we want to avoid having it cross the midline if possible
         
         return solution;
