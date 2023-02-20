@@ -458,39 +458,40 @@ public class Arm extends Submodule {
         else
             elbow_supplement = Math.acos(acosarg);
 
-        //Alternative
-        double abs_elbow_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH, ArmConstants.UPPER_ARM_LENGTH, radius);
-        double lower_interior_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius, ArmConstants.UPPER_ARM_LENGTH);
+        // //Alternative
+        // double abs_elbow_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH, ArmConstants.UPPER_ARM_LENGTH, radius);
+        // double lower_interior_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius, ArmConstants.UPPER_ARM_LENGTH);
 
-        //Calculate the two possible lower arm angles, eliminate them for the alternative
-        double lower_negative = theta + lower_interior_angle > Math.PI - Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta - lower_interior_angle: theta + lower_interior_angle;
-        double lower_positive = theta - lower_interior_angle < Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta + lower_interior_angle: theta - lower_interior_angle;
+        // //Calculate the two possible lower arm angles, eliminate them for the alternative
+        // double lower_negative = theta + lower_interior_angle > Math.PI - Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta - lower_interior_angle: theta + lower_interior_angle;
+        // double lower_positive = theta - lower_interior_angle < Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta + lower_interior_angle: theta - lower_interior_angle;
 
-        //Return the solution given where the elbow is:  Note, if there are not two solutions, the elbow
-        //will go to the only possible location
-        double lower_solution = positiveElbow ? lower_positive : lower_negative;
-        double upper_solution = lower_solution > Math.PI/2 ? +abs_elbow_angle-Math.PI : -Math.PI-abs_elbow_angle;
-        double[] solution = new double[] {Math.toDegrees(lower_solution), angleConv(Math.toDegrees(upper_solution))} ;
-        //Compare the motion of the upper arm two solutions- we want to avoid having it cross the midline if possible
+        // //Return the solution given where the elbow is:  Note, if there are not two solutions, the elbow
+        // //will go to the only possible location
+        // double lower_solution = positiveElbow ? lower_positive : lower_negative;
+        // double upper_solution = lower_solution > Math.PI/2 ? +abs_elbow_angle-Math.PI : -Math.PI-abs_elbow_angle;
+        // double[] solution = new double[] {Math.toDegrees(lower_solution), angleConv(Math.toDegrees(upper_solution))} ;
+        // //Compare the motion of the upper arm two solutions- we want to avoid having it cross the midline if possible
         
-        return solution;
+        // return solution;
+        
         // Use law of sines to compute angle at the bottom vertex of the triangle
         // defined by the links
-        // double alpha = 0;
-        // if (radius > 0.0)
-        //     alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
-        // else
-        //     alpha = 0.0;
+        double alpha = 0;
+        if (radius > 0.0)
+            alpha = Math.asin(ArmConstants.UPPER_ARM_LENGTH * Math.sin(elbow_supplement) / radius);
+        else
+            alpha = 0.0;
 
-        // // Compute the two solutions with opposite elbow sign
-        // double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
-        // double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
+        // Compute the two solutions with opposite elbow sign
+        double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
+        double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
-        // // Check for wacko solutions
-        // if (Math.signum(s1[0]) < 0) {
-        //     return s2;
-        // } else
-        //     return s1;
+        // Check for wacko solutions
+        if (Math.signum(s1[0]) < 0) {
+            return s2;
+        } else
+            return s1;
 
         // Compare elbow angle solutions, find closest angle to move to
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < Math

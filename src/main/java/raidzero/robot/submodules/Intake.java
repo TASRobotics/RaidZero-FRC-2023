@@ -147,9 +147,18 @@ public class Intake extends Submodule {
         mPIDController.setI(IntakeConstants.KI, IntakeConstants.PID_SLOT);
         mPIDController.setD(IntakeConstants.KD, IntakeConstants.PID_SLOT);
 
+        // mPIDController.setSmartMotionMinOutputVelocity(IntakeConstants.MIN_VEL, IntakeConstants.SMART_MOTION_SLOT);
+        // mPIDController.setSmartMotionMaxVelocity(IntakeConstants.MAX_VEL, IntakeConstants.SMART_MOTION_SLOT);
+        // mPIDController.setSmartMotionMaxAccel(IntakeConstants.MAX_ACCEL, IntakeConstants.SMART_MOTION_SLOT);
+        // mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR, IntakeConstants.SMART_MOTION_SLOT);
+        // mPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, IntakeConstants.SMART_MOTION_SLOT);
+
+
         mPIDController.setPositionPIDWrappingEnabled(true);
         mPIDController.setPositionPIDWrappingMinInput(IntakeConstants.PID_WRAPPING_MIN);
         mPIDController.setPositionPIDWrappingMaxInput(IntakeConstants.PID_WRAPPING_MAX);
+
+
     }
 
 }

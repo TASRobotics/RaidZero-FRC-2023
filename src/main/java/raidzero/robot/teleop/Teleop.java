@@ -83,7 +83,7 @@ public class Teleop {
                 arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
                 // arm.moveToAngle(70, -90);
             } else if (p.getXButtonPressed()) {
-                arm.moveToAngle(110, -250);
+                arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 200);
             } else if (p.getAButtonPressed()) {
                 // arm.moveToAngle(110, -270);
                 arm.moveTwoPronged(-0.7, 0.7, 0, -0.5, 0.5, 0);

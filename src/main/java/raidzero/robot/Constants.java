@@ -172,7 +172,7 @@ public class Constants {
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.85, 1.15 };
                 public static final double[] GRID_HIGH = { 1.2, 1.3 };
-                public static final double[] FLOOR_INTAKE = { 0.7, -0.1 };
+                public static final double[] FLOOR_INTAKE = { 0.7, 0.1 };
 
                 /**
                  * Constants for a DC brushed motor.
@@ -325,14 +325,15 @@ public class Constants {
 
                 public static final int CURRENT_LIMIT = 60;
                 public static final int PID_SLOT = 0;
+                public static final int SMART_MOTION_SLOT = 0;
                 public static final double KF = 0.00005;
                 public static final double KP = 0.0003;
                 public static final double KI = 0.0;
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 9000.0;
-                public static final double MAX_ACCEL = 5000.0;
+                public static final double MAX_VEL = 500.0;
+                public static final double MAX_ACCEL = 250.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;
