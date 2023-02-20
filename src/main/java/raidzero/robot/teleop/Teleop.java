@@ -70,7 +70,8 @@ public class Teleop {
             arm.moveArm(p.getLeftX() * 0.2, p.getRightX() * 0.2);
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
-            if (p.getYButtonPressed()) {
+            // Human Pckup Station
+            if (p.getYButtonPressed()) { 
                 arm.configSmartMotionConstraints(
                         ArmConstants.LOWER_MAX_VEL * 1.5,
                         ArmConstants.LOWER_MAX_ACCEL * 1.5,
@@ -79,16 +80,19 @@ public class Teleop {
 
                 arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
                         ArmConstants.HUMAN_PICKUP_STATION[1], 170);
-
-                // arm.moveToAngle(42.1085066795, -255.950172901);
-            } else if (p.getBButtonPressed()) {
+            } 
+            // High Grid
+            else if (p.getBButtonPressed()) {
                 arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
-                // arm.moveToAngle(70, -90);
-            } else if (p.getXButtonPressed()) {
+            } 
+            // Floor Intake
+            else if (p.getXButtonPressed()) {
                 arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 180);
-            } else if (p.getAButtonPressed()) {
+            } 
+            // Medium Grid
+            else if (p.getAButtonPressed()) {
                 // arm.moveToAngle(110, -270);
-                arm.moveTwoPronged(-0.7, 0.7, 0, -0.5, 0.5, 0);
+                arm.moveTwoPronged(-0.05, 0.8, 0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180);
             }
         } else if (mode == 3) {
             if (Math.abs(target[0]) <= ArmConstants.X_EXTENSION_LIMIT && target[1] <= ArmConstants.Y_EXTENSION_LIMIT

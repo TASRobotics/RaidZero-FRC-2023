@@ -170,8 +170,8 @@ public class Constants {
                  */
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.05 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
-                public static final double[] GRID_MEDIUM = { 0.85, 1.15 };
-                public static final double[] GRID_HIGH = { 1.2, 1.3 };
+                public static final double[] GRID_MEDIUM = { 0.99, 0.87 };
+                public static final double[] GRID_HIGH = { 1.28, 1.25 };
                 public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
 
                 /**
