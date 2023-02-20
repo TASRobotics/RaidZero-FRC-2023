@@ -168,10 +168,10 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
-                public static final double[] HUMAN_PICKUP_STATION = { 0.55, 1.20 };
+                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.12 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.85, 1.15 };
-                public static final double[] GRID_HIGH = { 1.2, 1.3 };
+                public static final double[] GRID_HIGH = { 1.2, 1.4 };
                 public static final double[] FLOOR_INTAKE = { 0.7, 0.1 };
 
                 /**
@@ -275,70 +275,71 @@ public class Constants {
         }
 
         public static final class WristConstants {
-                public static final int ID = 15;
+            public static final int ID = 15;
 
-                public static final boolean INVERSION = true;
+            public static final boolean INVERSION = true;
 
-                public static final int CURRENT_LIMIT = 25;
+            public static final int CURRENT_LIMIT = 25;
 
-                // public static final boolean ENCODER_INVERSION = false;
-                // 1:75 ratio, in degrees
-                public static final double POSITION_CONVERSION_FACTOR = 1.0 / 75.0 * 360.0;
-                public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
+            // public static final boolean ENCODER_INVERSION = false;
+            // 1:75 ratio, in degrees
+            public static final double POSITION_CONVERSION_FACTOR = 1.0 / 75.0 * 360.0;
+            public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
-                public static final boolean ENABLEREVERSELIMIT = true;
-                public static final boolean ENABLEFORWARDLIMIT = true;
-                public static final float FORWARDLIMIT = 50;
-                public static final float REVERSELIMIT = -50;
+            public static final boolean ENABLEREVERSELIMIT = true;
+            public static final boolean ENABLEFORWARDLIMIT = true;
+            public static final float FORWARDLIMIT = 50;
+            public static final float REVERSELIMIT = -50;
 
-                public static final int SMART_MOTION_SLOT = 0;
+            public static final int SMART_MOTION_SLOT = 0;
 
-                public static final double KF = 0.00009;
-                public static final double KP = 0.000106;
-                public static final double KI = 0.0;
-                public static final double KD = 0.0;
+            public static final double KF = 0.00009;
+            public static final double KP = 0.000106;
+            public static final double KI = 0.0;
+            public static final double KD = 0.0;
 
-                public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 1000.0;
-                public static final double MAX_ACCEL = 500.0;
-                public static final double MIN_ERROR = 0.0;
+            public static final double MIN_VEL = 0.0;
+            public static final double MAX_VEL = 2000.0;
+            public static final double MAX_ACCEL = 1000.0;
+            public static final double MIN_ERROR = 0.0;
 
-                public static final double MAXWINDS = 0.6;
-                public static final double PID_WRAPPING_MIN = 0.0;
-                public static final double PID_WRAPPING_MAX = 360.0;
+            public static final double MAXWINDS = 0.6;
+            public static final double PID_WRAPPING_MIN = 0.0;
+            public static final double PID_WRAPPING_MAX = 360.0;
 
-                public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
-                public static final double LIMITSWITCHPOSITIONS[] = { 35.5, -22.5 };
-                public static final double LIMITSWITCHDIFFERENCE = LIMITSWITCHPOSITIONS[1] - LIMITSWITCHPOSITIONS[0];
+            public static final SparkMaxLimitSwitch.Type LIMITSWITCHPOLARITY = SparkMaxLimitSwitch.Type.kNormallyOpen;
+            public static final double LIMITSWITCHPOSITIONS[] = { 35.5, -22.5 };
+            public static final double LIMITSWITCHDIFFERENCE = LIMITSWITCHPOSITIONS[1] - LIMITSWITCHPOSITIONS[0];
 
-                public static final int LIMITSWITCHBUFFERSIZE = 100;
+            public static final int LIMITSWITCHBUFFERSIZE = 100;
 
-                public static final double ENCODER_NORMALIZATION = 100.0;
+            public static final double ENCODER_NORMALIZATION = 100.0;
 
-                public static final String NAME = null;
+            public static final String NAME = null;
         }
 
         public static final class IntakeConstants {
-                public static final int ID = 16;
+            public static final int ID = 16;
 
-                public static final boolean INVERSION = false;
+            public static final boolean INVERSION = false;
 
-                public static final int CURRENT_LIMIT = 60;
-                public static final int PID_SLOT = 0;
-                public static final int SMART_MOTION_SLOT = 0;
-                public static final double KF = 0.00005;
-                public static final double KP = 0.0003;
-                public static final double KI = 0.0;
-                public static final double KD = 0.0;
+            public static final int STALL_CURRENT_LIMIT = 5;
+            public static final int FREE_CURRENT_LIMIT = 20;
+            public static final int PID_SLOT = 0;
+            public static final int SMART_MOTION_SLOT = 0;
+            public static final double KF = 0.00005;
+            public static final double KP = 0.00005;
+            public static final double KI = 0.0;
+            public static final double KD = 0.0;
 
-                public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 500.0;
-                public static final double MAX_ACCEL = 250.0;
-                public static final double MIN_ERROR = 0.0;
+            public static final double MIN_VEL = 0.0;
+            public static final double MAX_VEL = 1000.0;
+            public static final double MAX_ACCEL = 1500.0;
+            public static final double MIN_ERROR = 0.0;
 
-                public static final double MAXWINDS = 0.6;
-                public static final double PID_WRAPPING_MIN = 0.0;
-                public static final double PID_WRAPPING_MAX = 360.0;
+            public static final double MAXWINDS = 0.6;
+            public static final double PID_WRAPPING_MIN = 0.0;
+            public static final double PID_WRAPPING_MAX = 360.0;
         }
 
         public static final class TOFSensorConstants {

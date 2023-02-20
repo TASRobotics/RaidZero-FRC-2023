@@ -1,22 +1,16 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.math.Matrix;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
+import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Wrist;
 import raidzero.robot.utils.JoystickUtils;
 import raidzero.robot.wrappers.LazyCANSparkMax;
+
+import javax.naming.directory.AttributeModificationException;
+
 import edu.wpi.first.math.MathUtil;
 
 public class Teleop {
@@ -26,6 +20,8 @@ public class Teleop {
     private static XboxController p2 = new XboxController(1);
 
     private static final Arm arm = Arm.getInstance();
+    private static final Wrist wrist = Wrist.getInstance();
+    private static final Intake intake = Intake.getInstance();
     private double rampRate = 0.0;
 
     public static Teleop getInstance() {
@@ -76,8 +72,21 @@ public class Teleop {
         } else if (mode == 2) {
             if (p.getYButtonPressed()) {
                 // arm.moveTwoPronged(-.05, 1.3, 90, -1.0, 1.3, 0);
-                arm.moveTwoPronged(-.05, 1.4, -90, -ArmConstants.HUMAN_PICKUP_STATION[0],
-                        ArmConstants.HUMAN_PICKUP_STATION[1], 160);
+
+                arm.configSmartMotionConstraints(
+                    ArmConstants.LOWER_MAX_VEL * 1.5, 
+                    ArmConstants.LOWER_MAX_ACCEL * 1.5, 
+                    ArmConstants.UPPER_MAX_VEL * 0.75, 
+                    ArmConstants.UPPER_MAX_ACCEL * 0.75
+                );
+                
+                arm.moveTwoPronged(-.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
+                        ArmConstants.HUMAN_PICKUP_STATION[1], 170);
+                        
+                
+                // arm.moveToAngle(42.1085066795, -255.950172901);
+
+
                 // arm.moveToAngle(90, -180);
             } else if (p.getBButtonPressed()) {
                 arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
@@ -111,7 +120,12 @@ public class Teleop {
             mode = 0;
         }
 
-        arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        if(Math.abs(p.getRightTriggerAxis()-p.getLeftTriggerAxis()) >= 0.2) {
+            intake.setPercentSpeed(p.getRightTriggerAxis()-p.getLeftTriggerAxis());
+        } else {
+            intake.holdPosition();
+        }
+        
         // if (p.getRightTriggerAxis() - p.getLeftTriggerAxis() >= 0.2) {
         //     arm.getWrist().getIntake().setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
         // } else if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) <= 0.2) {

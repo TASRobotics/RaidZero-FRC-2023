@@ -360,6 +360,13 @@ public class Arm extends Submodule {
         wrist.setDesiredAngle(calculateWristRelativeAngle(wristAngle));
     }
 
+    public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel, double upperMaxAccel) {
+        mLowerPIDController.setSmartMotionMaxVelocity(lowerMaxVel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMaxAccel(lowerMaxAccel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxVelocity(upperMaxVel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+    }
+
     /**
      * Closed loop Arm + Wrist Control (Target Lower Angle, Target Upper Angle,
      * Associated Parallel Wrist Angle)
@@ -520,6 +527,12 @@ public class Arm extends Submodule {
     }
 
     public void goHome() {
+        configSmartMotionConstraints(
+            ArmConstants.LOWER_MAX_VEL * 0.5, 
+            ArmConstants.LOWER_MAX_ACCEL * 0.5, 
+            ArmConstants.UPPER_MAX_VEL * 1.75, 
+            ArmConstants.UPPER_MAX_ACCEL * 1.75
+        );
         if (state[1].getY() < 0.15) {
             moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
