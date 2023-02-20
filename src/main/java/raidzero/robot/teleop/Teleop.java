@@ -8,9 +8,6 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Wrist;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.utils.JoystickUtils;
-import raidzero.robot.wrappers.LazyCANSparkMax;
-
-import javax.naming.directory.AttributeModificationException;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -154,9 +151,4 @@ public class Teleop {
 
     }
 
-    private int shift = 0;
-
-    private void p2Loop(XboxController p) {
-
-    }
 }

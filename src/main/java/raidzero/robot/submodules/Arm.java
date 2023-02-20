@@ -14,14 +14,9 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.math.util.Units;
 
 import raidzero.robot.Constants;
-import raidzero.robot.submodules.DoubleJointedArm;
-import raidzero.robot.submodules.Wrist;
-import raidzero.robot.utils.MathTools;
 import raidzero.robot.Constants.ArmConstants;
-import raidzero.robot.Constants.WristConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {

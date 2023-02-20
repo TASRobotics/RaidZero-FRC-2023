@@ -3,31 +3,25 @@ package raidzero.robot.submodules;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleArrayTopic;
-import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.PubSubOption;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
-import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Wrist extends Submodule {
-    private Wrist() {
-    }
+    private Wrist() {}
 
     private static Wrist instance = null;
 
@@ -98,11 +92,12 @@ public class Wrist extends Submodule {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                    mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
-                    ControlType.kSmartMotion,
-                    WristConstants.SMART_MOTION_SLOT,
-                    0,
-                    ArbFFUnits.kPercentOut);
+                mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
+                ControlType.kSmartMotion,
+                WristConstants.SMART_MOTION_SLOT,
+                0,
+                ArbFFUnits.kPercentOut
+            );
         }
         double limitSwitchEncoderData[] = { inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition() };
         // System.out.println(mMotor.getEncoder().getPosition());
