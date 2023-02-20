@@ -462,14 +462,14 @@ public class Arm extends Submodule {
         double abs_elbow_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH, ArmConstants.UPPER_ARM_LENGTH, radius);
         double lower_interior_angle = MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius, ArmConstants.UPPER_ARM_LENGTH);
 
-        //Calculate the two possible lower arm angles
-        double lower_negative = theta - lower_interior_angle > Math.PI -  ArmConstants.LOWER_MAX_ANGLE ? theta + lower_interior_angle: theta - lower_interior_angle;
-        double lower_positive = theta + lower_interior_angle > ArmConstants.LOWER_MAX_ANGLE ? theta + lower_interior_angle: theta - lower_interior_angle;
+        //Calculate the two possible lower arm angles, eliminate them for the alternative
+        double lower_negative = theta + lower_interior_angle > Math.PI - Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta - lower_interior_angle: theta + lower_interior_angle;
+        double lower_positive = theta - lower_interior_angle < Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta + lower_interior_angle: theta - lower_interior_angle;
 
         //Return the solution given where the elbow is:  Note, if there are not two solutions, the elbow
         //will go to the only possible location
         double lower_solution = positiveElbow ? lower_positive : lower_negative;
-        double upper_solution = lower_solution > Math.PI/2 ? abs_elbow_angle-Math.PI : Math.PI-abs_elbow_angle;
+        double upper_solution = lower_solution > Math.PI/2 ? +abs_elbow_angle-Math.PI : -Math.PI-abs_elbow_angle;
         double[] solution = new double[] {Math.toDegrees(lower_solution), angleConv(Math.toDegrees(upper_solution))} ;
         //Compare the motion of the upper arm two solutions- we want to avoid having it cross the midline if possible
         
@@ -522,7 +522,7 @@ public class Arm extends Submodule {
         if (state[1].getY() < 0.15) {
             moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
-            // System.out.println("Safety one");
+            System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
             moveTwoPronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, -180, 0.0, 0.15, 0);
             // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
             // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,

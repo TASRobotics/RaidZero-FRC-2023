@@ -74,17 +74,16 @@ public class Intake extends Submodule {
 
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
-            mDesiredPosition = mEncoder.getPosition();
+            // System.out.println("Setting position to "+mDesiredPosition);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
                     mDesiredPosition,
-                    ControlType.kPosition,
+                    ControlType.kSmartMotion,
                     IntakeConstants.PID_SLOT,
                     0,
                     ArbFFUnits.kPercentOut);
-        } else {
-            mControlState = ControlState.CLOSED_LOOP;
-        }
+            System.out.println("Keeping position at " + mDesiredPosition);
+        } 
     }
 
     @Override
@@ -98,9 +97,10 @@ public class Intake extends Submodule {
     }
 
     public void setPercentSpeed(double speed) {
-        if (Math.abs(speed)<0.2){
-            mControlState = ControlState.OPEN_LOOP;
+        if (Math.abs(speed)>0.2){
+            mControlState = ControlState.CLOSED_LOOP;
             mPercentOut = speed;
+            mDesiredPosition += .1;
         } else {
             mControlState = ControlState.CLOSED_LOOP;
         }

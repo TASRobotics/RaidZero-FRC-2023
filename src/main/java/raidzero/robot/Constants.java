@@ -115,27 +115,7 @@ public class Constants {
                 public static final int TRANSMIT_PERIOD_MS = 20;
         }
 
-        public static final class IntakeConstants {
-                public static final int ID = 16;
 
-                public static final boolean INVERSION = false;
-
-                public static final int CURRENT_LIMIT = 20;
-                public static final int PID_SLOT = 0;
-                public static final double KF = 0.00005;
-                public static final double KP = 0.0003;
-                public static final double KI = 0.0;
-                public static final double KD = 0.0;
-
-                public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 750.0;
-                public static final double MAX_ACCEL = 350.0;
-                public static final double MIN_ERROR = 0.0;
-
-                public static final double MAXWINDS = 0.6;
-                public static final double PID_WRAPPING_MIN = 0.0;
-                public static final double PID_WRAPPING_MAX = 360.0;
-        }
 
         public static final class VisionConstants {
                 public static final String APRILTAGFAMILY = "tag36h11";
@@ -296,7 +276,6 @@ public class Constants {
 
         public static final class WristConstants {
                 public static final int ID = 15;
-                public static final int INTAKEID = 16;
 
                 public static final boolean INVERSION = true;
 
@@ -320,8 +299,8 @@ public class Constants {
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 700.0;
-                public static final double MAX_ACCEL = 350.0;
+                public static final double MAX_VEL = 1000.0;
+                public static final double MAX_ACCEL = 500.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;
@@ -337,6 +316,28 @@ public class Constants {
                 public static final double ENCODER_NORMALIZATION = 100.0;
 
                 public static final String NAME = null;
+        }
+
+        public static final class IntakeConstants {
+                public static final int ID = 16;
+
+                public static final boolean INVERSION = false;
+
+                public static final int CURRENT_LIMIT = 60;
+                public static final int PID_SLOT = 0;
+                public static final double KF = 0.00005;
+                public static final double KP = 0.0003;
+                public static final double KI = 0.0;
+                public static final double KD = 0.0;
+
+                public static final double MIN_VEL = 0.0;
+                public static final double MAX_VEL = 9000.0;
+                public static final double MAX_ACCEL = 5000.0;
+                public static final double MIN_ERROR = 0.0;
+
+                public static final double MAXWINDS = 0.6;
+                public static final double PID_WRAPPING_MIN = 0.0;
+                public static final double PID_WRAPPING_MAX = 360.0;
         }
 
         public static final class TOFSensorConstants {
