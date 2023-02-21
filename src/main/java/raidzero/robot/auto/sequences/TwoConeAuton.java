@@ -39,8 +39,7 @@ public class TwoConeAuton extends AutoSequence {
                     mIntake.holdPosition();
                 }),
                 new MoveTwoPronged(-0.05, 0.9, 0.0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180.0),
-                new LambdaAction(() -> {
-                    Timer.delay(3);                
+                new LambdaAction(() -> {             
                     mIntake.setPercentSpeed(-0.7);
                 })
 
