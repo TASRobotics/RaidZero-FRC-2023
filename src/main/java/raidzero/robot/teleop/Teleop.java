@@ -54,9 +54,9 @@ public class Teleop {
          */
 
         swerve.drive(
-                JoystickUtils.deadband(-p.getLeftY()),
-                JoystickUtils.deadband(-p.getLeftX()),
-                JoystickUtils.deadband(-p.getRightX()),
+                JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
                 true);
 
         // if(p.getYButton()) {

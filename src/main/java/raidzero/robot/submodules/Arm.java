@@ -119,6 +119,16 @@ public class Arm extends Submodule {
 
     @Override
     public void onStart(double timestamp) {
+        // Proximal Angle Update
+        q[0] = Rotation2d.fromDegrees(90).minus(Rotation2d
+                .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES));
+        // Distal Angle Update
+        q[1] = Rotation2d
+                .fromDegrees(90 + q[0].getDegrees() - mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
+                .unaryMinus();
+
+        state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
+        state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
     }
 
     @Override
@@ -166,6 +176,7 @@ public class Arm extends Submodule {
 
         SmartDashboard.putNumber("Wrist Rotations", wrist.getRotations());
         SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
+        SmartDashboard.putNumber("TooFast", tooFasttooFurious());
 
         // Two Pronged Movement
         if (stage > 0) {
@@ -326,6 +337,13 @@ public class Arm extends Submodule {
             return org;
     }
 
+    public double tooFasttooFurious() {
+        if (Math.abs(state[1].getX()) > 0.3)
+            return 0.1;
+        else
+            return 1;
+    }
+
     /**
      * Open loop Arm Control
      */
@@ -466,20 +484,20 @@ public class Arm extends Submodule {
 
         // // Elbow Checks
         // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < 5) {
-        //     return s1;
+        // return s1;
         // } else {
-        //     if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180) {
-        //         return s1;
-        //     } else if (s1[1] < -180 && state[1].getRotation().getDegrees() < -180) {
-        //         return s1;
-        //     } else {
-        //         return s2;
-        //     }
+        // if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180) {
+        // return s1;
+        // } else if (s1[1] < -180 && state[1].getRotation().getDegrees() < -180) {
+        // return s1;
+        // } else {
+        // return s2;
+        // }
         // }
         // if (bq1)
-        //     return s1;
+        // return s1;
         // else
-        //     return s2;
+        // return s2;
 
         // Check for wacko solutions
         if (Math.signum(s1[0]) < 0) {
