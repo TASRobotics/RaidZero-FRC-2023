@@ -46,21 +46,7 @@
     }
   ],
   "maxVelocity": 2.5,
-  "maxAcceleration": 3.70375,
+  "maxAcceleration": 3.7,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 0.5000000000000001,
-      "names": [
-        "proceed to target"
-      ]
-    },
-    {
-      "position": 0.24545454545454548,
-      "names": [
-        "climbing ramp",
-        "start "
-      ]
-    }
-  ]
+  "markers": []
 }

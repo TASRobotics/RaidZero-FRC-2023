@@ -38,10 +38,11 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         // Register all submodules here
         submoduleManager.setSubmodules(
-            swerve,
-            arm, 
-            intake, 
-            wrist
+                swerve,
+                arm,
+                wrist,
+                intake
+        // vision
         );
         submoduleManager.onInit();
 
@@ -65,10 +66,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        submoduleManager.onStart(Timer.getFPGATimestamp());
 
         autoRunner.readSendableSequence();
         autoRunner.start();
+        submoduleManager.onStart(Timer.getFPGATimestamp());
     }
 
     /**
@@ -78,8 +79,9 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {
         double timestamp = Timer.getFPGATimestamp();
         // System.out.println("tx full: " + RobotController.getCANStatus().txFullCount);
-        autoRunner.onLoop(timestamp);
         submoduleManager.onLoop(timestamp);
+        autoRunner.onLoop(timestamp);
+
     }
 
     /**
@@ -103,4 +105,4 @@ public class Robot extends TimedRobot {
         teleop.onLoop();
         submoduleManager.onLoop(Timer.getFPGATimestamp());
     }
-}   
+}
