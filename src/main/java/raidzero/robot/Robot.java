@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
                 swerve,
                 arm,
                 wrist,
-                intake
+                intake,
                 vision
         );
         submoduleManager.onInit();
