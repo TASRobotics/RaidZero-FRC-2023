@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -144,23 +145,22 @@ public class Constants {
                 public static final int TRANSMIT_PERIOD_MS = 20;
         }
 
-    public static final class IntakeConstants {}
 
-    
 
     public static final class VisionConstants{
         public static final String NAME = "SmartDashboard";
-        public static final String APRILTAGFAMILY = "tag36h11";
+        public static final String APRILTAGFAMILY = "tag16h5";
         private static final String APRILTAGFILENAME = "AprilTagPoses.json";
         public static final Path APRILTAGPATH = Filesystem.getDeployDirectory().toPath().resolve(APRILTAGFILENAME);
         private static final double CAMERAXDISPLACEMENT = 0.0772;
         private static final double CAMERAYDISPLACEMENT = 0.3429;
-        private static final double CAMERAZDISPLACEMENT = 0.56198;
+        // private static final double CAMERAZDISPLACEMENT = 0.56198;
         private static final Rotation2d[] CAMERAANGLES = {new Rotation2d(0),new Rotation2d(Math.PI)};
         
-        // private static final double[][] CAMERALOCATIONS = {{1,2,3},{3,4,5}};
+        
         private static final Pose2d[] CAMERALOCATIONS = {new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
-            new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1])};
+            new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1])};
+        public static final Transform2d[] CAMERATRANSFORMS = {new Transform2d(CAMERALOCATIONS[0],new Pose2d()), new Transform2d(CAMERALOCATIONS[1],new Pose2d())};
     
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
