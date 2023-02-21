@@ -26,10 +26,10 @@ public class SingleConeClimbSequence extends AutoSequence {
     public void sequence() {
         addAction(
             new SeriesAction(Arrays.asList(
-                new MoveTwoPronged(-0.05, 0.9, 0.0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180.0),
-                new LambdaAction(() -> mIntake.setPercentSpeed(-1))
-                // new ArmHomeAction(),
-                // new DrivePath(mTrajectory)
+                // new MoveTwoPronged(-0.05, 0.9, 0.0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180.0),
+                // new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
+                // new ArmHomeAction()
+                new DrivePath(mTrajectory)
             ))
         );
     }
