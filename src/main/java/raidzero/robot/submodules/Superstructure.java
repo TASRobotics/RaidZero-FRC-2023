@@ -21,5 +21,4 @@ public class Superstructure extends Submodule {
 
     @Override
     public void stop() {}
-
 }

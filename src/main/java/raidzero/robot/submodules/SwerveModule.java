@@ -36,6 +36,7 @@ public class SwerveModule extends Submodule implements Sendable {
     private double outputThrottleVelocity = 0.0;
     private double outputThrottlePercentSpeed = 0.0;
     private double outputRotorAngle = 0.0;
+    private double outputRotorPercentSpeed = 0.0;
 
     private ControlState controlState = ControlState.VELOCITY;
 
@@ -47,44 +48,22 @@ public class SwerveModule extends Submodule implements Sendable {
     /**
      * Called once when the submodule is initialized.
      */
-    public void onInit(int throttleId, int rotorId, double forwardAngle, int quadrant) {
-        this.quadrant = quadrant;
+    public void onInit(int throttleId, int rotorId, int rotorEncoderId, double forwardAngle) {
         this.forwardAngle = forwardAngle;
 
         throttle = new LazyTalonFX(throttleId, Constants.CANBUS_STRING);
         initThrottle(throttle);
 
-        //rotorExternalEncoder = new CANCoder(quadrant);
-        rotorExternalEncoder = new CANCoder(quadrant, Constants.CANBUS_STRING);
+        // rotorExternalEncoder = new CANCoder(quadrant);
+        rotorExternalEncoder = new CANCoder(rotorEncoderId, Constants.CANBUS_STRING);
         rotorExternalEncoder.configFactoryDefault();
         rotorExternalEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360, Constants.TIMEOUT_MS);
-        rotorExternalEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero, Constants.TIMEOUT_MS);
+        rotorExternalEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero,
+                Constants.TIMEOUT_MS);
         // rotorExternalEncoder.configMagnetOffset(forwardAngle, Constants.TIMEOUT_MS);
 
         rotor = new LazyTalonFX(rotorId, Constants.CANBUS_STRING);
         initRotor(rotor, rotorExternalEncoder);
-
-        int column = 0;
-        int row = 0;
-        if (quadrant == 1) {
-            column = 3;
-            row = 0;
-        } else if (quadrant == 2) {
-            column = 1;
-            row = 0;
-        } else if (quadrant == 3) {
-            column = 1;
-            row = 2;
-        } else {
-            column = 3;
-            row = 2;
-        }
-
-        // Shuffleboard.getTab(Tab.MAIN).add("Rotor" + quadrant, this)
-        //         .withSize(2, 2).withPosition(column, row);
-        // motorVelocityEntry = Shuffleboard.getTab(Tab.MAIN).add("Motor" + quadrant, 0)
-        //         .withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -10.0, "max", 10.0))
-        //         .withSize(1, 1).withPosition(column + 4, row).getEntry();
 
         stop();
     }
@@ -106,12 +85,15 @@ public class SwerveModule extends Submodule implements Sendable {
      * Reads cached inputs & calculate outputs.
      */
     @Override
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     @Override
     public void stop() {
         outputThrottleVelocity = 0.0;
+        outputThrottlePercentSpeed = 0.0;
         outputRotorAngle = getRotorAngle();
+        outputRotorPercentSpeed = 0.0;
     }
 
     @Override
@@ -131,15 +113,15 @@ public class SwerveModule extends Submodule implements Sendable {
     /** Runs components in the submodule that have continuously changing inputs. */
     public void run() {
         switch (controlState) {
-            case VELOCITY:                
+            case VELOCITY:
                 throttle.set(ControlMode.Velocity, outputThrottleVelocity);
                 rotor.set(ControlMode.Position, outputRotorAngle);
                 break;
             case PATHING:
                 break;
             case TESTING:
-                throttle.set(ControlMode.Velocity, outputThrottleVelocity);
-                rotor.set(ControlMode.Position, outputRotorAngle);
+                throttle.set(ControlMode.PercentOutput, outputThrottlePercentSpeed);
+                rotor.set(ControlMode.PercentOutput, outputRotorPercentSpeed);
                 break;
             case PERCENT:
                 throttle.set(ControlMode.PercentOutput, outputThrottlePercentSpeed);
@@ -155,7 +137,7 @@ public class SwerveModule extends Submodule implements Sendable {
      */
     public double getThrottleVelocity() {
         return throttle.getSelectedSensorVelocity(SwerveConstants.THROTTLE_VELOCITY_PID_SLOT)
-             * SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0;
+                * SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0;
     }
 
     /**
@@ -221,13 +203,13 @@ public class SwerveModule extends Submodule implements Sendable {
      * @param angle target rotor angle in degrees.
      */
     public void setRotorAngle(double angle) {
-        controlState = ControlState.VELOCITY;
-
         double currentAngle = getRotorAngle();
         double delta = angle - currentAngle;
         delta = delta % 360;
-        while (delta > 180) delta -= 360;
-        while (delta < -180) delta += 360;
+        while (delta > 180)
+            delta -= 360;
+        while (delta < -180)
+            delta += 360;
 
         outputRotorAngle = (currentAngle + delta) / SwerveConstants.CANCODER_TO_DEGREES;
     }
@@ -256,7 +238,7 @@ public class SwerveModule extends Submodule implements Sendable {
      * @param targetState target state of the module
      */
     public void setTargetState(SwerveModuleState targetState) {
-        setTargetState(targetState, false, true);
+        setTargetState(targetState, false, true, false);
     }
 
     /**
@@ -264,17 +246,22 @@ public class SwerveModule extends Submodule implements Sendable {
      * 
      * @param targetState the target state
      * @param ignoreAngle whether to ignore the target angle
-     * @param optimize whether to optimize the target angle
+     * @param optimize    whether to optimize the target angle
      */
-    public void setTargetState(SwerveModuleState targetState, boolean ignoreAngle, boolean optimize) {
+    public void setTargetState(SwerveModuleState targetState, boolean ignoreAngle, boolean optimize,
+            boolean isOpenLoop) {
         SwerveModuleState state = targetState;
         if (optimize) {
             // Optimize the reference state to avoid spinning further than 90 degrees
-            state =
-                SwerveModuleState.optimize(targetState, Rotation2d.fromDegrees(MathTools.wrapDegrees(getRotorAngle())));
+            state = SwerveModuleState.optimize(targetState,
+                    Rotation2d.fromDegrees(MathTools.wrapDegrees(getRotorAngle())));
         }
         // System.out.println("Q" + quadrant + ": state=" + state);
-        setThrottleVelocity(state.speedMetersPerSecond);
+        if (isOpenLoop) {
+            setThrottlePercentSpeed(state.speedMetersPerSecond);
+        } else {
+            setThrottleVelocity(state.speedMetersPerSecond);
+        }
         if (!ignoreAngle) {
             setRotorAngle(state.angle.getDegrees());
         }
@@ -286,7 +273,8 @@ public class SwerveModule extends Submodule implements Sendable {
      * @return error in degrees
      */
     public double getRotorAngleError() {
-        double error = (rotorExternalEncoder.getPosition() - outputRotorAngle * SwerveConstants.CANCODER_TO_DEGREES) % 360.0;
+        double error = (rotorExternalEncoder.getPosition() - outputRotorAngle * SwerveConstants.CANCODER_TO_DEGREES)
+                % 360.0;
         if (Math.abs(error) > 180) {
             if (error > 0) {
                 return error - 180;
@@ -297,16 +285,13 @@ public class SwerveModule extends Submodule implements Sendable {
         return error;
     }
 
-    public void testMotorAndRotor(double motorOutput, double rotorOutput) {
+    public void testThrottleAndRotor(double throttleOutput, double rotorOutput) {
         controlState = ControlState.TESTING;
 
-        outputThrottleVelocity = motorOutput / (SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0);
-        outputRotorAngle = MathTools.wrapDegrees(rotorOutput) / SwerveConstants.CANCODER_TO_DEGREES;
-        // if (quadrant == 1) {
-        //     System.out.println("Target angle: " + outputRotorAngle + ", actual: " + (getRotorAngle() / 360.0 * 4096));
-        // }
+        outputThrottlePercentSpeed = throttleOutput;
+        outputRotorPercentSpeed = rotorOutput;
     }
-    
+
     public void initThrottle(TalonFX throttle) {
         throttle.configFactoryDefault();
         throttle.setInverted(SwerveConstants.MOTOR_INVERSION);
@@ -336,6 +321,10 @@ public class SwerveModule extends Submodule implements Sendable {
         rotor.configVoltageCompSaturation(Constants.VOLTAGE_COMP);
         rotor.enableVoltageCompensation(true);
         rotor.configSupplyCurrentLimit(SwerveConstants.ROTOR_CURRENT_LIMIT);
+    }
+
+    public void setRotorRampRate(double val) {
+        throttle.configClosedloopRamp(val);
     }
 
 }

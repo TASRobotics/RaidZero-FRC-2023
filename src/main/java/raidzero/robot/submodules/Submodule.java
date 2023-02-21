@@ -21,9 +21,9 @@ public abstract class Submodule {
      * Reads cached inputs & calculate outputs.
      */
     public void update(double timestamp) {}
-    
+
     /**
-     * Runs components in the submodule that have continuously changing 
+     * Runs components in the submodule that have continuously changing
      * inputs.
      */
     public void run() {}
