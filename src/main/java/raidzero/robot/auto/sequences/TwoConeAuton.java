@@ -8,9 +8,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
+import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.auto.actions.WaitAction;
+import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.submodules.Intake;
@@ -35,14 +37,11 @@ public class TwoConeAuton extends AutoSequence {
                 // Score Mid
                 new LambdaAction(() -> {
                     mIntake.holdPosition();
-                    mArm.moveTwoPronged(-0.05, 0.8, 0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180);
-                    new WaitAction(3);
                 }),
+                new MoveTwoPronged(-0.05, 0.9, 0.0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180.0),
                 new LambdaAction(() -> {
+                    Timer.delay(3);                
                     mIntake.setPercentSpeed(-0.7);
-                    Timer.delay(1);
-                    mArm.goHome();
-                    Timer.delay(2);
                 })
 
                 // // Climb Ramp

@@ -327,6 +327,10 @@ public class Arm extends Submodule {
         return wrist;
     }
 
+    public double getStage() {
+        return stage;
+    }
+
     /**
      * Converts angle such that result is bound between -2pi and 0
      */
