@@ -18,7 +18,9 @@ public class AutoRunner {
     private AutoSequence[] availableSequences = {
             new TestSequence(),
             new EmptySequence(),
-            new TwoConeAuton()
+            new TwoConeAuton(), 
+            new ClimbSequence(), 
+            new SingleConeClimbSequence()
     };
 
     public AutoRunner() {
