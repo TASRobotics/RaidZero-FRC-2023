@@ -32,8 +32,6 @@ public class Arm extends Submodule {
 
     // Multi-Staged Movement Constants
     private int stage = 0;
-    private double mLowerWaypointPositions[] = { 0.0, 0.0, 0.0 };
-    private double mUpperWaypointPositions[] = { 0.0, 0.0, 0.0 };
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -185,7 +183,7 @@ public class Arm extends Submodule {
             if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
                     && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.1) {
                 // Stage Check: Within Range, Proceed to Following Stage
-                if (stage < mLowerWaypointPositions.length) {
+                if (stage < xWaypointPositions.length) {
                     moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]);
                     System.out.println("Moving to point");
                     stage++;

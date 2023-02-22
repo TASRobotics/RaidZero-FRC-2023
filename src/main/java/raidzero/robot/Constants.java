@@ -196,7 +196,7 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
-                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 1.05 };
+                public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.99, 0.89 };
                 public static final double[] GRID_HIGH = { 1.28, 1.25 };

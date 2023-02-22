@@ -45,7 +45,7 @@ public class Teleop {
         p2Loop(p2);
     }
 
-    private int mode = 0;
+
     private double[] target = { 0, 0.15 };
 
     private void p1Loop(XboxController p) {
@@ -71,12 +71,14 @@ public class Teleop {
         // swerve.stop();
         // }
     }
+    private int mode = 0;
 
     private void p2Loop(XboxController p) {
         rampRate = SmartDashboard.getNumber("Ramp Rate", 0);
         SmartDashboard.putNumber("Ramp Rate", rampRate);
         SmartDashboard.putNumber("Target EE X", target[0]);
         SmartDashboard.putNumber("Target EE Y", target[1]);
+        SmartDashboard.putNumber("Mode", mode);
 
         // arm.setArmRampRate(rampRate);
 
@@ -93,7 +95,7 @@ public class Teleop {
             arm.moveArm(p.getLeftX() * 0.2, p.getRightX() * 0.2);
             arm.getWrist().setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
-            // Human Pckup Station
+            // Human Pickup Station
             if (p.getYButtonPressed()) {
                 arm.configSmartMotionConstraints(
                         ArmConstants.LOWER_MAX_VEL * 1.5,
@@ -102,7 +104,7 @@ public class Teleop {
                         ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
                 arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
-                        ArmConstants.HUMAN_PICKUP_STATION[1], 170);
+                        ArmConstants.HUMAN_PICKUP_STATION[1], 180);
             }
             // High Grid
             else if (p.getBButtonPressed()) {

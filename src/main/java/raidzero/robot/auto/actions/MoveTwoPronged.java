@@ -4,15 +4,13 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.utils.TimerBoolean;
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.math.geometry.Pose2d;
 
 public class MoveTwoPronged implements Action {
 
     private static final Arm arm = Arm.getInstance();
     // Multi-Staged Movement Constants
     private int stage = 0;
-    private double mLowerWaypointPositions[] = { 0.0, 0.0, 0.0 };
-    private double mUpperWaypointPositions[] = { 0.0, 0.0, 0.0 };
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -33,7 +31,8 @@ public class MoveTwoPronged implements Action {
 
     @Override
     public boolean isFinished() {
-        return arm.getStage()==0;
+        Pose2d endPose = arm.getState()[1];
+        return Math.abs(endPose.getX()-xWaypointPositions[1]) < 0.1 && Math.abs(endPose.getY() - yWaypointPositions[1]) < 0.1;
     }
 
     @Override
