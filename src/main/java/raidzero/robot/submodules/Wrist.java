@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -18,7 +19,6 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
-import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Wrist extends Submodule {
     private Wrist() {}
@@ -48,7 +48,7 @@ public class Wrist extends Submodule {
     private double lastFallingEdge = WristConstants.LIMITSWITCHPOSITIONS[0];
     private Rotation2d wristAngle;
 
-    private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
+    private final CANSparkMax mMotor = new CANSparkMax(WristConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
     private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor
@@ -66,13 +66,10 @@ public class Wrist extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {
-    }
+    public void onStart(double timestamp) {}
 
     @Override
-    public void update(double timestamp) {
-
-    }
+    public void update(double timestamp) {}
 
     private void align() {
         double[] defaultEdgeData = { WristConstants.LIMITSWITCHPOSITIONS[0], 1.0 };

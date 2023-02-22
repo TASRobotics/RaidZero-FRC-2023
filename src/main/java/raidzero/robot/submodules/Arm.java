@@ -5,10 +5,12 @@ import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,7 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
-import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Arm extends Submodule {
 
@@ -51,13 +52,13 @@ public class Arm extends Submodule {
             Rotation2d.fromDegrees(0) };
 
     // Motor Declaration
-    private final LazyCANSparkMax mLowerLeader = new LazyCANSparkMax(ArmConstants.LOWER_LEADER_ID,
+    private final CANSparkMax mLowerLeader = new CANSparkMax(ArmConstants.LOWER_LEADER_ID,
             MotorType.kBrushless);
-    private final LazyCANSparkMax mLowerFollower = new LazyCANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
+    private final CANSparkMax mLowerFollower = new CANSparkMax(ArmConstants.LOWER_FOLLOWER_ID,
             MotorType.kBrushless);
-    private final LazyCANSparkMax mUpperLeader = new LazyCANSparkMax(ArmConstants.UPPER_LEADER_ID,
+    private final CANSparkMax mUpperLeader = new CANSparkMax(ArmConstants.UPPER_LEADER_ID,
             MotorType.kBrushless);
-    private final LazyCANSparkMax mUpperFollower = new LazyCANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
+    private final CANSparkMax mUpperFollower = new CANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
             MotorType.kBrushless);
     private Wrist wrist = Wrist.getInstance();
     private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
@@ -295,11 +296,11 @@ public class Arm extends Submodule {
         mUpperAbsoluteEncoder.setPositionConversionFactor(ArmConstants.UPPER_ABS_POSITION_CONVERSION_FACTOR);
         mUpperAbsoluteEncoder.setZeroOffset(ArmConstants.UPPER_ZERO_OFFSET);
 
-        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward, true);
-        mUpperLeader.enableSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse, true);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kReverse,
+        mUpperLeader.enableSoftLimit(SoftLimitDirection.kForward, true);
+        mUpperLeader.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        mUpperLeader.setSoftLimit(SoftLimitDirection.kReverse,
                 (float) ArmConstants.UPPER_REV_SOFTLIMIT);
-        mUpperLeader.setSoftLimit(LazyCANSparkMax.SoftLimitDirection.kForward,
+        mUpperLeader.setSoftLimit(SoftLimitDirection.kForward,
                 (float) ArmConstants.UPPER_FWD_SOFTLIMIT);
 
         mUpperPIDController.setFeedbackDevice(mUpperEncoder);
