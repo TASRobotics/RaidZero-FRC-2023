@@ -116,7 +116,7 @@ public class Teleop {
         // }
         // // High Grid
         // else if (p.getBButtonPressed() && !swerve.isOverLimit() && !arm.isGoingHome()
-        // && !delivering) {
+        // && !delivering) {bh
         // delivering = true;
         // arm.moveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0],
         // ArmConstants.GRID_HIGH[1], 180);
@@ -220,9 +220,9 @@ public class Teleop {
 
         // Intake
         if (p.getRawButton(12)) {
-            intake.setPercentSpeed(Math.random() * (0.5 - 0.4) + 0.4);
+            intake.setPercentSpeed(0.8);
         } else if (p.getRawButton(11)) {
-            intake.setPercentSpeed(-(Math.random() * (0.5 - 0.4) + 0.4));
+            intake.setPercentSpeed(-0.8);
         }  else {
             intake.holdPosition();
         }

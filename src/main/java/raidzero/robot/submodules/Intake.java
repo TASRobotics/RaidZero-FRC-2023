@@ -93,6 +93,11 @@ public class Intake extends Submodule {
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
+        if(speed <= 0.9) {
+            mPercentOut = Math.random() * 0.1 + speed;
+        } else {
+            mPercentOut = Math.random() * -0.1 + speed;
+        }
     }
 
     public void holdPosition() {
