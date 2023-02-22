@@ -14,13 +14,14 @@ import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
+import raidzero.robot.auto.actions.ArmHomeAction;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.Constants.ArmConstants;;
 
-public class TwoConeAuton extends AutoSequence {
+public class TwoConeClimbSequence extends AutoSequence {
     private PathPlannerTrajectory mSClimbRamp = PathPlanner.loadPath("sClimbRamp", SwerveConstants.MAX_DRIVE_VEL_MPS,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
     private PathPlannerTrajectory mRClimbRamp = PathPlanner.loadPath("rClimbRamp", SwerveConstants.MAX_DRIVE_VEL_MPS,
@@ -33,15 +34,17 @@ public class TwoConeAuton extends AutoSequence {
 
     @Override
     public void sequence() {
-        addAction(new SeriesAction(Arrays.asList(
-                // Score Mid
-                new LambdaAction(() -> {
-                    mIntake.holdPosition();
-                }),
-                new MoveTwoPronged(-0.05, 0.9, 0.0, -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 180.0),
-                new LambdaAction(() -> {          
-                    mIntake.setPercentSpeed(-0.7);
-                })
+        addAction(
+            new SeriesAction(Arrays.asList(
+                // Score preload in mid rung
+                new MoveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180),
+                new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
+                new WaitAction(0.5), 
+                new LambdaAction(() -> mIntake.setPercentSpeed(0)),
+                new ArmHomeAction()
+
+                // Climb over charge station & get cone
+
 
                 // // Climb Ramp
                 // new ParallelAction(Arrays.asList(
@@ -89,11 +92,11 @@ public class TwoConeAuton extends AutoSequence {
 
     @Override
     public void onEnded() {
-        System.out.println("Two Cone Auton ended!");
+        System.out.println("Two Cone Climb ended!");
     }
 
     @Override
     public String getName() {
-        return "Two Cone Auton";
+        return "Two Cone Climb Sequence";
     }
 }
