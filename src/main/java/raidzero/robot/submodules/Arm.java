@@ -33,6 +33,7 @@ public class Arm extends Submodule {
     // Multi-Staged Movement Constants
     private int stage = 0;
     private boolean goingHome = false;
+    private boolean onPath = false;
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -181,8 +182,8 @@ public class Arm extends Submodule {
         if (stage > 0) {
             // Attempt approximate linear motion
             // Check for Intermediate Error and Proceed to Staged Target
-            if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.1
-                    && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.1) {
+            if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.25
+                    && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.25) {
                 // Stage Check: Within Range, Proceed to Following Stage
                 if (stage < xWaypointPositions.length) {
                     moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]);
@@ -192,6 +193,12 @@ public class Arm extends Submodule {
                 }
             }
         }
+
+        // // Check On Path
+        // if (Math.abs(state[1].getX() - xWaypointPositions[xWaypointPositions.length - 1]) < 0.1
+        //         && Math.abs(state[1].getY() - yWaypointPositions.length - 1) < 0.1) {
+        //     onPath = false;
+        // }
 
         // Check Going Home
         if (Math.abs(state[1].getX()) < 0.15 && Math.abs(state[1].getY() - 0.15) < 0.15) {
@@ -420,6 +427,7 @@ public class Arm extends Submodule {
     public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
             double target_x, double target_y, double target_wrist) {
         stage = 1;
+        onPath = true;
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
@@ -430,13 +438,13 @@ public class Arm extends Submodule {
         wristWaypointPositions[0] = inter_wrist;
         wristWaypointPositions[1] = target_wrist;
         moveToPoint(inter_x, inter_y, inter_wrist);
-
     }
 
     public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
             double inter_x2, double inter_y2, double inter_wrist2,
             double target_x, double target_y, double target_wrist) {
         stage = 1;
+        onPath = true;
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
@@ -460,6 +468,10 @@ public class Arm extends Submodule {
 
     public boolean isGoingHome() {
         return goingHome;
+    }
+
+    public boolean isOnPath() {
+        return onPath;
     }
 
     public void goHome() {

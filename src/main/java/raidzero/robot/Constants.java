@@ -196,9 +196,14 @@ public class Constants {
                  * Constants for arm Distal endpoint locations for different
                  * arm positions. Constants are measured in meters
                  */
+                public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.0, 0.0 };
+                public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
+                public static final double[] INTER_GRID_MEDIUM = {0.50, 1.15 };
+                public static final double[] INTER_GRID_HIGH = { 0.50, 1.3 };
+                public static final double[] INTER_FLOOR_INTAKE = { 0.0, 0.0 };
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
-                public static final double[] GRID_MEDIUM = { 0.99, 0.106 };
+                public static final double[] GRID_MEDIUM = { 0.93, 0.97 };
                 public static final double[] GRID_HIGH = { 1.28, 1.25 };
                 public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
 
@@ -276,6 +281,7 @@ public class Constants {
                 public static final double UPPER_MAX_ACCEL = 2770;
                 public static final double UPPER_MIN_ERROR = 0.0;
 
+                // Testing Speeds
                 // public static final double LOWER_KF = 0.000166;
                 // public static final double LOWER_KP = 0.000156;
                 // public static final double LOWER_KI = 0.0;
@@ -311,7 +317,8 @@ public class Constants {
 
                 // public static final boolean ENCODER_INVERSION = false;
                 // 1:75 ratio, in degrees
-                public static final double POSITION_CONVERSION_FACTOR = 1.0 / 75.0 * 360.0;
+                public static final double GEAR_RATIO = 82.2;
+                public static final double POSITION_CONVERSION_FACTOR = 1.0 / GEAR_RATIO * 360.0;
                 public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
                 public static final boolean ENABLEREVERSELIMIT = true;
@@ -327,8 +334,8 @@ public class Constants {
                 public static final double KD = 0.0;
 
                 public static final double MIN_VEL = 0.0;
-                public static final double MAX_VEL = 2000.0;
-                public static final double MAX_ACCEL = 1000.0;
+                public static final double MAX_VEL = 3000.0;
+                public static final double MAX_ACCEL = 2500.0;
                 public static final double MIN_ERROR = 0.0;
 
                 public static final double MAXWINDS = 0.6;
@@ -376,7 +383,8 @@ public class Constants {
 
         public static final String NETWORKTABLESNAME = "SmartDashboard";
 
-        public static final double JOYSTICK_DEADBAND = 0.07;
+        public static final double JOYSTICK_DEADBAND = 0.02;
+        public static final double AIMING_JOYSTICK_DEADBAND = 0.02;
         public static final int TIMEOUT_MS = 20;
         public static final double TIMEOUT_S = TIMEOUT_MS / 1000.0f;
         public static final int SECONDS_IN_MINUTE = 60;

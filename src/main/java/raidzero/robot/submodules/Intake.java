@@ -2,6 +2,8 @@ package raidzero.robot.submodules;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -54,6 +56,8 @@ public class Intake extends Submodule {
     @Override
     public void update(double timestamp) {
         SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
+        // if(mPercentOut<0.05)
+        //     holdPosition();
     }
 
     @Override
@@ -73,7 +77,7 @@ public class Intake extends Submodule {
                 ArbFFUnits.kPercentOut
             );
             System.out.println("Keeping position at " + mDesiredPosition);
-        }
+        } 
     }
 
     @Override
