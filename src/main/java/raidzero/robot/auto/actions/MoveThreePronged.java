@@ -9,8 +9,6 @@ import edu.wpi.first.wpilibj.Timer;
 public class MoveThreePronged implements Action {
 
     private static final Arm arm = Arm.getInstance();
-    // Multi-Staged Movement Constants
-    private int stage = 0;
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -38,12 +36,12 @@ public class MoveThreePronged implements Action {
     @Override
     public boolean isFinished() {
         Pose2d endPose = arm.getState()[1];
-        return Math.abs(endPose.getX()-xWaypointPositions[2]) < 0.1 && Math.abs(endPose.getY() - yWaypointPositions[2]) < 0.1;
+        return Math.abs(endPose.getX() - xWaypointPositions[2]) < 0.1
+                && Math.abs(endPose.getY() - yWaypointPositions[2]) < 0.1;
     }
 
     @Override
     public void start() {
-        stage = 0;
         arm.moveThreePronged(xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0],
                 xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1], xWaypointPositions[2],
                 yWaypointPositions[2], wristWaypointPositions[2]);
@@ -52,12 +50,11 @@ public class MoveThreePronged implements Action {
 
     @Override
     public void update() {
-        arm.update(Timer.getFPGATimestamp());
+        // arm.update(Timer.getFPGATimestamp());
     }
 
     @Override
     public void done() {
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' finished!");
-        arm.stop();
     }
 }

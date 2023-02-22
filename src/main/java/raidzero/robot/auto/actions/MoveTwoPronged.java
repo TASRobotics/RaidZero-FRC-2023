@@ -9,8 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class MoveTwoPronged implements Action {
 
     private static final Arm arm = Arm.getInstance();
-    // Multi-Staged Movement Constants
-    private int stage = 0;
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -32,24 +30,24 @@ public class MoveTwoPronged implements Action {
     @Override
     public boolean isFinished() {
         Pose2d endPose = arm.getState()[1];
-        return Math.abs(endPose.getX()-xWaypointPositions[1]) < 0.1 && Math.abs(endPose.getY() - yWaypointPositions[1]) < 0.1;
+        return Math.abs(endPose.getX() - xWaypointPositions[1]) < 0.1
+                && Math.abs(endPose.getY() - yWaypointPositions[1]) < 0.1;
     }
 
     @Override
     public void start() {
-        stage=0;
-        arm.moveTwoPronged(xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0], xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1]);
+        arm.moveTwoPronged(xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0],
+                xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1]);
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' started!");
     }
 
     @Override
     public void update() {
-        arm.update(Timer.getFPGATimestamp());
+        // arm.update(Timer.getFPGATimestamp());
     }
 
     @Override
     public void done() {
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' finished!");
-        arm.stop();
     }
 }
