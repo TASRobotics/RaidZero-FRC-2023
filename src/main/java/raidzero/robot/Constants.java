@@ -198,7 +198,7 @@ public class Constants {
                  */
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
-                public static final double[] GRID_MEDIUM = { 0.99, 0.89 };
+                public static final double[] GRID_MEDIUM = { 0.99, 0.106 };
                 public static final double[] GRID_HIGH = { 1.28, 1.25 };
                 public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
 
@@ -263,8 +263,8 @@ public class Constants {
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 700;
-                public static final double LOWER_MAX_ACCEL = 350;
+                public static final double LOWER_MAX_VEL = 1600;
+                public static final double LOWER_MAX_ACCEL = 970;
                 public static final double LOWER_MIN_ERROR = 0.0;
 
                 public static final double UPPER_KF = 0.000166;
@@ -272,8 +272,8 @@ public class Constants {
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 1600;
-                public static final double UPPER_MAX_ACCEL = 800;
+                public static final double UPPER_MAX_VEL = 3000;
+                public static final double UPPER_MAX_ACCEL = 2050;
                 public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double TOTAL_MAX_ACCEL = LOWER_MAX_ACCEL + UPPER_MAX_ACCEL;

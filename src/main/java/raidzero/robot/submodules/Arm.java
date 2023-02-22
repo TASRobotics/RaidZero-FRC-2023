@@ -32,6 +32,7 @@ public class Arm extends Submodule {
 
     // Multi-Staged Movement Constants
     private int stage = 0;
+    private boolean goingHome = false;
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -149,7 +150,7 @@ public class Arm extends Submodule {
         // .fromDegrees(mLowerEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES))),
         // upperSanityCheck(
         // Rotation2d.fromDegrees(mUpperEncoder.getPosition()
-        // *ArmConstants.TICKS_TO_DEGREES)
+        // * ArmConstants.TICKS_TO_DEGREES)
         // .unaryMinus(),
         // Rotation2d.fromDegrees(mUpperEncoder.getPosition() *
         // ArmConstants.TICKS_TO_DEGREES)
@@ -190,6 +191,11 @@ public class Arm extends Submodule {
                     stage %= xWaypointPositions.length;
                 }
             }
+        }
+
+        // Check Going Home
+        if (Math.abs(state[1].getX()) < 0.15 && Math.abs(state[1].getY() - 0.15) < 0.15) {
+            goingHome = false;
         }
     }
 
@@ -325,10 +331,6 @@ public class Arm extends Submodule {
         return wrist;
     }
 
-    public double getStage() {
-        return stage;
-    }
-
     /**
      * Converts angle such that result is bound between -2pi and 0
      */
@@ -339,6 +341,9 @@ public class Arm extends Submodule {
             return org;
     }
 
+    /**
+     * Return speed reduction if joints are outside bumper
+     */
     public double tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.3 || Math.abs(state[0].getX()) > 0.2)
             return 0.1;
@@ -366,14 +371,6 @@ public class Arm extends Submodule {
         wrist.setDesiredAngle(calculateWristRelativeAngle(wristAngle));
     }
 
-    public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel,
-            double upperMaxAccel) {
-        mLowerPIDController.setSmartMotionMaxVelocity(lowerMaxVel, ArmConstants.LOWER_SMART_MOTION_SLOT);
-        mLowerPIDController.setSmartMotionMaxAccel(lowerMaxAccel, ArmConstants.LOWER_SMART_MOTION_SLOT);
-        mUpperPIDController.setSmartMotionMaxVelocity(upperMaxVel, ArmConstants.UPPER_SMART_MOTION_SLOT);
-        mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
-    }
-
     /**
      * Closed loop Arm + Wrist Control (Target Lower Angle, Target Upper Angle,
      * Associated Parallel Wrist Angle)
@@ -385,29 +382,10 @@ public class Arm extends Submodule {
         moveToAngle(targetAngles, targetWristAngle);
     }
 
-    public double calculateWristAbsoluteAngle(double relativeAngle) {
-        return relativeAngle - (mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES);
-    }
-
-    public double calculateWristRelativeAngle(double targetAngle) {
-        double relativeAngle = targetAngle - (mUpperDesiredPosition * ArmConstants.TICKS_TO_DEGREES);
-        System.out.println(relativeAngle);
-        return relativeAngle;
-    }
-
-    private void attemptLinearMotion() {
-        double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
-                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH
-                - state[1].getX() * state[1].getX() - state[1].getY() * state[1].getY();
-        double R = 1 / (2 * state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY())
-                * rightTriangleDifference;
-        double ratio = Math.max(Math.abs(R / (1 + R)), 3);
-        double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
-    }
-
     public void moveToPoint(double target_x, double target_y, double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
         moveToAngle(invKin(target_x, target_y), wristAngle);
+
     }
 
     // TODO: Add Kalman Filter to sanity check here:
@@ -429,6 +407,110 @@ public class Arm extends Submodule {
             return abs;
         }
         return rel;
+    }
+
+    public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel,
+            double upperMaxAccel) {
+        mLowerPIDController.setSmartMotionMaxVelocity(lowerMaxVel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mLowerPIDController.setSmartMotionMaxAccel(lowerMaxAccel, ArmConstants.LOWER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxVelocity(upperMaxVel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+        mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
+    }
+
+    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
+            double target_x, double target_y, double target_wrist) {
+        stage = 1;
+        xWaypointPositions = new double[2];
+        yWaypointPositions = new double[2];
+        wristWaypointPositions = new double[2];
+        xWaypointPositions[0] = inter_x;
+        xWaypointPositions[1] = target_x;
+        yWaypointPositions[0] = inter_y;
+        yWaypointPositions[1] = target_y;
+        wristWaypointPositions[0] = inter_wrist;
+        wristWaypointPositions[1] = target_wrist;
+        moveToPoint(inter_x, inter_y, inter_wrist);
+
+    }
+
+    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
+            double inter_x2, double inter_y2, double inter_wrist2,
+            double target_x, double target_y, double target_wrist) {
+        stage = 1;
+        xWaypointPositions = new double[3];
+        yWaypointPositions = new double[3];
+        wristWaypointPositions = new double[3];
+        xWaypointPositions[0] = inter_x;
+        xWaypointPositions[1] = inter_x2;
+        xWaypointPositions[2] = target_x;
+
+        yWaypointPositions[0] = inter_y;
+        yWaypointPositions[1] = inter_y2;
+        yWaypointPositions[2] = target_y;
+
+        wristWaypointPositions[0] = inter_wrist;
+        wristWaypointPositions[1] = inter_wrist2;
+        wristWaypointPositions[2] = target_wrist;
+        moveToPoint(inter_x, inter_y, inter_wrist);
+    }
+
+    public void reverseState() {
+        stage--;
+    }
+
+    public boolean isGoingHome() {
+        return goingHome;
+    }
+
+    public void goHome() {
+        configSmartMotionConstraints(
+                ArmConstants.LOWER_MAX_VEL * 2.0,
+                ArmConstants.LOWER_MAX_ACCEL * 2.0,
+                ArmConstants.UPPER_MAX_VEL * 1.25,
+                ArmConstants.UPPER_MAX_ACCEL * 1.25);
+        goingHome = true;
+        if (state[1].getY() < 0.15) {
+            moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
+        } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
+            System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
+            moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
+                    0.15 * Math.signum(state[1].getX()), 0.5, -70, 0.0, 0.15, 0);
+            // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
+            // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
+            // 0.0, 0.15, 0);
+            // System.out.println("Safety two");
+        } else {
+            moveToAngle(new double[] { 90, -180 }, 0);
+        }
+
+    }
+
+    public double calculateWristAbsoluteAngle(double relativeAngle) {
+        return relativeAngle - (mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES);
+    }
+
+    public double calculateWristRelativeAngle(double targetAngle) {
+        double relativeAngle = targetAngle - (mUpperDesiredPosition * ArmConstants.TICKS_TO_DEGREES);
+        System.out.println(relativeAngle);
+        return relativeAngle;
+    }
+
+    private double calcSpeedRatio() {
+        double radius_sq = state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY();
+        double square_diff = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH;
+        return ArmConstants.UPPER_ARM_LENGTH / (2 * ArmConstants.LOWER_ARM_LENGTH) * (radius_sq)
+                / (radius_sq + square_diff);
+    }
+
+    private void attemptLinearMotion() {
+        double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
+                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH
+                - state[1].getX() * state[1].getX() - state[1].getY() * state[1].getY();
+        double R = 1 / (2 * state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY())
+                * rightTriangleDifference;
+        double ratio = Math.max(Math.abs(R / (1 + R)), 3);
+        double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
     }
 
     public double[] forKin(Rotation2d[] q) {
@@ -536,71 +618,5 @@ public class Arm extends Submodule {
         // it cross the midline if possible
 
         // return solution;
-    }
-
-    private double calcSpeedRatio() {
-        double radius_sq = state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY();
-        double square_diff = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
-                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH;
-        return ArmConstants.UPPER_ARM_LENGTH / (2 * ArmConstants.LOWER_ARM_LENGTH) * (radius_sq)
-                / (radius_sq + square_diff);
-    }
-
-    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
-            double target_x, double target_y, double target_wrist) {
-        stage = 1;
-        xWaypointPositions = new double[2];
-        yWaypointPositions = new double[2];
-        wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = target_x;
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = target_y;
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = target_wrist;
-        moveToPoint(inter_x, inter_y, inter_wrist);
-    }
-
-    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
-            double inter_x2, double inter_y2, double inter_wrist2,
-            double target_x, double target_y, double target_wrist) {
-        stage = 1;
-        xWaypointPositions = new double[3];
-        yWaypointPositions = new double[3];
-        wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = inter_x2;
-        xWaypointPositions[2] = target_x;
-
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = inter_y2;
-        yWaypointPositions[2] = target_y;
-
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = inter_wrist2;
-        wristWaypointPositions[2] = target_wrist;
-        moveToPoint(inter_x, inter_y, inter_wrist);
-    }
-
-    public void goHome() {
-        configSmartMotionConstraints(
-                ArmConstants.LOWER_MAX_VEL * 2.0,
-                ArmConstants.LOWER_MAX_ACCEL * 2.0,
-                ArmConstants.UPPER_MAX_VEL * 1.25,
-                ArmConstants.UPPER_MAX_ACCEL * 1.25);
-
-        if (state[1].getY() < 0.15) {
-            moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
-        } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
-            System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
-            moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
-                    0.15 * Math.signum(state[1].getX()), 0.5, -70, 0.0, 0.15, 0);
-            // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-            // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
-            // 0.0, 0.15, 0);
-            // System.out.println("Safety two");
-        } else {
-            moveToAngle(new double[] { 90, -180 }, 0);
-        }
     }
 }
