@@ -13,7 +13,14 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
@@ -40,8 +47,9 @@ public class Arm extends Submodule {
     private double[] wristWaypointPositions = { 0, 0, 0 };
 
     // Absolute Encoder Adjustment Constants
+    private NetworkTable table;
     public double drift = 0.0; // degrees
-    public double driftTolerance = 10.0;
+    public double driftTolerance = 0.5;  //In rotations
     public double dResets = 0.0;
 
     // State of Proximal and Distal Links
@@ -80,6 +88,9 @@ public class Arm extends Submodule {
             .getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
     private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
+    private DoubleArrayPublisher encoderDataPub;
+    private DoubleArraySubscriber newZeroSub;
+    private double[] zeros;
 
     private Arm() {
         int numLinkages = ArmConstants.LINKAGES;
@@ -112,6 +123,10 @@ public class Arm extends Submodule {
         configLowerSparkMax();
         configUpperSparkMax();
 
+        
+        encoderDataPub = getDoubleArrayTopic("EncoderData").publish();
+        newZeroSub = getDoubleArrayTopic("Offset").subscribe(new double[]{0,0});
+
         zero();
         stage = 0;
         wrist.onInit();
@@ -140,7 +155,9 @@ public class Arm extends Submodule {
         q[1] = Rotation2d
                 .fromDegrees(90 + q[0].getDegrees() - mUpperEncoder.getPosition() * ArmConstants.TICKS_TO_DEGREES)
                 .unaryMinus();
-
+        
+        encoderDataPub.set(new double[]{mLowerEncoder.getPosition(),mLowerAbsoluteEncoder.getPosition(), mUpperEncoder.getPosition(),mUpperAbsoluteEncoder.getPosition()});
+        align();
         // Absolute Encoder Sanity Checks
         // Rotation2d[] q = {
         // Rotation2d.fromDegrees(90).minus(Rotation2d
@@ -433,6 +450,17 @@ public class Arm extends Submodule {
         return rel;
     }
 
+    public void align(){
+        zeros = newZeroSub.get();
+        if (Math.abs(zeros[0]) < driftTolerance&&Math.abs(zeros[1]) < driftTolerance)
+        {
+            mLowerEncoder.setPosition(mLowerEncoder.getPosition()-zeros[0]);
+            mLowerEncoder.setPosition(mLowerEncoder.getPosition()-zeros[0]);
+        }
+        
+        
+    }
+
     public double[] forKin(Rotation2d[] q) {
         double[] pos = new double[state.length * 2];
 
@@ -604,5 +632,15 @@ public class Arm extends Submodule {
         } else {
             moveToAngle(new double[] { 90, -180 }, 0);
         }
+    }
+
+    
+
+    private DoubleArrayTopic getDoubleArrayTopic(String key) {
+        if (table == null) {
+            NetworkTableInstance.getDefault();
+            table = NetworkTableInstance.getDefault().getTable(Constants.NETWORKTABLESNAME).getSubTable(ArmConstants.NETWORKTABLESNAME);
+        }
+        return table.getDoubleArrayTopic(key);
     }
 }

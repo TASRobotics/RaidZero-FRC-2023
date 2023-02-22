@@ -179,6 +179,7 @@ public class Constants {
         }
 
         public static final class ArmConstants {
+                public static final String NETWORKTABLESNAME = "Arm";
 
                 /** Arm Kinematics Constants */
                 public static final double LOWER_ARM_LENGTH = 1.0; // in meters
@@ -308,13 +309,16 @@ public class Constants {
         public static final class WristConstants {
                 public static final int ID = 15;
 
+                public static final String NETWORKTABLES_NAME = "Wrist";
+
                 public static final boolean INVERSION = true;
 
                 public static final int CURRENT_LIMIT = 25;
 
                 // public static final boolean ENCODER_INVERSION = false;
                 // 1:75 ratio, in degrees
-                public static final double POSITION_CONVERSION_FACTOR = 1.0/75.0 * 360.0;
+                public static final double GEAR_RATIO = 82.2;
+                public static final double POSITION_CONVERSION_FACTOR = 1.0/GEAR_RATIO * 360.0;
                 public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60;
 
                 public static final boolean ENABLEREVERSELIMIT = true;
@@ -345,8 +349,6 @@ public class Constants {
                 public static final int LIMITSWITCHBUFFERSIZE = 100;
 
                 public static final double ENCODER_NORMALIZATION = 100.0;
-
-                public static final String NAME = null;
         }
 
         public static final class IntakeConstants {
