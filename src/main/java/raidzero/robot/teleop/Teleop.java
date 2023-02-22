@@ -220,9 +220,9 @@ public class Teleop {
 
         // Intake
         if (p.getRawButton(12)) {
-            intake.setPercentSpeed(0.5);
+            intake.setPercentSpeed(Math.random() * (0.5 - 0.4) + 0.4);
         } else if (p.getRawButton(11)) {
-            intake.setPercentSpeed(-0.7);
+            intake.setPercentSpeed(-(Math.random() * (0.5 - 0.4) + 0.4));
         }  else {
             intake.holdPosition();
         }
