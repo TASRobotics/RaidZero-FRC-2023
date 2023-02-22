@@ -1,5 +1,7 @@
+package raidzero.robot.auto.actions;
+
 import edu.wpi.first.wpilibj.Timer;
-import raidzero.robot.auto.actions.Action;
+
 import raidzero.robot.submodules.Intake;
 
 public class RunIntakeAction implements Action {
@@ -33,5 +35,6 @@ public class RunIntakeAction implements Action {
     public void done() {
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' finished!");
         timer.stop();
+        mIntake.setPercentSpeed(0);
     }
 }

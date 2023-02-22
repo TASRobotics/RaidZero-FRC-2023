@@ -22,12 +22,11 @@ import raidzero.robot.submodules.Arm;
 import raidzero.robot.Constants.ArmConstants;;
 
 public class TwoConeClimbSequence extends AutoSequence {
-    private PathPlannerTrajectory mSClimbRamp = PathPlanner.loadPath("sClimbRamp", SwerveConstants.MAX_DRIVE_VEL_MPS,
+    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("TCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
-    private PathPlannerTrajectory mRClimbRamp = PathPlanner.loadPath("rClimbRamp", SwerveConstants.MAX_DRIVE_VEL_MPS,
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("TCC Balance", SwerveConstants.MAX_DRIVE_VEL_MPS,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("Balance", SwerveConstants.MAX_DRIVE_VEL_MPS,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
+
     private static final Swerve mSwerve = Swerve.getInstance();
     private static final Arm mArm = Arm.getInstance();
     private static final Intake mIntake = Intake.getInstance();
@@ -37,14 +36,16 @@ public class TwoConeClimbSequence extends AutoSequence {
         addAction(
             new SeriesAction(Arrays.asList(
                 // Score preload in mid rung
-                new MoveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180),
-                new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
-                new WaitAction(0.5), 
-                new LambdaAction(() -> mIntake.setPercentSpeed(0)),
-                new ArmHomeAction()
+                // new MoveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180),
+                // new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
+                // new WaitAction(0.5), 
+                // new LambdaAction(() -> mIntake.setPercentSpeed(0)),
+                // new ArmHomeAction()
 
                 // Climb over charge station & get cone
-
+                new DrivePath(mOverRamp),
+                new WaitAction(1),
+                new DrivePath(mBalance)
 
                 // // Climb Ramp
                 // new ParallelAction(Arrays.asList(
