@@ -88,12 +88,13 @@ public class Constants {
                                 (MAX_VEL_MPS /
                                                 (Math.PI * WHEEL_DIAMETER_METERS * THROTTLE_REDUCTION / 2048.0 * 10));
                 /** 1678 Pathing Constants */
-                public static final double XCONTROLLER_KP = 1;
-                public static final double YCONTROLLER_KP = 1;
-                public static final double THETACONTROLLER_KP = 2;
-                public static final double XCONTROLLER_TOLERANCE = 0.05;
-                public static final double YCONTROLLER_TOLERANCE = 0.05;
-                public static final double THETACONTROLLER_TOLERANCE = 1;
+                public static final double XCONTROLLER_KP = 1.5;
+                public static final double YCONTROLLER_KP = 1.5;
+                public static final double THETACONTROLLER_KP = 1;
+                public static final double THETACONTROLLER_KD = 0;
+                public static final double XCONTROLLER_TOLERANCE = 0.1;
+                public static final double YCONTROLLER_TOLERANCE = 0.1;
+                public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(20);
 
                 // Using SDS 6.75 ratio
                 public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS

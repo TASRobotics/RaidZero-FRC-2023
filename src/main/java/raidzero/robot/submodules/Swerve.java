@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
@@ -133,11 +132,11 @@ public class Swerve extends Submodule {
 
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
-        thetaController = new PIDController(SwerveConstants.THETACONTROLLER_KP, 0, 0);
+        thetaController = new PIDController(SwerveConstants.THETACONTROLLER_KP, 0, SwerveConstants.THETACONTROLLER_KD);
         xController.setTolerance(SwerveConstants.XCONTROLLER_TOLERANCE);
         yController.setTolerance(SwerveConstants.YCONTROLLER_TOLERANCE);
         thetaController.setTolerance(SwerveConstants.THETACONTROLLER_TOLERANCE);
-        thetaController.enableContinuousInput(-180, 180);
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         autoAimXController = new PIDController(0, 0, 0);
         autoAimYController = new PIDController(0, 0, 0);
@@ -329,6 +328,9 @@ public class Swerve extends Submodule {
         double ySpeed = yController.calculate(getPose().getY(), state.poseMeters.getY());
         double thetaSpeed = thetaController.calculate(getPose().getRotation().getRadians(),
                 state.holonomicRotation.getRadians());
+        // Math
+        SmartDashboard.putNumber("theta speed", thetaSpeed);
+
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
                 ySpeed,
@@ -349,8 +351,8 @@ public class Swerve extends Submodule {
     }
 
     public boolean isFinishedPathing() {
-        if (xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint()) {
-            if (timer.hasElapsed(currentTrajectory.getTotalTimeSeconds() * 1.5)) {
+        if (xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint() ) {
+            if (timer.hasElapsed(currentTrajectory.getTotalTimeSeconds())) {
                 return true;
             }
         }
