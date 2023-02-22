@@ -263,8 +263,8 @@ public class Constants {
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 700;
-                public static final double LOWER_MAX_ACCEL = 350;
+                public static final double LOWER_MAX_VEL = 1050;
+                public static final double LOWER_MAX_ACCEL = 700;
                 public static final double LOWER_MIN_ERROR = 0.0;
 
                 public static final double UPPER_KF = 0.000166;
@@ -272,8 +272,8 @@ public class Constants {
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 1600;
-                public static final double UPPER_MAX_ACCEL = 800;
+                public static final double UPPER_MAX_VEL = 2400;
+                public static final double UPPER_MAX_ACCEL = 1600;
                 public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double TOTAL_MAX_ACCEL = LOWER_MAX_ACCEL + UPPER_MAX_ACCEL;

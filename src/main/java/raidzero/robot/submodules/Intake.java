@@ -58,6 +58,9 @@ public class Intake extends Submodule {
 
     @Override
     public void run() {
+        if(Math.abs(mPercentOut) < 0.05) {
+            holdPosition();
+        }
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
