@@ -15,7 +15,6 @@ import raidzero.robot.auto.actions.SeriesAction;
 public class ClimbSequence extends AutoSequence {
     private PathPlannerTrajectory mTrajectory = PathPlanner.loadPath("Balance", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.75,
         SwerveConstants.MAX_DRIVE_ACCEL_MPSPS, false);
-    private Swerve mSwerve = Swerve.getInstance();
     
     @Override
     public void sequence() {
