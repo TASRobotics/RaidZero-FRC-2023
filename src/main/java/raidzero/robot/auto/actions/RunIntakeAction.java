@@ -1,5 +1,3 @@
-import javax.xml.stream.events.StartDocument;
-
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.auto.actions.Action;
 import raidzero.robot.submodules.Intake;
