@@ -30,4 +30,8 @@ public class MathTools {
         }
         return converted;
     }
+
+    public static double lawOfCosines(double adj1, double adj2, double opp){
+        return Math.acos((adj1*adj1+adj2*adj2-opp*opp)/(2*adj1*adj2));
+    }
 }

@@ -36,6 +36,7 @@ public class SwerveModule extends Submodule implements Sendable {
     private double outputThrottleVelocity = 0.0;
     private double outputThrottlePercentSpeed = 0.0;
     private double outputRotorAngle = 0.0;
+    private double outputRotorPercentSpeed = 0.0;
 
     private ControlState controlState = ControlState.VELOCITY;
 
@@ -47,15 +48,14 @@ public class SwerveModule extends Submodule implements Sendable {
     /**
      * Called once when the submodule is initialized.
      */
-    public void onInit(int throttleId, int rotorId, double forwardAngle, int quadrant) {
-        this.quadrant = quadrant;
+    public void onInit(int throttleId, int rotorId, int rotorEncoderId, double forwardAngle) {
         this.forwardAngle = forwardAngle;
 
         throttle = new LazyTalonFX(throttleId, Constants.CANBUS_STRING);
         initThrottle(throttle);
 
         // rotorExternalEncoder = new CANCoder(quadrant);
-        rotorExternalEncoder = new CANCoder(quadrant, Constants.CANBUS_STRING);
+        rotorExternalEncoder = new CANCoder(rotorEncoderId, Constants.CANBUS_STRING);
         rotorExternalEncoder.configFactoryDefault();
         rotorExternalEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360, Constants.TIMEOUT_MS);
         rotorExternalEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToZero,
@@ -64,29 +64,6 @@ public class SwerveModule extends Submodule implements Sendable {
 
         rotor = new LazyTalonFX(rotorId, Constants.CANBUS_STRING);
         initRotor(rotor, rotorExternalEncoder);
-
-        int column = 0;
-        int row = 0;
-        if (quadrant == 1) {
-            column = 3;
-            row = 0;
-        } else if (quadrant == 2) {
-            column = 1;
-            row = 0;
-        } else if (quadrant == 3) {
-            column = 1;
-            row = 2;
-        } else {
-            column = 3;
-            row = 2;
-        }
-
-        // Shuffleboard.getTab(Tab.MAIN).add("Rotor" + quadrant, this)
-        // .withSize(2, 2).withPosition(column, row);
-        // motorVelocityEntry = Shuffleboard.getTab(Tab.MAIN).add("Motor" + quadrant, 0)
-        // .withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", -10.0,
-        // "max", 10.0))
-        // .withSize(1, 1).withPosition(column + 4, row).getEntry();
 
         stop();
     }
@@ -114,7 +91,9 @@ public class SwerveModule extends Submodule implements Sendable {
     @Override
     public void stop() {
         outputThrottleVelocity = 0.0;
+        outputThrottlePercentSpeed = 0.0;
         outputRotorAngle = getRotorAngle();
+        outputRotorPercentSpeed = 0.0;
     }
 
     @Override
@@ -141,8 +120,8 @@ public class SwerveModule extends Submodule implements Sendable {
             case PATHING:
                 break;
             case TESTING:
-                throttle.set(ControlMode.Velocity, outputThrottleVelocity);
-                rotor.set(ControlMode.Position, outputRotorAngle);
+                throttle.set(ControlMode.PercentOutput, outputThrottlePercentSpeed);
+                rotor.set(ControlMode.PercentOutput, outputRotorPercentSpeed);
                 break;
             case PERCENT:
                 throttle.set(ControlMode.PercentOutput, outputThrottlePercentSpeed);
@@ -224,8 +203,6 @@ public class SwerveModule extends Submodule implements Sendable {
      * @param angle target rotor angle in degrees.
      */
     public void setRotorAngle(double angle) {
-        controlState = ControlState.VELOCITY;
-
         double currentAngle = getRotorAngle();
         double delta = angle - currentAngle;
         delta = delta % 360;
@@ -308,15 +285,11 @@ public class SwerveModule extends Submodule implements Sendable {
         return error;
     }
 
-    public void testMotorAndRotor(double motorOutput, double rotorOutput) {
+    public void testThrottleAndRotor(double throttleOutput, double rotorOutput) {
         controlState = ControlState.TESTING;
 
-        outputThrottleVelocity = motorOutput / (SwerveConstants.THROTTLE_TICKS_TO_METERS * 10.0);
-        outputRotorAngle = MathTools.wrapDegrees(rotorOutput) / SwerveConstants.CANCODER_TO_DEGREES;
-        // if (quadrant == 1) {
-        // System.out.println("Target angle: " + outputRotorAngle + ", actual: " +
-        // (getRotorAngle() / 360.0 * 4096));
-        // }
+        outputThrottlePercentSpeed = throttleOutput;
+        outputRotorPercentSpeed = rotorOutput;
     }
 
     public void initThrottle(TalonFX throttle) {
