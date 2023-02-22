@@ -56,8 +56,6 @@ public class Intake extends Submodule {
     @Override
     public void update(double timestamp) {
         SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
-        // if(mPercentOut<0.05)
-        //     holdPosition();
     }
 
     @Override
