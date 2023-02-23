@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.swing.text.DefaultStyledDocument.ElementSpec;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -14,7 +15,6 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
-import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Intake extends Submodule {
     private Intake() {}
@@ -38,7 +38,7 @@ public class Intake extends Submodule {
     private double mDesiredPosition = 0.0;
     private double mPrevOpenLoopPosition = 0.0;
 
-    private final LazyCANSparkMax mMotor = new LazyCANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
+    private final CANSparkMax mMotor = new CANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
@@ -70,9 +70,7 @@ public class Intake extends Submodule {
             mPIDController.setReference(
                 mDesiredPosition,
                 ControlType.kSmartMotion,
-                IntakeConstants.PID_SLOT,
-                0,
-                ArbFFUnits.kPercentOut
+                IntakeConstants.PID_SLOT
             );
             System.out.println("Keeping position at " + mDesiredPosition);
         } 
@@ -91,11 +89,6 @@ public class Intake extends Submodule {
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
-        if(speed <= 0.9) {
-            mPercentOut = Math.random() * 0.1 + speed;
-        } else {
-            mPercentOut = Math.random() * -0.1 + speed;
-        }
     }
 
     public void holdPosition() {
