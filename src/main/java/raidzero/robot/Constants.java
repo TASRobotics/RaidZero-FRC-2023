@@ -200,8 +200,8 @@ public class Constants {
                 public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.0, 0.0 };
                 public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
                 public static final double[] INTER_GRID_MEDIUM = {0.50, 1.15 };
-                public static final double[] INTER_GRID_HIGH = { 0.50, 1.3 };
-                public static final double[] INTER_FLOOR_INTAKE = { 0.0, 0.0 };
+                public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
+                public static final double[] INTER_FLOOR_INTAKE = { 0.7, 0.35 };
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.93, 0.97 };
@@ -264,13 +264,32 @@ public class Constants {
                 public static final double X_EXTENSION_LIMIT = 1.4;
                 public static final double Y_EXTENSION_LIMIT = 1.4;
 
+                // public static final double LOWER_KF = 0.000166;
+                // public static final double LOWER_KP = 0.000133;
+                // public static final double LOWER_KI = 0.0;
+                // public static final double LOWER_KD = 0.00000;
+                // public static final double LOWER_MIN_VEL = 0.0;
+                // public static final double LOWER_MAX_VEL = 2100;
+                // public static final double LOWER_MAX_ACCEL = 1330;
+                // public static final double LOWER_MIN_ERROR = 0.0;
+
+                // public static final double UPPER_KF = 0.000166;
+                // public static final double UPPER_KP = 0.000133;
+                // public static final double UPPER_KI = 0.0;
+                // public static final double UPPER_KD = 0.00000;
+                // public static final double UPPER_MIN_VEL = 0.0;
+                // public static final double UPPER_MAX_VEL = 4300;
+                // public static final double UPPER_MAX_ACCEL = 2770;
+                // public static final double UPPER_MIN_ERROR = 0.0;
+
+                // Testing Speeds
                 public static final double LOWER_KF = 0.000166;
                 public static final double LOWER_KP = 0.000156;
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
-                public static final double LOWER_MAX_VEL = 2100;
-                public static final double LOWER_MAX_ACCEL = 1330;
+                public static final double LOWER_MAX_VEL = 700;
+                public static final double LOWER_MAX_ACCEL = 350;
                 public static final double LOWER_MIN_ERROR = 0.0;
 
                 public static final double UPPER_KF = 0.000166;
@@ -278,28 +297,9 @@ public class Constants {
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;
-                public static final double UPPER_MAX_VEL = 4300;
-                public static final double UPPER_MAX_ACCEL = 2770;
+                public static final double UPPER_MAX_VEL = 1500;
+                public static final double UPPER_MAX_ACCEL = 700;
                 public static final double UPPER_MIN_ERROR = 0.0;
-
-                // Testing Speeds
-                // public static final double LOWER_KF = 0.000166;
-                // public static final double LOWER_KP = 0.000156;
-                // public static final double LOWER_KI = 0.0;
-                // public static final double LOWER_KD = 0.00000;
-                // public static final double LOWER_MIN_VEL = 0.0;
-                // public static final double LOWER_MAX_VEL = 700;
-                // public static final double LOWER_MAX_ACCEL = 350;
-                // public static final double LOWER_MIN_ERROR = 0.0;
-
-                // public static final double UPPER_KF = 0.000166;
-                // public static final double UPPER_KP = 0.000156;
-                // public static final double UPPER_KI = 0.0;
-                // public static final double UPPER_KD = 0.00000;
-                // public static final double UPPER_MIN_VEL = 0.0;
-                // public static final double UPPER_MAX_VEL = 1500;
-                // public static final double UPPER_MAX_ACCEL = 700;
-                // public static final double UPPER_MIN_ERROR = 0.0;
 
                 public static final double TOTAL_MAX_ACCEL = LOWER_MAX_ACCEL + UPPER_MAX_ACCEL;
                 public static final double TOTAL_MAX_VEL = LOWER_MAX_VEL + UPPER_MAX_VEL;

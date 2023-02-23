@@ -25,7 +25,6 @@ public class Teleop {
     private static final Intake intake = Intake.getInstance();
 
     private double rampRate = 0.0;
-    private boolean delivering = false;
 
     public static Teleop getInstance() {
         if (instance == null) {
@@ -180,8 +179,7 @@ public class Teleop {
 
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
-        if (p.getRawButtonPressed(10) && !swerve.isOverLimit() && !arm.isGoingHome() && !delivering) {
-            delivering = true;
+        if (p.getRawButtonPressed(10) && !swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe()) {
             arm.configSmartMotionConstraints(
                     ArmConstants.LOWER_MAX_VEL * 1.5,
                     ArmConstants.LOWER_MAX_ACCEL * 1.5,
@@ -190,31 +188,25 @@ public class Teleop {
 
             arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90, -ArmConstants.HUMAN_PICKUP_STATION[0],
                     ArmConstants.HUMAN_PICKUP_STATION[1], 160);
-        } else if (p.getRawButtonPressed(10) && delivering) {
-            arm.reverseState();
+        } else if (p.getRawAxis(0)==1 && !swerve.isOverLimit() && !arm.isGoingHome()) {
+            arm.reverseStage();
         }
         // High Grid
-        else if (p.getRawButtonPressed(14) && !swerve.isOverLimit() && !arm.isGoingHome() && !delivering) {
-            delivering = true;
+        else if (p.getRawButtonPressed(14) && !swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe()) {
             arm.moveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], 70,
                     -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 155);
-        } else if (p.getRawButtonPressed(14) && delivering) {
-            arm.reverseState();
-        }
+        } 
         // Medium Grid
-        else if (p.getRawButtonPressed(15) && !swerve.isOverLimit() && !arm.isGoingHome() && !delivering) {
-            delivering = true;
+        else if (p.getRawButtonPressed(15) && !swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe()) {
             arm.moveTwoPronged(-ArmConstants.INTER_GRID_MEDIUM[0], ArmConstants.INTER_GRID_MEDIUM[1], 70,
                     -ArmConstants.GRID_MEDIUM[0], ArmConstants.GRID_MEDIUM[1], 155);
-        } else if (p.getRawButtonPressed(15) && delivering) {
-            arm.reverseState();
-        }
+        } 
         // Floor Intake
-        else if (p.getRawButtonPressed(16) && !swerve.isOverLimit() && !arm.isGoingHome()) {
-            delivering = false;
-            arm.moveToPoint(-ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 155);
-        } else if (p.getRawButtonPressed(13)) {
-            delivering = false;
+        else if (p.getRawButtonPressed(16) && !swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe()) {
+            arm.moveTwoPronged(-ArmConstants.INTER_FLOOR_INTAKE[0], ArmConstants.INTER_FLOOR_INTAKE[1], 155, -ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 155);
+        } 
+        // Go Home
+        else if (p.getRawButtonPressed(13)) {
             arm.goHome();
         }
 
