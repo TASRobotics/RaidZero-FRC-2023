@@ -37,7 +37,6 @@ public class Intake extends Submodule {
 
     private final CANSparkMax mMotor = new CANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
-
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
     @Override
@@ -83,11 +82,17 @@ public class Intake extends Submodule {
         mEncoder.setPosition(0);
     }
 
+    /**
+     * Set intake percent speed [-1, 1]
+     * 
+     * @param speed percent speed
+     */
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
     }
 
+    /** Hold position of intake */
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
         if(Math.signum(mPercentOut)<0)
@@ -96,6 +101,7 @@ public class Intake extends Submodule {
             mDesiredPosition = mPrevOpenLoopPosition + 3;
     }
 
+    /** Configure intake motor & integrated encoder/PID controller */
     private void configIntakeSparkMax() {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
@@ -115,5 +121,4 @@ public class Intake extends Submodule {
         mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, IntakeConstants.SMART_MOTION_SLOT);
     }
-
 }

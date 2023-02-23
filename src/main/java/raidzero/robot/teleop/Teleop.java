@@ -1,8 +1,9 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
@@ -11,10 +12,7 @@ import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.utils.JoystickUtils;
 
-import edu.wpi.first.math.MathUtil;
-
 public class Teleop {
-
     private static Teleop instance = null;
     private static XboxController p1 = new XboxController(0);
     private static XboxController p2 = new XboxController(1);
@@ -26,6 +24,7 @@ public class Teleop {
     private static final Intake intake = Intake.getInstance();
 
     private double rampRate = 0.0;
+    private Alliance alliance;
 
     public static Teleop getInstance() {
         if (instance == null) {
@@ -35,6 +34,7 @@ public class Teleop {
     }
 
     public void onStart() {
+        alliance = DriverStation.getAlliance();
     }
 
     public void onLoop() {
@@ -61,20 +61,20 @@ public class Teleop {
         }
         if (!aiming)
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
-                    true);
+                JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
+                true
+            );
         else
             swerve.drive(
-                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
-                    true);
+                JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25),
+                JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
+                JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
+                true
+            );
     }
-
-    private int mode = 0;
-
+    
     private void p2Loop(XboxController p) {
 
         // if (p.getRightBumperPressed())
@@ -201,5 +201,51 @@ public class Teleop {
             intake.holdPosition();
         }
 
+        // Auto Alignments
+        if(alliance == Alliance.Blue) {
+            if(p.getRawButton(8)) {
+                swerve.autoAim(AutoAimLocation.BLL);
+            } else if(p.getRawButton(7)) {
+                swerve.autoAim(AutoAimLocation.BLM);
+            } else if(p.getRawButton(6)) {
+                swerve.autoAim(AutoAimLocation.BLR);
+            } else if(p.getRawButton(5)) {
+                swerve.autoAim(AutoAimLocation.BML);
+            } else if(p.getRawButton(4)) {
+                swerve.autoAim(AutoAimLocation.BMM);
+            } else if(p.getRawButton(3)) {
+                swerve.autoAim(AutoAimLocation.BMR);
+            } else if(p.getRawButton(2)) {
+                swerve.autoAim(AutoAimLocation.BRL);
+            } else if(p.getRawButton(1)) {
+                swerve.autoAim(AutoAimLocation.BRM);
+            } else if(p.getRawButton(0)) {
+                swerve.autoAim(AutoAimLocation.BRR);
+            } else  {
+
+            }
+        } else {
+            if(p.getRawButton(8)) {
+                swerve.autoAim(AutoAimLocation.RLL);
+            } else if(p.getRawButton(7)) {
+                swerve.autoAim(AutoAimLocation.RLM);
+            } else if(p.getRawButton(6)) {
+                swerve.autoAim(AutoAimLocation.RLR);
+            } else if(p.getRawButton(5)) {
+                swerve.autoAim(AutoAimLocation.RML);
+            } else if(p.getRawButton(4)) {
+                swerve.autoAim(AutoAimLocation.RMM);
+            } else if(p.getRawButton(3)) {
+                swerve.autoAim(AutoAimLocation.RMR);
+            } else if(p.getRawButton(2)) {
+                swerve.autoAim(AutoAimLocation.RRL);
+            } else if(p.getRawButton(1)) {
+                swerve.autoAim(AutoAimLocation.RRM);
+            } else if(p.getRawButton(0)) {
+                swerve.autoAim(AutoAimLocation.RRR);
+            } else  {
+
+            }
+        }
     }
 }
