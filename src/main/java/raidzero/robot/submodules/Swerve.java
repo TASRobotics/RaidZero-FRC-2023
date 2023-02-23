@@ -259,8 +259,9 @@ public class Swerve extends Submodule {
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
         try {
-            visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1);
-            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+            // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1);
+            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
@@ -272,10 +273,11 @@ public class Swerve extends Submodule {
         return prevPose;
     }
 
-    public SwerveDriveKinematics getKinematics() {
-        return SwerveConstants.KINEMATICS;
-    }
-
+    /**
+     * Updates odometry
+     * 
+     * @return current position
+     */
     private Pose2d updateOdometry() {
         try {
             return odometry.update(
@@ -287,6 +289,14 @@ public class Swerve extends Submodule {
         }
     }
 
+    /**
+     * Drives robot (primarily used for teleop manual control)
+     * 
+     * @param xSpeed speed in x direction
+     * @param ySpeed speed in y direction
+     * @param angularSpeed turn speed
+     * @param fieldOriented 
+     */
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
         boolean ignoreAngle = false;
         if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
@@ -305,6 +315,11 @@ public class Swerve extends Submodule {
         bottomRightModule.setTargetState(targetState[3], ignoreAngle, true, true);
     }
 
+    /**
+     * Follow path
+     * 
+     * @param trajectory desired path
+     */
     public void followPath(PathPlannerTrajectory trajectory) {
         if (controlState == ControlState.PATHING) {
             return;
@@ -351,10 +366,20 @@ public class Swerve extends Submodule {
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
+    /**
+     * Get total path time
+     * 
+     * @return path time
+     */
     public double getPathingTime() {
         return timer.get();
     }
 
+    /**
+     * Check if robot has finished pathing
+     * 
+     * @return robot pathing state
+     */
     public boolean isFinishedPathing() {
         if (xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint() ) {
             if (timer.hasElapsed(currentTrajectory.getTotalTimeSeconds())) {
@@ -364,36 +389,77 @@ public class Swerve extends Submodule {
         return false;
     }
 
+    /**
+     * Auto aim robot to desired location
+     * 
+     * @param location auto aim location
+     */
     public void autoAim(AutoAimLocation location) {
         controlState = ControlState.AUTO_AIM;
         switch (location) {
             case BLL:
-                zero();
-                desiredAutoAimPose = new Pose2d(1, 1, Rotation2d.fromDegrees(90));
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 0.89, Rotation2d.fromDegrees(180));
                 break;
             case BLM:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 1.44, Rotation2d.fromDegrees(180));
                 break;
             case BLR:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 2.04, Rotation2d.fromDegrees(180));
                 break;
             case BML:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 2.59, Rotation2d.fromDegrees(180));
                 break;
             case BMM:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 3.14, Rotation2d.fromDegrees(180));
                 break;
             case BMR:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 3.81, Rotation2d.fromDegrees(180));
                 break;
             case BRL:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 4.24, Rotation2d.fromDegrees(180));
                 break;
             case BRM:
+                desiredAutoAimPose = new Pose2d(getPose().getX(), 4.79, Rotation2d.fromDegrees(180));
                 break;
             case BRR:
+                // no bueno
+                break;
+            case RLM:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RLR:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RML:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RMM:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RMR:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RRL:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RRM:
+                desiredAutoAimPose = new Pose2d();
+                break;
+            case RRR:
+                desiredAutoAimPose = new Pose2d();
                 break;
             case B_LOAD:
+                desiredAutoAimPose = null;
+                break;
+            case R_LOAD:
+                desiredAutoAimPose = null;
                 break;
             default:
                 break;
         }
     }
 
+    /** Update auto aim */
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
@@ -403,13 +469,20 @@ public class Swerve extends Submodule {
             getPose().getRotation()
         );
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.5);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
+    /**
+     * Test swerve modules
+     * 
+     * @param quadrant module quadrant [I, II, III, IV]
+     * @param throttleOutput output of throttle motor
+     * @param rotorOutput output of rotor motor
+     */
     public void testModule(int quadrant, double throttleOutput, double rotorOutput) {
         if (quadrant == 1) {
             topLeftModule.testThrottleAndRotor(throttleOutput, rotorOutput);
@@ -422,6 +495,11 @@ public class Swerve extends Submodule {
         }
     }
 
+    /**
+     * Set drive throttle ramp rate
+     * 
+     * @param val ramp rate (seconds to full speed)
+     */
     public void setThrottleRampRate(double val) {
         topRightModule.setRotorRampRate(val);
         topLeftModule.setRotorRampRate(val);
