@@ -331,10 +331,11 @@ public class Swerve extends Submodule {
         SmartDashboard.putNumber("theta speed", thetaSpeed);
 
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed,
-                ySpeed,
-                thetaSpeed,
-                getPose().getRotation());
+            xSpeed,
+            ySpeed,
+            thetaSpeed,
+            getPose().getRotation()
+        );
         PathPlannerServer.sendPathFollowingData(state.poseMeters, getPose());
 
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
@@ -390,12 +391,14 @@ public class Swerve extends Submodule {
 
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
-                autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
-                autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-                        desiredAutoAimPose.getRotation().getRadians()),
-                getPose().getRotation());
+            autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
+            autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
+            autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+                    desiredAutoAimPose.getRotation().getRadians()),
+            getPose().getRotation()
+        );
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);

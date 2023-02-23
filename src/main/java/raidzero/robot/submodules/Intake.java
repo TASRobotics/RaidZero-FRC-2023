@@ -2,8 +2,6 @@ package raidzero.robot.submodules;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import javax.swing.text.DefaultStyledDocument.ElementSpec;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -11,7 +9,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
