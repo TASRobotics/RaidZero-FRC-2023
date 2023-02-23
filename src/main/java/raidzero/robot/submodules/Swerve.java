@@ -259,8 +259,9 @@ public class Swerve extends Submodule {
     public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
         try {
-            visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1);
-            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+            // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2, 0.2, 0.1);
+            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
+            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
