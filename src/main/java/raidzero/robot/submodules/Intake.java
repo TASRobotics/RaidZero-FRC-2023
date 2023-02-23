@@ -91,9 +91,9 @@ public class Intake extends Submodule {
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
         if(Math.signum(mPercentOut)<0)
-            mDesiredPosition = mPrevOpenLoopPosition - 1;
+            mDesiredPosition = mPrevOpenLoopPosition - 3;
         else     
-            mDesiredPosition = mPrevOpenLoopPosition + 1;
+            mDesiredPosition = mPrevOpenLoopPosition + 3;
     }
 
     private void configIntakeSparkMax() {
