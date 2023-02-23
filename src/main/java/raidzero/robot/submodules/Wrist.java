@@ -21,7 +21,8 @@ import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
 
 public class Wrist extends Submodule {
-    private Wrist() {}
+    private Wrist() {
+    }
 
     private static Wrist instance = null;
 
@@ -66,10 +67,12 @@ public class Wrist extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     private void align() {
         double[] defaultEdgeData = { WristConstants.LIMITSWITCHPOSITIONS[0], 1.0 };
@@ -89,12 +92,11 @@ public class Wrist extends Submodule {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
-                ControlType.kSmartMotion,
-                WristConstants.SMART_MOTION_SLOT,
-                0,
-                ArbFFUnits.kPercentOut
-            );
+                    mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
+                    ControlType.kSmartMotion,
+                    WristConstants.SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
         }
         double limitSwitchEncoderData[] = { inZoneLimitSwitch.isPressed() ? 1 : 0, mMotor.getEncoder().getPosition() };
         // System.out.println(mMotor.getEncoder().getPosition());
