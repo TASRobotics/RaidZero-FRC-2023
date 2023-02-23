@@ -7,6 +7,7 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Wrist;
+import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.utils.JoystickUtils;
 
@@ -70,6 +71,10 @@ public class Teleop {
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
                     JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
                     true);
+
+        if (p.getBButtonPressed()){
+            swerve.autoAim(AutoAimLocation.BLL);
+        }
     }
 
     private int mode = 0;
