@@ -34,60 +34,63 @@ public class TwoConeClimbSequence extends AutoSequence {
     @Override
     public void sequence() {
         addAction(
-            new SeriesAction(Arrays.asList(
-                // Score preload in mid rung
-                // new MoveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180),
-                // new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
-                // new WaitAction(0.5), 
-                // new LambdaAction(() -> mIntake.setPercentSpeed(0)),
-                // new ArmHomeAction()
+                new SeriesAction(Arrays.asList(
+                        // Score preload in mid rung
+                        // new MoveTwoPronged(-.05, 1.5, 0, -ArmConstants.GRID_HIGH[0],
+                        // ArmConstants.GRID_HIGH[1], 180),
+                        // new LambdaAction(() -> mIntake.setPercentSpeed(-1)),
+                        // new WaitAction(0.5),
+                        // new LambdaAction(() -> mIntake.setPercentSpeed(0)),
+                        // new ArmHomeAction()
 
-                // Climb over charge station & get cone
-                new DrivePath(mOverRamp),
-                new WaitAction(1),
-                new DrivePath(mBalance)
+                        // Climb over charge station & get cone
+                        new DrivePath(mOverRamp),
+                        new WaitAction(1),
+                        new DrivePath(mBalance)
 
                 // // Climb Ramp
                 // new ParallelAction(Arrays.asList(
-                //         new DrivePath(mRClimbRamp),
-                //         new LambdaAction(() -> {
-                //             mIntake.setPercentSpeed(0);
-                //         }),
-                //         new SeriesAction(Arrays.asList(
-                //                 new WaitForEventMarkerAction(mRClimbRamp, "",
-                //                         mSwerve.getPathingTime()),
-                //                 new LambdaAction(() -> mIntake.setPercentSpeed(0.5)))))),
+                // new DrivePath(mRClimbRamp),
+                // new LambdaAction(() -> {
+                // mIntake.setPercentSpeed(0);
+                // }),
+                // new SeriesAction(Arrays.asList(
+                // new WaitForEventMarkerAction(mRClimbRamp, "",
+                // mSwerve.getPathingTime()),
+                // new LambdaAction(() -> mIntake.setPercentSpeed(0.5)))))),
                 // // Floor Pickup
                 // new LambdaAction(() -> {
-                //     mIntake.setPercentSpeed(0.3);
-                //     mArm.moveToPoint(ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1], 180);
-                //     Timer.delay(4);
-                //     mIntake.holdPosition();
-                //     Timer.delay(0.5);
-                //     mArm.goHome();
+                // mIntake.setPercentSpeed(0.3);
+                // mArm.moveToPoint(ArmConstants.FLOOR_INTAKE[0], ArmConstants.FLOOR_INTAKE[1],
+                // 180);
+                // Timer.delay(4);
+                // mIntake.holdPosition();
+                // Timer.delay(0.5);
+                // mArm.goHome();
                 // }),
                 // // Reverse Climb Ramp
                 // new ParallelAction(Arrays.asList(
-                //         new DrivePath(mSClimbRamp),
-                //         new LambdaAction(() -> {
-                //             // Timer.delay(1);
-                //         }))),
+                // new DrivePath(mSClimbRamp),
+                // new LambdaAction(() -> {
+                // // Timer.delay(1);
+                // }))),
                 // // Score High
                 // new LambdaAction(() -> {
-                //     mArm.moveTwoPronged(-0.05, 0.8, 0, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 180);
-                //     Timer.delay(5);
-                //     mIntake.setPercentSpeed(-0.7);
-                //     Timer.delay(0.5);
-                //     mArm.goHome();
+                // mArm.moveTwoPronged(-0.05, 0.8, 0, -ArmConstants.GRID_HIGH[0],
+                // ArmConstants.GRID_HIGH[1], 180);
+                // Timer.delay(5);
+                // mIntake.setPercentSpeed(-0.7);
+                // Timer.delay(0.5);
+                // mArm.goHome();
                 // }),
                 // // Balance
                 // new ParallelAction(Arrays.asList(
-                //         new DrivePath(mBalance),
-                //         new LambdaAction(() -> {
-                //             // Timer.delay(1);
-                //         })))
+                // new DrivePath(mBalance),
+                // new LambdaAction(() -> {
+                // // Timer.delay(1);
+                // })))
 
-        )));
+                )));
         System.out.println("Added actions.");
     }
 

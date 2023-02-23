@@ -6,7 +6,8 @@ import raidzero.robot.submodules.Arm;
 public class ArmHomeAction implements Action {
     private static final Arm mArm = Arm.getInstance();
 
-    public ArmHomeAction() {}
+    public ArmHomeAction() {
+    }
 
     @Override
     public void start() {
@@ -15,7 +16,8 @@ public class ArmHomeAction implements Action {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     @Override
     public void done() {
