@@ -163,12 +163,10 @@ public class Arm extends Submodule {
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-        // Link Angles
         SmartDashboard.putNumber("Proximal Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
 
-        // Link Positions
         SmartDashboard.putNumber("Proximal X ", state[0].getX());
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
         SmartDashboard.putNumber("Distal X", state[1].getX());
@@ -181,7 +179,7 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
         SmartDashboard.putNumber("TooFast", tooFasttooFurious());
 
-        // Two Pronged Movement
+        // Multi-pronged Movement
         if (stage > 0) {
             // Attempt approximate linear motion
             // Check for Intermediate Error and Proceed to Staged Target
@@ -216,7 +214,8 @@ public class Arm extends Submodule {
         }
 
         // Check Safe Zone
-        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.2 && Math.abs(state[1].getY() - 0.15) < 0.15) {
+        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.2
+                && Math.abs(state[1].getY() - 0.15) < 0.15) {
             safeZone = true;
         } else
             safeZone = false;
@@ -341,17 +340,19 @@ public class Arm extends Submodule {
         mUpperLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
     }
 
+    /*
+     * Returns current Arm Ramp Rate
+     */
     public void setArmRampRate(double val) {
         mUpperLeader.setClosedLoopRampRate(val);
         mLowerLeader.setClosedLoopRampRate(val);
     }
 
+    /*
+     * Returns current Proximal and Distal State
+     */
     public Pose2d[] getState() {
         return state;
-    }
-
-    public Wrist getWrist() {
-        return wrist;
     }
 
     /**
@@ -433,6 +434,9 @@ public class Arm extends Submodule {
         return rel;
     }
 
+    /* 
+     * Override current smart motion constarints
+     */
     public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel,
             double upperMaxAccel) {
         mLowerPIDController.setSmartMotionMaxVelocity(lowerMaxVel, ArmConstants.LOWER_SMART_MOTION_SLOT);
@@ -441,6 +445,9 @@ public class Arm extends Submodule {
         mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
     }
 
+    /* 
+     * Two-Pronged Arm Movement
+     */
     public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
             double target_x, double target_y, double target_wrist) {
         stage = 1;
@@ -457,6 +464,9 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
+    /*
+     * Three-Pronged Arm Movement
+     */
     public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
             double inter_x2, double inter_y2, double inter_wrist2,
             double target_x, double target_y, double target_wrist) {
@@ -479,32 +489,48 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
+    /* 
+     * Revert to previous staged movement
+     */
     public void reverseStage() {
-        if (stage==0 || stage==1){
-            stage = xWaypointPositions.length-1;
-            moveToPoint(xWaypointPositions[stage-1], yWaypointPositions[stage-1], wristWaypointPositions[stage-1]);
-        } 
-        // else if (stage==xWaypointPositions.length-1){
-        //     stage--;
-        // }
+        if (stage == 0 || stage == 1) {
+            stage = xWaypointPositions.length - 1;
+            moveToPoint(xWaypointPositions[stage - 1], yWaypointPositions[stage - 1],
+                    wristWaypointPositions[stage - 1]);
+        }
     }
 
+    /*
+     * Returns whether the arm is returning home
+     */
     public boolean isGoingHome() {
         return goingHome;
     }
 
+    /*
+     * Returns whether the arm is on a path to target
+     */
     public boolean isOnPath() {
         return onPath;
     }
 
+    /* 
+     * Returns whether the arm has reached it's target
+     */
     public boolean isOnTarget() {
         return targetAcquired;
     }
 
+    /* 
+     * Returns whether the arm is within the bumpers
+     */
     public boolean isSafe() {
         return safeZone;
     }
 
+    /*
+     * Universal Arm Idle Command
+     */
     public void goHome() {
         configSmartMotionConstraints(
                 ArmConstants.LOWER_MAX_VEL * 2.0,
@@ -552,6 +578,9 @@ public class Arm extends Submodule {
         double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
     }
 
+    /* 
+     * Calculates x and y position of distal joint
+    */
     public double[] forKin(Rotation2d[] q) {
         double[] pos = new double[state.length * 2];
 
@@ -568,6 +597,9 @@ public class Arm extends Submodule {
         return pos;
     }
 
+    /*
+     * Calculates proximal and distal angles to reach target x and y end-effector state
+     */
     public double[] invKin(double target_x, double target_y) {
         // Prevent upper arm from crossing the y-axis
         return invKin(target_x, target_y, target_x < 0);
@@ -627,35 +659,5 @@ public class Arm extends Submodule {
             return s2;
         } else
             return s1;
-
-        // //Alternative
-        // double abs_elbow_angle =
-        // MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,
-        // ArmConstants.UPPER_ARM_LENGTH, radius);
-        // double lower_interior_angle =
-        // MathTools.lawOfCosines(ArmConstants.LOWER_ARM_LENGTH,radius,
-        // ArmConstants.UPPER_ARM_LENGTH);
-
-        // //Calculate the two possible lower arm angles, eliminate them for the
-        // alternative
-        // double lower_negative = theta + lower_interior_angle > Math.PI -
-        // Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta - lower_interior_angle:
-        // theta + lower_interior_angle;
-        // double lower_positive = theta - lower_interior_angle <
-        // Math.toRadians(ArmConstants.LOWER_MAX_ANGLE) ? theta + lower_interior_angle:
-        // theta - lower_interior_angle;
-
-        // //Return the solution given where the elbow is: Note, if there are not two
-        // solutions, the elbow
-        // //will go to the only possible location
-        // double lower_solution = positiveElbow ? lower_positive : lower_negative;
-        // double upper_solution = lower_solution > Math.PI/2 ? +abs_elbow_angle-Math.PI
-        // : -Math.PI-abs_elbow_angle;
-        // double[] solution = new double[] {Math.toDegrees(lower_solution),
-        // angleConv(Math.toDegrees(upper_solution))} ;
-        // //Compare the motion of the upper arm two solutions- we want to avoid having
-        // it cross the midline if possible
-
-        // return solution;
     }
 }
