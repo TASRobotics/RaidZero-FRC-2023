@@ -120,6 +120,7 @@ public class Vision extends Submodule {
             System.out.println("Setting up triggers");
             table.getSubTable(cameraSubTable).addListener("Timestamp", EnumSet.of(NetworkTableEvent.Kind.kValueAll), (subTable, key, NetworkTableEvent) -> {aprilDetect(subTable);});
         }
+        robotPose = new Pose2d(0, 0, new Rotation2d(0));
     }
 
     @Override
@@ -336,7 +337,7 @@ public class Vision extends Submodule {
         return aPoses;
     }
 
-    public Pose2d updateRobotPose(){
+    public void updateRobotPose(){
         NetworkTable subTable = table.getSubTable("Camera 1");
         aprilDetect(subTable);
         if (aprilTagIDs.length > 0){
@@ -349,15 +350,16 @@ public class Vision extends Submodule {
             Pose2d rotationPose = new Pose2d(new Translation2d(0, 0), robotRotation);
             Transform2d aprilTagTransform = new Transform2d(new Translation2d(xTranslationNT[0], zTranslationNT[0]), new Rotation2d(0));
             Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
-            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getX(), -cameraPose.getY(), new Rotation2d(0)));
+            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getY(), -cameraPose.getX(), new Rotation2d(0)));
             
             Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
 
             Pose2d finalPose = new Pose2d().transformBy(globalToAprilTag.plus(aprilTagToCamera).plus(cameraToRobot));
             robotPose = new Pose2d(finalPose.getX(), finalPose.getY(), robotDrive.getPose().getRotation());
-           
-            return robotPose;
         }
-        return new Pose2d();
+    }
+
+    public Pose2d getRobotPose(){
+        return robotPose;
     }
 }   

@@ -2,6 +2,7 @@ package raidzero.robot.teleop;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import raidzero.robot.Constants.ArmConstants;
@@ -10,6 +11,7 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Wrist;
 import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Swerve;
+import raidzero.robot.submodules.Vision;
 import raidzero.robot.utils.JoystickUtils;
 
 public class Teleop {
@@ -22,6 +24,7 @@ public class Teleop {
     private static final Swerve swerve = Swerve.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
+    private static final Vision vision = Vision.getInstance();
 
     private double rampRate = 0.0;
     private Alliance alliance;
@@ -50,6 +53,9 @@ public class Teleop {
          * p3 controls
          */
         p3Loop(p3);
+
+        SmartDashboard.putNumber("April tags x", vision.getRobotPose().getX());
+        SmartDashboard.putNumber("April tags y", vision.getRobotPose().getY());
     }
 
     private double[] target = { 0, 0.15 };
