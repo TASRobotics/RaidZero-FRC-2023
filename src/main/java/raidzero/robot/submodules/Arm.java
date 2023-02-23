@@ -340,16 +340,20 @@ public class Arm extends Submodule {
         mUpperLeader.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);
     }
 
-    /*
-     * Returns current Arm Ramp Rate
+    /**
+     * Sets ramprate for both links
+     * 
+     * @param val Ramp Rate
      */
     public void setArmRampRate(double val) {
         mUpperLeader.setClosedLoopRampRate(val);
         mLowerLeader.setClosedLoopRampRate(val);
     }
 
-    /*
-     * Returns current Proximal and Distal State
+    /**
+     * Returns current Proximal and Distal States
+     * 
+     * @return Array of Proximal and Distal Poses
      */
     public Pose2d[] getState() {
         return state;
@@ -357,6 +361,9 @@ public class Arm extends Submodule {
 
     /**
      * Converts angle such that result is bound between -2pi and 0
+     * 
+     * @param org Original Angle
+     * @return Converted Angle
      */
     public double angleConv(double org) {
         if (Math.signum(org) > 0)
@@ -366,7 +373,9 @@ public class Arm extends Submodule {
     }
 
     /**
-     * Return speed reduction if joints are outside bumper
+     * Rate limits the swerve is proximal or distal joint is outside bumper
+     * 
+     * @return Speed Reduction
      */
     public double tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.3 || Math.abs(state[0].getX()) > 0.2)
@@ -376,7 +385,10 @@ public class Arm extends Submodule {
     }
 
     /**
-     * Open loop Arm Control
+     * OpenLoop Arm Control
+     * 
+     * @param lowerOut proximal joint percentOutput
+     * @param upperOut distal joint percentOutput
      */
     public void moveArm(double lowerOut, double upperOut) {
         mControlState = ControlState.OPEN_LOOP;
@@ -385,7 +397,10 @@ public class Arm extends Submodule {
     }
 
     /**
-     * Closed loop Arm + Wrist Control (Target Angle Array, Target Wrist Angle)
+     * Closed Loop Arm + Wrist Control using Angle
+     * 
+     * @param targetAngles Target Angle Array
+     * @param wristAngle   Target Wrist Array
      */
     public void moveToAngle(double targetAngles[], double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
@@ -397,8 +412,10 @@ public class Arm extends Submodule {
     }
 
     /**
-     * Closed loop Arm + Wrist Control (Target Lower Angle, Target Upper Angle,
-     * Associated Parallel Wrist Angle)
+     * Closed Loop Arm + Wrist Control using Angles
+     * 
+     * @param lowerAngle Target Proximal Angle
+     * @param upperAngle Target Distal Angle
      */
     public void moveToAngle(double lowerAngle, double upperAngle) {
         mControlState = ControlState.CLOSED_LOOP;
@@ -407,6 +424,13 @@ public class Arm extends Submodule {
         moveToAngle(targetAngles, targetWristAngle);
     }
 
+    /**
+     * Closed Loop Arm + Wrist Control using Inverse Kinematics
+     * 
+     * @param target_x   Target X Distal Position
+     * @param target_y   Target Y Distal Position
+     * @param wristAngle Target Wrist Angle
+     */
     public void moveToPoint(double target_x, double target_y, double wristAngle) {
         mControlState = ControlState.CLOSED_LOOP;
         moveToAngle(invKin(target_x, target_y), wristAngle);
@@ -434,8 +458,13 @@ public class Arm extends Submodule {
         return rel;
     }
 
-    /* 
-     * Override current smart motion constarints
+    /**
+     * Override current smart motion constraints
+     * 
+     * @param lowerMaxVel   Proximal Max Velocity
+     * @param lowerMaxAccel Proximal Max Acceleration
+     * @param upperMaxVel   Distal Max Velocity
+     * @param upperMaxAccel Distal Max Acceleration
      */
     public void configSmartMotionConstraints(double lowerMaxVel, double lowerMaxAccel, double upperMaxVel,
             double upperMaxAccel) {
@@ -445,8 +474,15 @@ public class Arm extends Submodule {
         mUpperPIDController.setSmartMotionMaxAccel(upperMaxAccel, ArmConstants.UPPER_SMART_MOTION_SLOT);
     }
 
-    /* 
-     * Two-Pronged Arm Movement
+    /**
+     * Two Pronged Arm Movement
+     * 
+     * @param inter_x      Intermediate X Distal Position
+     * @param inter_y      Intermediate Y Distal Position
+     * @param inter_wrist  Intermediate wrist angle
+     * @param target_x     Target X Distal Position
+     * @param target_y     Target Y Distal Position
+     * @param target_wrist Target Wrist Angle Position
      */
     public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
             double target_x, double target_y, double target_wrist) {
@@ -464,8 +500,18 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
-    /*
-     * Three-Pronged Arm Movement
+    /**
+     * Three Pronged Arm Movement
+     * 
+     * @param inter_x      Intermediate X Distal Position
+     * @param inter_y      Intermediate Y Distal Position
+     * @param inter_wrist  Intermediate wrist angle
+     * @param inter_x2     Second Intermediate X Distal Position
+     * @param inter_y2     Second Intermediate Y Distal Position
+     * @param inter_wrist2 Second Intermediate wrist angle
+     * @param target_x     Target X Distal Position
+     * @param target_y     Target Y Distal Position
+     * @param target_wrist Target Wrist Angle Position
      */
     public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
             double inter_x2, double inter_y2, double inter_wrist2,
@@ -489,8 +535,8 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
-    /* 
-     * Revert to previous staged movement
+    /**
+     * Return to previous target arm state
      */
     public void reverseStage() {
         if (stage == 0 || stage == 1) {
@@ -500,35 +546,43 @@ public class Arm extends Submodule {
         }
     }
 
-    /*
-     * Returns whether the arm is returning home
+    /**
+     * Checks whether the arm is currently going home
+     * 
+     * @return going home?
      */
     public boolean isGoingHome() {
         return goingHome;
     }
 
-    /*
-     * Returns whether the arm is on a path to target
+    /**
+     * Checks whether the arm is on a path to target
+     * 
+     * @return on path?
      */
     public boolean isOnPath() {
         return onPath;
     }
 
-    /* 
-     * Returns whether the arm has reached it's target
+    /**
+     * Checks whether the arm has reached it's target
+     * 
+     * @return on target?
      */
     public boolean isOnTarget() {
         return targetAcquired;
     }
 
-    /* 
-     * Returns whether the arm is within the bumpers
+    /**
+     * Checks whether the arm is within the bumpers
+     * 
+     * @return is safe?
      */
     public boolean isSafe() {
         return safeZone;
     }
 
-    /*
+    /**
      * Universal Arm Idle Command
      */
     public void goHome() {
@@ -578,9 +632,12 @@ public class Arm extends Submodule {
         double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
     }
 
-    /* 
-     * Calculates x and y position of distal joint
-    */
+    /**
+     * Calculates Proximal and Distal Position using Forward Kinematics
+     * 
+     * @param q Rotation2d of Proximal and Distal Angles
+     * @return Distal x and y position
+     */
     public double[] forKin(Rotation2d[] q) {
         double[] pos = new double[state.length * 2];
 
@@ -597,8 +654,13 @@ public class Arm extends Submodule {
         return pos;
     }
 
-    /*
-     * Calculates proximal and distal angles to reach target x and y end-effector state
+
+    /**
+     * Calculates proximal and distal angles to reach target x and y end-effector state using inverse kinematics
+     * 
+     * @param target_x Target End-effector x coord
+     * @param target_y Target End-effector y coord
+     * @return Proximal and Distal angles to reach target position
      */
     public double[] invKin(double target_x, double target_y) {
         // Prevent upper arm from crossing the y-axis
