@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
@@ -13,12 +12,7 @@ import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.utils.JoystickUtils;
 
-import edu.wpi.first.math.MathUtil;
-
 public class Teleop {
-    private enum ControlState {
-        OPEN_LOOP, CLOSED_LOOP
-    }
     private static Teleop instance = null;
     private static XboxController p1 = new XboxController(0);
     private static XboxController p2 = new XboxController(1);
@@ -67,20 +61,20 @@ public class Teleop {
         }
         if (!aiming)
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
-                    true);
+                JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
+                JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
+                true
+            );
         else
             swerve.drive(
-                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
-                    true);
+                JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25),
+                JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
+                JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
+                true
+            );
     }
-
-    private int mode = 0;
-
+    
     private void p2Loop(XboxController p) {
         // rampRate = SmartDashboard.getNumber("Ramp Rate", 0);
         // SmartDashboard.putNumber("Ramp Rate", rampRate);
