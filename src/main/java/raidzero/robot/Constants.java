@@ -176,6 +176,7 @@ public class Constants {
         //public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new Rotation2d(.5))};
         // public final Pose2d[] APRILTAG_POSE2DS = JSONTools.GenerateAprilTagPoses(APRILTAGPATH);
         Path trajectoryFilePath = Filesystem.getDeployDirectory().toPath().resolve("paths/");
+		public static final int IMU_ID = 0;
     }
 
 	public static final class ArmConstants {

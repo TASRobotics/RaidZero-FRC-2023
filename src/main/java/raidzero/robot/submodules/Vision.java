@@ -93,6 +93,7 @@ public class Vision extends Submodule {
 
     private Vision(){
         robotDrive = Swerve.getInstance();
+        pigeon = new WPI_Pigeon2_Helper(VisionConstants.IMU_ID, Constants.CANBUS_STRING);
         aprilTagGlobalPoses = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH);
         int numAprilTags = aprilTagGlobalPoses.length;
         angleInterpolate =  TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
@@ -120,7 +121,6 @@ public class Vision extends Submodule {
             System.out.println("Setting up triggers");
             table.getSubTable(cameraSubTable).addListener("Timestamp", EnumSet.of(NetworkTableEvent.Kind.kValueAll), (subTable, key, NetworkTableEvent) -> {aprilDetect(subTable);});
         }
-        robotPose = new Pose2d(0, 0, new Rotation2d(0));
     }
 
     @Override
@@ -350,7 +350,7 @@ public class Vision extends Submodule {
             Pose2d rotationPose = new Pose2d(new Translation2d(0, 0), robotRotation);
             Transform2d aprilTagTransform = new Transform2d(new Translation2d(xTranslationNT[0], zTranslationNT[0]), new Rotation2d(0));
             Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
-            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getY(), -cameraPose.getX(), new Rotation2d(0)));
+            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getX(), -cameraPose.getY(), new Rotation2d(0)));
             
             Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
 

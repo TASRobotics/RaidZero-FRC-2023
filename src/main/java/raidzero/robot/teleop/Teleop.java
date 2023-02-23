@@ -55,6 +55,7 @@ public class Teleop {
          */
         p3Loop(p3);
 
+        vision.updateRobotPose();
         SmartDashboard.putNumber("April tags x", vision.getRobotPose().getX());
         SmartDashboard.putNumber("April tags y", vision.getRobotPose().getY());
     }
