@@ -201,12 +201,12 @@ public class Constants {
                 public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
                 public static final double[] INTER_GRID_MEDIUM = {0.50, 1.15 };
                 public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
-                public static final double[] INTER_FLOOR_INTAKE = { 0.7, 0.35 };
+                public static final double[] INTER_FLOOR_INTAKE = { 0.55, 0.5 };
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.93, 0.97 };
                 public static final double[] GRID_HIGH = { 1.28, 1.25 };
-                public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
+                public static final double[] FLOOR_INTAKE = { 0.7, 0.02 };
 
                 /**
                  * Constants for a DC brushed motor.
