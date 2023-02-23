@@ -60,7 +60,7 @@ public class Wrist extends Submodule {
         mMotor.restoreFactoryDefaults();
 
         configWristSparkMax();
-        zero();
+        // zero();
         limitEncoderDataPub = getDoubleArrayTopic("LimitSwitchData").publish();
         limitSwitchEdgeSub = getDoubleArrayTopic("EdgeData").subscribe(WristConstants.LIMITSWITCHPOSITIONS); // FIX
     }

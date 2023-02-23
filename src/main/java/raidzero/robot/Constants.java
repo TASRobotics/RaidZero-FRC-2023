@@ -96,6 +96,15 @@ public class Constants {
                 public static final double YCONTROLLER_TOLERANCE = 0.1;
                 public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(20);
 
+                /** AutoAim Constants */
+                public static final double AA_XCONTROLLER_KP = 1.5;
+                public static final double AA_YCONTROLLER_KP = 1.5;
+                public static final double AA_THETACONTROLLER_KP = 0.5;
+                public static final double AA_THETACONTROLLER_KD = 0;
+                public static final double AA_XCONTROLLER_TOLERANCE = 0.1;
+                public static final double AA_YCONTROLLER_TOLERANCE = 0.1;
+                public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(5);
+
                 // Using SDS 6.75 ratio
                 public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
                                 / (2048 * (1 / THROTTLE_REDUCTION));
@@ -199,14 +208,14 @@ public class Constants {
                  */
                 public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.0, 0.0 };
                 public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
-                public static final double[] INTER_GRID_MEDIUM = {0.50, 1.15 };
-                public static final double[] INTER_GRID_HIGH = { 0.50, 1.3 };
-                public static final double[] INTER_FLOOR_INTAKE = { 0.0, 0.0 };
+                public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15 };
+                public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
+                public static final double[] INTER_FLOOR_INTAKE = { 0.55, 0.5 };
                 public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
                 public static final double[] GRID_LOW = { 0.6, 0.0 };
                 public static final double[] GRID_MEDIUM = { 0.93, 0.97 };
                 public static final double[] GRID_HIGH = { 1.28, 1.25 };
-                public static final double[] FLOOR_INTAKE = { 0.7, 0.07 };
+                public static final double[] FLOOR_INTAKE = { 0.7, 0.02 };
 
                 /**
                  * Constants for a DC brushed motor.
@@ -265,7 +274,7 @@ public class Constants {
                 public static final double Y_EXTENSION_LIMIT = 1.4;
 
                 public static final double LOWER_KF = 0.000166;
-                public static final double LOWER_KP = 0.000156;
+                public static final double LOWER_KP = 0.000133;
                 public static final double LOWER_KI = 0.0;
                 public static final double LOWER_KD = 0.00000;
                 public static final double LOWER_MIN_VEL = 0.0;
@@ -274,7 +283,7 @@ public class Constants {
                 public static final double LOWER_MIN_ERROR = 0.0;
 
                 public static final double UPPER_KF = 0.000166;
-                public static final double UPPER_KP = 0.000156;
+                public static final double UPPER_KP = 0.000133;
                 public static final double UPPER_KI = 0.0;
                 public static final double UPPER_KD = 0.00000;
                 public static final double UPPER_MIN_VEL = 0.0;

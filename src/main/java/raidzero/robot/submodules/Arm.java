@@ -35,6 +35,8 @@ public class Arm extends Submodule {
     private int stage = 0;
     private boolean goingHome = false;
     private boolean onPath = false;
+    private boolean targetAcquired = false;
+    private boolean safeZone = false;
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };
@@ -195,16 +197,29 @@ public class Arm extends Submodule {
             }
         }
 
-        // // Check On Path
-        // if (Math.abs(state[1].getX() - xWaypointPositions[xWaypointPositions.length - 1]) < 0.1
-        //         && Math.abs(state[1].getY() - yWaypointPositions.length - 1) < 0.1) {
-        //     onPath = false;
+        // Check On Path
+        // if (Math.abs(state[1].getX() - xWaypointPositions[xWaypointPositions.length -
+        // 1]) < 0.1
+        // && Math.abs(state[1].getY() - yWaypointPositions.length - 1) < 0.1) {
+        // onPath = false;
         // }
+
+        // Check Target Acquired
+        if (Math.abs(mLowerDesiredPosition - mLowerEncoder.getPosition()) < 2
+                && Math.abs(mUpperDesiredPosition - mUpperEncoder.getPosition()) < 2) {
+            targetAcquired = true;
+        }
 
         // Check Going Home
         if (Math.abs(state[1].getX()) < 0.15 && Math.abs(state[1].getY() - 0.15) < 0.15) {
             goingHome = false;
         }
+
+        // Check Safe Zone
+        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.2 && Math.abs(state[1].getY() - 0.15) < 0.15) {
+            safeZone = true;
+        } else
+            safeZone = false;
     }
 
     @Override
@@ -375,6 +390,7 @@ public class Arm extends Submodule {
         mControlState = ControlState.CLOSED_LOOP;
         mLowerDesiredPosition = (90 - targetAngles[0]) / ArmConstants.TICKS_TO_DEGREES;
         mUpperDesiredPosition = (90 + targetAngles[0] + targetAngles[1]) / ArmConstants.TICKS_TO_DEGREES;
+        targetAcquired = false;
 
         wrist.setDesiredAngle(calculateWristRelativeAngle(wristAngle));
     }
@@ -463,8 +479,14 @@ public class Arm extends Submodule {
         moveToPoint(inter_x, inter_y, inter_wrist);
     }
 
-    public void reverseState() {
-        stage--;
+    public void reverseStage() {
+        if (stage==0 || stage==1){
+            stage = xWaypointPositions.length-1;
+            moveToPoint(xWaypointPositions[stage-1], yWaypointPositions[stage-1], wristWaypointPositions[stage-1]);
+        } 
+        // else if (stage==xWaypointPositions.length-1){
+        //     stage--;
+        // }
     }
 
     public boolean isGoingHome() {
@@ -475,6 +497,14 @@ public class Arm extends Submodule {
         return onPath;
     }
 
+    public boolean isOnTarget() {
+        return targetAcquired;
+    }
+
+    public boolean isSafe() {
+        return safeZone;
+    }
+
     public void goHome() {
         configSmartMotionConstraints(
                 ArmConstants.LOWER_MAX_VEL * 2.0,
@@ -483,16 +513,12 @@ public class Arm extends Submodule {
                 ArmConstants.UPPER_MAX_ACCEL * 1.25);
         goingHome = true;
         if (state[1].getY() < 0.15) {
-            moveTwoPronged(state[1].getX(), 0.25, 0, 0, 0.15, 0);
+            moveTwoPronged(state[1].getX(), 0.5, 0, 0, 0.15, 0);
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
             moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
                     0.15 * Math.signum(state[1].getX()), 0.5, -70, 0.0, 0.15, 0);
-            // } else if (state[1].getY() < 0.3 && Math.abs(state[1].getX()) > 0.3) {
-            // moveTwoPronged(0.3 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
-            // 0.0, 0.15, 0);
-            // System.out.println("Safety two");
-        } else {
+        } else if (stage == 0) {
             moveToAngle(new double[] { 90, -180 }, 0);
         }
 

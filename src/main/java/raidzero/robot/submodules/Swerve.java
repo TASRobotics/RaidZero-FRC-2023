@@ -91,7 +91,6 @@ public class Swerve extends Submodule {
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
 
-        // check!!
         zero();
         firstPath = true;
     }
@@ -121,7 +120,6 @@ public class Swerve extends Submodule {
                 SwerveConstants.REAR_RIGHT_ENCODER_ID,
                 SwerveConstants.REAR_RIGHT_ROTOR_OFFSET);
 
-        // check
         odometry = new SwerveDrivePoseEstimator(
                 SwerveConstants.KINEMATICS,
                 Rotation2d.fromDegrees(pigeon.getAngle()),
@@ -138,13 +136,14 @@ public class Swerve extends Submodule {
         thetaController.setTolerance(SwerveConstants.THETACONTROLLER_TOLERANCE);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        autoAimXController = new PIDController(0, 0, 0);
-        autoAimYController = new PIDController(0, 0, 0);
-        autoAimThetaController = new PIDController(0, 0, 0);
-        autoAimThetaController.enableContinuousInput(0, 360);
-        autoAimXController.setTolerance(0);
-        autoAimYController.setTolerance(0);
-        autoAimThetaController.setTolerance(0);
+        autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0, 0);
+        autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
+        autoAimThetaController = new PIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0, SwerveConstants.THETACONTROLLER_KD);
+        autoAimXController.setTolerance(SwerveConstants.AA_XCONTROLLER_TOLERANCE);
+        autoAimYController.setTolerance(SwerveConstants.AA_YCONTROLLER_TOLERANCE);
+        autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
+        autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
 
         zero();
         prevPose = new Pose2d();
@@ -174,7 +173,7 @@ public class Swerve extends Submodule {
         SmartDashboard.putNumber("X pose", odometry.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Y pose", odometry.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Theta pose", odometry.getEstimatedPosition().getRotation().getDegrees());
-
+        
         checkThrottleSpeed();
     }
 
@@ -363,6 +362,8 @@ public class Swerve extends Submodule {
         controlState = ControlState.AUTO_AIM;
         switch (location) {
             case BLL:
+                zero();
+                desiredAutoAimPose = new Pose2d(1, 1, Rotation2d.fromDegrees(90));
                 break;
             case BLM:
                 break;
@@ -389,10 +390,10 @@ public class Swerve extends Submodule {
 
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
-                yController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
-                thetaController.calculate(getPose().getRotation().getDegrees(),
-                        desiredAutoAimPose.getRotation().getDegrees()),
+                autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX()),
+                autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY()),
+                autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+                        desiredAutoAimPose.getRotation().getRadians()),
                 getPose().getRotation());
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
