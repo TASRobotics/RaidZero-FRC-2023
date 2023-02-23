@@ -93,6 +93,8 @@ public class Vision extends Submodule {
 
     private Vision(){
         robotDrive = Swerve.getInstance();
+        robotPose = new Pose2d();
+        pigeon = new WPI_Pigeon2_Helper(VisionConstants.IMU_ID, Constants.CANBUS_STRING);
         aprilTagGlobalPoses = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH);
         int numAprilTags = aprilTagGlobalPoses.length;
         angleInterpolate =  TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
@@ -341,15 +343,15 @@ public class Vision extends Submodule {
         aprilDetect(subTable);
         if (aprilTagIDs.length > 0){
             double pigeonAngle = pigeon.getAngle();
-            Rotation2d robotRotation = new Rotation2d(Math.toRadians(pigeonAngle - 180));
+            Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle - 180);
 
-            Pose2d aprilTagPose = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH)[aprilTagIDs[0]];
-            Transform2d globalToAprilTag = new Transform2d(new Pose2d(), aprilTagPose);
+            Pose2d aprilTagPose = aprilTagGlobalPoses[aprilTagIDs[0]];
+            Transform2d globalToAprilTag = new Transform2d(new Pose2d(0,0,Rotation2d.fromDegrees(0)), aprilTagPose);
 
-            Pose2d rotationPose = new Pose2d(new Translation2d(0, 0), robotRotation);
-            Transform2d aprilTagTransform = new Transform2d(new Translation2d(xTranslationNT[0], zTranslationNT[0]), new Rotation2d(0));
+            Pose2d rotationPose = new Pose2d(0,0, robotRotation);
+            Transform2d aprilTagTransform = new Transform2d( new Translation2d(xTranslationNT[0], zTranslationNT[0]), Rotation2d.fromRadians(0));
             Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
-            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getX(), -cameraPose.getY(), new Rotation2d(0)));
+            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), new Pose2d(cameraPose.getY(), -cameraPose.getX(), Rotation2d.fromDegrees(0)));
             
             Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
 
