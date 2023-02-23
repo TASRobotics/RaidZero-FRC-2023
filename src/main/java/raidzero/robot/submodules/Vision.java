@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
+
 // import com.fasterxml.jackson.annotation.JsonCreator;
 // import com.fasterxml.jackson.annotation.JsonProperty;
 // import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +43,8 @@ import raidzero.robot.Constants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.utils.MathTools;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class Vision extends Submodule {
@@ -59,9 +63,23 @@ public class Vision extends Submodule {
     private double[] yawRotationNT;
     private double timestampNT;
 
+    private Pose2d robotPose;
+
 	private NetworkTable table;
     private String[] cameraSubTables;
     private double[] confidenceNT;
+
+    private WPI_Pigeon2_Helper pigeon;
+
+    private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
+        public WPI_Pigeon2_Helper(int deviceNumber, String canbus) {
+            super(deviceNumber, canbus);
+        }
+
+        public double getAngle() {
+            return -super.getAngle();
+        }
+    }
 
     private static Vision instance;
 
@@ -81,7 +99,8 @@ public class Vision extends Submodule {
         // angleHistory = new Rotation2d[VisionConstants.ANGLEHISTNUM];
         // timestampHistory = new double[VisionConstants.ANGLEHISTNUM];
         xTranslationNT = new double[numAprilTags];
-        yTranslationNT = new double[numAprilTags];        
+        yTranslationNT = new double[numAprilTags];   
+        zTranslationNT = new double[numAprilTags];     
         yawRotationNT = new double[numAprilTags];
         confidenceNT = new double[numAprilTags];
         // Nat<N2> states = Nat.N2();
@@ -111,6 +130,13 @@ public class Vision extends Submodule {
     @Override
     public void update(double timestamp) {
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
+        updateRobotPose();
+        // Shuffleboard.getTab("Main").add("April Tag X Pose", robotPose.getX());
+        // Shuffleboard.getTab("Main").add("April Tag Y Pose", robotPose.getY());
+        SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
+        SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
+        // table.putValue("April Tag X Pose", robotPose.getX());
+        // table.putValue("April Tag X Pose", robotPose.getX());
         // aprilYawFilter.predict(new MatBuilder<N1,N1>(Nat.N1(),Nat.N1()).fill(0.0), Constants.TIMEOUT_S);
         // angleHistory[historyLoc] = robotDrive.getPose().getRotation();
         // timestampHistory[historyLoc] = timestamp;
@@ -133,7 +159,6 @@ public class Vision extends Submodule {
     }
 
 
-    
 // 	/**
 // 	 * Helper method to get an entry from the Raspberry Pi NetworkTable.
 // 	 * 
@@ -311,5 +336,28 @@ public class Vision extends Submodule {
         return aPoses;
     }
 
+    public Pose2d updateRobotPose(){
+        NetworkTable subTable = table.getSubTable("Camera 1");
+        aprilDetect(subTable);
+        if (aprilTagIDs.length > 0){
+            double pigeonAngle = pigeon.getAngle();
+            Rotation2d robotRotation = new Rotation2d(Math.toRadians(pigeonAngle - 180));
 
+            Pose2d aprilTagPose = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH)[aprilTagIDs[0]];
+            Transform2d globalToAprilTag = new Transform2d(new Pose2d(), aprilTagPose);
+
+            Pose2d rotationPose = new Pose2d(new Translation2d(0, 0), robotRotation);
+            Transform2d aprilTagTransform = new Transform2d(new Translation2d(xTranslationNT[0], zTranslationNT[0]), new Rotation2d(0));
+            Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
+            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), new Pose2d(cameraPose.getX(), -cameraPose.getY(), new Rotation2d(0)));
+            
+            Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
+
+            Pose2d finalPose = new Pose2d().transformBy(globalToAprilTag.plus(aprilTagToCamera).plus(cameraToRobot));
+            robotPose = new Pose2d(finalPose.getX(), finalPose.getY(), robotDrive.getPose().getRotation());
+           
+            return robotPose;
+        }
+        return new Pose2d();
+    }
 }   
