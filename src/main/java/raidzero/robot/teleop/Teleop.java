@@ -71,10 +71,6 @@ public class Teleop {
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
                     JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
                     true);
-
-        if (p.getBButtonPressed()){
-            swerve.autoAim(AutoAimLocation.BLL);
-        }
     }
 
     private int mode = 0;
@@ -223,6 +219,7 @@ public class Teleop {
         }  else {
             intake.holdPosition();
         }
+
 
     }
 }
