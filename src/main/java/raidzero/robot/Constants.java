@@ -199,7 +199,8 @@ public class Constants {
 		 * Constants for arm Distal endpoint locations for different
 		 * arm positions. Constants are measured in meters
 		 */
-		public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.0, 0.0 };
+		public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.1, 0.7 };
+        public static final double[] INTER2_HUMAN_PICKUP_STATION = { 0.1, 1.4 };
 		public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
 		public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15 };
 		public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
@@ -267,21 +268,21 @@ public class Constants {
 		public static final double Y_EXTENSION_LIMIT = 1.4;
 
 		public static final double LOWER_KF = 0.000166;
-		public static final double LOWER_KP = 0.000133;
+		public static final double LOWER_KP = 0.000088;
 		public static final double LOWER_KI = 0.0;
 		public static final double LOWER_KD = 0.00000;
 		public static final double LOWER_MIN_VEL = 0.0;
-		public static final double LOWER_MAX_VEL = 2100;
-		public static final double LOWER_MAX_ACCEL = 1330;
+		public static final double LOWER_MAX_VEL = 3670;
+		public static final double LOWER_MAX_ACCEL = 2500;
 		public static final double LOWER_MIN_ERROR = 0.0;
 
 		public static final double UPPER_KF = 0.000166;
-		public static final double UPPER_KP = 0.000133;
+		public static final double UPPER_KP = 0.000088;
 		public static final double UPPER_KI = 0.0;
 		public static final double UPPER_KD = 0.00000;
 		public static final double UPPER_MIN_VEL = 0.0;
-		public static final double UPPER_MAX_VEL = 4300;
-		public static final double UPPER_MAX_ACCEL = 2770;
+		public static final double UPPER_MAX_VEL = 6900;
+		public static final double UPPER_MAX_ACCEL = 4570;
 		public static final double UPPER_MIN_ERROR = 0.0;
 
 		// Testing Speeds
@@ -337,8 +338,8 @@ public class Constants {
 		public static final double KD = 0.0;
 
 		public static final double MIN_VEL = 0.0;
-		public static final double MAX_VEL = 3000.0;
-		public static final double MAX_ACCEL = 2500.0;
+		public static final double MAX_VEL = 4750.0;
+		public static final double MAX_ACCEL = 3960.0;
 		public static final double MIN_ERROR = 0.0;
 
 		public static final double MAXWINDS = 0.6;

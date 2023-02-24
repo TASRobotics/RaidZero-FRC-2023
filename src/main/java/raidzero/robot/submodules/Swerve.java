@@ -402,6 +402,9 @@ public class Swerve extends Submodule {
     public void autoAim(AutoAimLocation location) {
         controlState = ControlState.AUTO_AIM;
         switch (location) {
+            /**
+             * Blue Alliance
+             */
             case BLL:
                 desiredAutoAimPose = new Pose2d(getPose().getX(), 0.89, Rotation2d.fromDegrees(180));
                 break;
@@ -411,6 +414,7 @@ public class Swerve extends Submodule {
             case BLR:
                 desiredAutoAimPose = new Pose2d(getPose().getX(), 2.04, Rotation2d.fromDegrees(180));
                 break;
+                
             case BML:
                 desiredAutoAimPose = new Pose2d(getPose().getX(), 2.59, Rotation2d.fromDegrees(180));
                 break;
@@ -420,6 +424,7 @@ public class Swerve extends Submodule {
             case BMR:
                 desiredAutoAimPose = new Pose2d(getPose().getX(), 3.81, Rotation2d.fromDegrees(180));
                 break;
+                
             case BRL:
                 desiredAutoAimPose = new Pose2d(getPose().getX(), 4.24, Rotation2d.fromDegrees(180));
                 break;
@@ -429,6 +434,9 @@ public class Swerve extends Submodule {
             case BRR:
                 // no bueno
                 break;
+            /**
+             * Red Alliance
+             */
             case RLM:
                 desiredAutoAimPose = new Pose2d();
                 break;
@@ -464,7 +472,9 @@ public class Swerve extends Submodule {
         }
     }
 
-    /** Update auto aim */
+    /**
+     * Update Auto Aim 
+     */
     public void updateAutoAim() {
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX()),

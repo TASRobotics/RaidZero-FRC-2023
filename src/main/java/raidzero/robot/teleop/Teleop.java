@@ -203,11 +203,11 @@ public class Teleop {
                     ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
             arm.moveThreePronged(
-                    -.10,
-                    0.7,
+                    -ArmConstants.INTER_HUMAN_PICKUP_STATION[0],
+                    ArmConstants.INTER_HUMAN_PICKUP_STATION[1],
                     90,
-                    -.01,
-                    1.4,
+                    -ArmConstants.INTER2_HUMAN_PICKUP_STATION[0],
+                    ArmConstants.INTER2_HUMAN_PICKUP_STATION[1],
                     90,
                     -ArmConstants.HUMAN_PICKUP_STATION[0],
                     ArmConstants.HUMAN_PICKUP_STATION[1],
