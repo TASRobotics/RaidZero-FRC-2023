@@ -101,13 +101,13 @@ public class Constants {
         public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(5);
 
         /** AutoAim Constants */
-        public static final double AA_XCONTROLLER_KP = 1.5;
-        public static final double AA_YCONTROLLER_KP = 1.5;
-        public static final double AA_THETACONTROLLER_KP = 0.5;
+        public static final double AA_XCONTROLLER_KP = 1.78;
+        public static final double AA_YCONTROLLER_KP = 1.78;
+        public static final double AA_THETACONTROLLER_KP = 0.7;
         public static final double AA_THETACONTROLLER_KD = 0;
-        public static final double AA_XCONTROLLER_TOLERANCE = 0.1;
-        public static final double AA_YCONTROLLER_TOLERANCE = 0.1;
-        public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(5);
+        public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
+        public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
+        public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.7);
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
@@ -178,6 +178,33 @@ public class Constants {
         // JSONTools.GenerateAprilTagPoses(APRILTAGPATH);
         Path trajectoryFilePath = Filesystem.getDeployDirectory().toPath().resolve("paths/");
         public static final int IMU_ID = 0;
+
+
+        public static final double CONE_PIXELS_TO_METERS = 0.001;
+
+        /**
+         * Auto Alignment Constants
+         */
+        // Blue Alliance
+        public static final double[] BLL = { 1.66, 4.57, 155 };
+        public static final double[] BLM = { 1.85, 4.61, 180 };
+        public static final double[] BLR = { 1.85, 4.08, 180 };
+        public static final double[] BML = { 1.85, 3.53, 180 };
+        public static final double[] BMM = { 1.85, 2.94, 180 };
+        public static final double[] BMR = { 1.85, 2.42, 180 };
+        public static final double[] BRL = { 1.85, 1.90, 180 };
+        public static final double[] BRM = { 1.85, 1.32, 180 };
+        public static final double[] BRR = { 1.85, 0.62, 180 };
+        // Red Alliance
+        public static final double[] RLL = { 14.65, 0.62, 0 };
+        public static final double[] RLM = { 14.65, 1.32, 0 };
+        public static final double[] RLR = { 14.65, 1.90, 0 };
+        public static final double[] RML = { 14.65, 2.42, 0 };
+        public static final double[] RMM = { 14.65, 2.94, 0 };
+        public static final double[] RMR = { 14.65, 3.53, 0 };
+        public static final double[] RRL = { 14.65, 4.08, 0 };
+        public static final double[] RRM = { 14.65, 4.61, 0 };
+        public static final double[] RRR = { 14.87, 4.57, 25 };
     }
 
     public static final class ArmConstants {
@@ -269,6 +296,7 @@ public class Constants {
         public static final double Y_EXTENSION_LIMIT = 1.4;
 
         public static final double LOWER_KF = 0.000166;
+
         public static final double LOWER_KP = 0.000088;
         public static final double LOWER_KI = 0.0;
         public static final double LOWER_KD = 0.00000;

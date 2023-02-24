@@ -50,15 +50,12 @@ public class Teleop {
         /**
          * p2 controls
          */
-        p2Loop(p2);
+        // p2Loop(p2);
         /**
          * p3 controls
          */
         p3Loop(p3);
 
-        vision.updateRobotPose();
-        SmartDashboard.putNumber("April tags x", vision.getRobotPose().getX());
-        SmartDashboard.putNumber("April tags y", vision.getRobotPose().getY());
     }
 
     private double[] target = { 0, 0.15 };
@@ -99,7 +96,8 @@ public class Teleop {
             wrist.setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             // Human Pickup Station
-            if (p.getYButtonPressed() && !swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget()
+            if (p.getYButtonPressed() && !swerve.isOverLimit() && !arm.isGoingHome() &&
+                    arm.isOnTarget()
                     && arm.isSafe()) {
                 arm.configSmartMotionConstraints(
                         ArmConstants.LOWER_MAX_VEL * 1.5,
@@ -183,9 +181,9 @@ public class Teleop {
 
         // // Intake
         // if (Math.abs(p.getRightTriggerAxis() - p.getLeftTriggerAxis()) >= 0.2) {
-        //     intake.setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
+        // intake.setPercentSpeed(p.getRightTriggerAxis() - p.getLeftTriggerAxis());
         // } else {
-        //     intake.holdPosition();
+        // intake.holdPosition();
         // }
     }
 
@@ -212,10 +210,6 @@ public class Teleop {
                     -ArmConstants.HUMAN_PICKUP_STATION[0],
                     ArmConstants.HUMAN_PICKUP_STATION[1],
                     160);
-        }
-        // Reverse Stage
-        else if (p.getRawAxis(0) == 1 && !swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe()) {
-            arm.reverseStage();
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
@@ -259,6 +253,13 @@ public class Teleop {
                     ArmConstants.FLOOR_INTAKE[1],
                     155);
         }
+        // Reverse Stage
+        else if (p.getRawAxis(0) == 1 &&
+                !swerve.isOverLimit() &&
+                !arm.isGoingHome() &&
+                !arm.isSafe()) {
+            arm.reverseStage();
+        }
         // Go Home
         else if (p.getRawButtonPressed(13)) {
             arm.goHome();
@@ -266,53 +267,53 @@ public class Teleop {
 
         // Intake
         if (p.getRawButton(12)) {
-            intake.setPercentSpeed(0.8);
+            intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
-            intake.setPercentSpeed(-0.8);
+            intake.setPercentSpeed(-0.7);
         } else {
             intake.holdPosition();
         }
 
         // Auto Alignments
-        if (alliance == Alliance.Blue) {
-            if (p.getRawButton(8)) {
+        if (alliance == Alliance.Blue && !arm.isGoingHome() && arm.isSafe() && !vision.noApples()) {
+            if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.BLL);
-            } else if (p.getRawButton(7)) {
+            } else if (p.getRawButton(8)) {
                 swerve.autoAim(AutoAimLocation.BLM);
-            } else if (p.getRawButton(6)) {
+            } else if (p.getRawButton(7)) {
                 swerve.autoAim(AutoAimLocation.BLR);
-            } else if (p.getRawButton(5)) {
+            } else if (p.getRawButton(6)) {
                 swerve.autoAim(AutoAimLocation.BML);
-            } else if (p.getRawButton(4)) {
+            } else if (p.getRawButton(5)) {
                 swerve.autoAim(AutoAimLocation.BMM);
-            } else if (p.getRawButton(3)) {
+            } else if (p.getRawButton(4)) {
                 swerve.autoAim(AutoAimLocation.BMR);
-            } else if (p.getRawButton(2)) {
+            } else if (p.getRawButton(3)) {
                 swerve.autoAim(AutoAimLocation.BRL);
-            } else if (p.getRawButton(1)) {
+            } else if (p.getRawButton(2)) {
                 swerve.autoAim(AutoAimLocation.BRM);
-            } else if (p.getRawButton(0)) {
+            } else if (p.getRawButton(1)) {
                 swerve.autoAim(AutoAimLocation.BRR);
             } else {
             }
-        } else {
-            if (p.getRawButton(8)) {
+        } else if (alliance == Alliance.Red && !arm.isGoingHome() && arm.isSafe() && !vision.noApples()) {
+            if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.RLL);
-            } else if (p.getRawButton(7)) {
+            } else if (p.getRawButton(8)) {
                 swerve.autoAim(AutoAimLocation.RLM);
-            } else if (p.getRawButton(6)) {
+            } else if (p.getRawButton(7)) {
                 swerve.autoAim(AutoAimLocation.RLR);
-            } else if (p.getRawButton(5)) {
+            } else if (p.getRawButton(6)) {
                 swerve.autoAim(AutoAimLocation.RML);
-            } else if (p.getRawButton(4)) {
+            } else if (p.getRawButton(5)) {
                 swerve.autoAim(AutoAimLocation.RMM);
-            } else if (p.getRawButton(3)) {
+            } else if (p.getRawButton(4)) {
                 swerve.autoAim(AutoAimLocation.RMR);
-            } else if (p.getRawButton(2)) {
+            } else if (p.getRawButton(3)) {
                 swerve.autoAim(AutoAimLocation.RRL);
-            } else if (p.getRawButton(1)) {
+            } else if (p.getRawButton(2)) {
                 swerve.autoAim(AutoAimLocation.RRM);
-            } else if (p.getRawButton(0)) {
+            } else if (p.getRawButton(1)) {
                 swerve.autoAim(AutoAimLocation.RRR);
             } else {
             }
