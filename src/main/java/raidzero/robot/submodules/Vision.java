@@ -65,6 +65,7 @@ public class Vision extends Submodule {
     private double timestampNT;
 
     private Pose2d robotPose;
+    private Transform2d coneTransform;
 
 	private NetworkTable table;
     private String[] cameraSubTables;
@@ -94,6 +95,7 @@ public class Vision extends Submodule {
 
     private Vision(){
         robotPose = new Pose2d();
+        coneTransform = new Transform2d();
         pigeon = new WPI_Pigeon2_Helper(SwerveConstants.IMU_ID, Constants.CANBUS_STRING);
         aprilTagGlobalPoses = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH);
         int numAprilTags = aprilTagGlobalPoses.length;
@@ -131,7 +133,7 @@ public class Vision extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
+        // angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
         updateRobotPose();
         // Shuffleboard.getTab("Main").add("April Tag X Pose", robotPose.getX());
         // Shuffleboard.getTab("Main").add("April Tag Y Pose", robotPose.getY());
@@ -157,7 +159,7 @@ public class Vision extends Submodule {
         yawRotationNT = cameraSubTable.getEntry("yawRotation").getDoubleArray(new double[aprilTagIDs.length]);
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length()-1)-'0'-1;
-        updatePose(zTranslationNT, xTranslationNT, yawRotationNT, aprilTagIDs, VisionConstants.CAMERATRANSFORMS[cameraNum], cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
+        // updatePose(zTranslationNT, xTranslationNT, yawRotationNT, aprilTagIDs, VisionConstants.CAMERATRANSFORMS[cameraNum], cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
     }
 
 
@@ -349,18 +351,30 @@ public class Vision extends Submodule {
             Transform2d globalToAprilTag = new Transform2d(new Pose2d(0,0,Rotation2d.fromDegrees(0)), aprilTagPose);
 
             Pose2d rotationPose = new Pose2d(0,0, robotRotation);
-            Transform2d aprilTagTransform = new Transform2d( new Translation2d(xTranslationNT[aprilTagIDs[0]], zTranslationNT[aprilTagIDs[0]]), Rotation2d.fromRadians(0));
+            Transform2d aprilTagTransform = new Transform2d(new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]), Rotation2d.fromRadians(0));
             Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
-            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), new Pose2d(cameraPose.getY(), -cameraPose.getX(), Rotation2d.fromDegrees(0)));
+            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
 
             Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
 
-            Pose2d finalPose = new Pose2d().transformBy(globalToAprilTag).transformBy(aprilTagToCamera).transformBy(cameraToRobot);
-            robotPose = new Pose2d(finalPose.getX(), finalPose.getY(), robotDrive.getPose().getRotation());
-        }
+            robotPose = new Pose2d().transformBy(globalToAprilTag).transformBy(aprilTagToCamera).transformBy(cameraToRobot);
+
+            // Pose2d finalPose = new Pose2d().transformBy(globalToAprilTag).transformBy(aprilTagToCamera).transformBy(cameraToRobot);
+            // robotPose = new Pose2d(finalPose.getX(), finalPose.getY(), robotDrive.getPose().getRotation());
+        } 
     }
 
     public Pose2d getRobotPose(){
         return robotPose;
     }
+
+    // public void updateConeTransform(){
+    //     double coneX = cameraSubTable.getEntry("xTranslation").getDouble();
+    //     coneTransform = new Transform2d(new Translation2d(0, coneX));
+    // }
+
+    // public Transform2d getConeTransform(){
+        
+        
+    // }
 }
