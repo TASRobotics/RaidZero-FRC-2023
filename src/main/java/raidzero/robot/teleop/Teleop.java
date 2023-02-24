@@ -214,7 +214,7 @@ public class Teleop {
                     160);
         }
         // Reverse Stage
-        else if (p.getRawAxis(0) == 1 && !swerve.isOverLimit() && !arm.isGoingHome()) {
+        else if (p.getRawAxis(0) == 1 && !swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe()) {
             arm.reverseStage();
         }
         // High Grid
