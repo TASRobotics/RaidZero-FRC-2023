@@ -60,10 +60,16 @@ public class Teleop {
 
     private double[] target = { 0, 0.15 };
     private boolean aiming = false;
+    private boolean noSafenoProblemo = false;
 
     private void p1Loop(XboxController p) {
+        SmartDashboard.putBoolean("Aiming", aiming);
+        SmartDashboard.putBoolean("Safety", noSafenoProblemo);
         if (p.getYButtonPressed()) {
             aiming = !aiming;
+        }
+        if (p.getAButtonPressed()) {
+            noSafenoProblemo = !noSafenoProblemo;
         }
         if (!aiming)
             swerve.drive(
@@ -190,10 +196,8 @@ public class Teleop {
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
-                !swerve.isOverLimit() &&
-                !arm.isGoingHome() &&
-                arm.isOnTarget() &&
-                arm.isSafe()) {
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                        || noSafenoProblemo)) {
             arm.configSmartMotionConstraints(
                     ArmConstants.LOWER_MAX_VEL * 1.5,
                     ArmConstants.LOWER_MAX_ACCEL * 1.5,
@@ -213,10 +217,8 @@ public class Teleop {
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
-                !swerve.isOverLimit() &&
-                !arm.isGoingHome() &&
-                arm.isOnTarget() &&
-                arm.isSafe()) {
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                        || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     -ArmConstants.INTER_GRID_HIGH[0],
                     ArmConstants.INTER_GRID_HIGH[1],
@@ -227,10 +229,8 @@ public class Teleop {
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
-                !swerve.isOverLimit() &&
-                !arm.isGoingHome() &&
-                arm.isOnTarget() &&
-                arm.isSafe()) {
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                        || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     -ArmConstants.INTER_GRID_MEDIUM[0],
                     ArmConstants.INTER_GRID_MEDIUM[1],
@@ -241,10 +241,8 @@ public class Teleop {
         }
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
-                !swerve.isOverLimit() &&
-                !arm.isGoingHome() &&
-                arm.isOnTarget() &&
-                arm.isSafe()) {
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                        || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     -ArmConstants.INTER_FLOOR_INTAKE[0],
                     ArmConstants.INTER_FLOOR_INTAKE[1],
@@ -255,9 +253,8 @@ public class Teleop {
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
-                !swerve.isOverLimit() &&
-                !arm.isGoingHome() &&
-                !arm.isSafe()) {
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())
+                        || noSafenoProblemo)) {
             arm.reverseStage();
         }
         // Go Home
@@ -275,7 +272,9 @@ public class Teleop {
         }
 
         // Auto Alignments
-        if (alliance == Alliance.Blue && !arm.isGoingHome() && arm.isSafe() && !vision.noApples()) {
+        if (alliance == Alliance.Blue
+                && ((!arm.isGoingHome() && arm.isSafe() && !vision.noApples())
+                        || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.BLL);
             } else if (p.getRawButton(8)) {
@@ -296,7 +295,9 @@ public class Teleop {
                 swerve.autoAim(AutoAimLocation.BRR);
             } else {
             }
-        } else if (alliance == Alliance.Red && !arm.isGoingHome() && arm.isSafe() && !vision.noApples()) {
+        } else if (alliance == Alliance.Red
+                && ((!arm.isGoingHome() && arm.isSafe() && !vision.noApples())
+                        || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.RLL);
             } else if (p.getRawButton(8)) {

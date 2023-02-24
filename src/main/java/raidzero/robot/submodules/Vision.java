@@ -397,10 +397,11 @@ public class Vision extends Submodule {
 
     /**
      * Checks whether the camera is currently seeing an April Tag
+     * 
      * @return whether aprilTagIds = 0
      */
-    public boolean noApples(){
-        return aprilTagIDs.length==0;
+    public boolean noApples() {
+        return aprilTagIDs.length == 0;
     }
 
     // public void updateConeTransform(){

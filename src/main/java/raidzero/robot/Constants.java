@@ -179,7 +179,6 @@ public class Constants {
         Path trajectoryFilePath = Filesystem.getDeployDirectory().toPath().resolve("paths/");
         public static final int IMU_ID = 0;
 
-
         public static final double CONE_PIXELS_TO_METERS = 0.001;
 
         /**

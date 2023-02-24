@@ -654,9 +654,9 @@ public class Arm extends Submodule {
         return pos;
     }
 
-
     /**
-     * Calculates proximal and distal angles to reach target x and y end-effector state using inverse kinematics
+     * Calculates proximal and distal angles to reach target x and y end-effector
+     * state using inverse kinematics
      * 
      * @param target_x Target End-effector x coord
      * @param target_y Target End-effector y coord

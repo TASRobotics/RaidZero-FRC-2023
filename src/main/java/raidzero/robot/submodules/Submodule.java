@@ -10,23 +10,27 @@ public abstract class Submodule {
      * 
      * @param timestamp
      */
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     /**
      * Called once when the submodule is initialized.
      */
-    public void onInit() {}
+    public void onInit() {
+    }
 
     /**
      * Reads cached inputs & calculate outputs.
      */
-    public void update(double timestamp) {}
+    public void update(double timestamp) {
+    }
 
     /**
      * Runs components in the submodule that have continuously changing
      * inputs.
      */
-    public void run() {}
+    public void run() {
+    }
 
     /**
      * Stops the submodule.
@@ -36,5 +40,6 @@ public abstract class Submodule {
     /**
      * Resets the sensor(s) to zero.
      */
-    public void zero() {}
+    public void zero() {
+    }
 }
