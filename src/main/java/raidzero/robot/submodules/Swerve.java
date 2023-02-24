@@ -160,9 +160,9 @@ public class Swerve extends Submodule {
     public void update(double timestamp) {
         if (controlState == ControlState.PATHING) {
             updatePathing();
-        } 
+        }
         // else if (controlState == ControlState.AUTO_AIM) {
-        //     updateAutoAim();
+        // updateAutoAim();
         // }
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
@@ -401,6 +401,7 @@ public class Swerve extends Submodule {
     }
 
     private AutoAimLocation prevAutoAimLocation;
+
     /**
      * Auto aim robot to desired location
      * 
@@ -408,48 +409,56 @@ public class Swerve extends Submodule {
      */
     public void autoAim(AutoAimLocation location) {
         controlState = ControlState.AUTO_AIM;
-        if(prevAutoAimLocation != location) {
-            setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(), Rotation2d.fromDegrees(pigeon.getAngle())));
+        if (prevAutoAimLocation != location) {
+            setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
+                    Rotation2d.fromDegrees(pigeon.getAngle())));
         }
-        
+
         prevAutoAimLocation = location;
-        //zero();
+        // zero();
         switch (location) {
+            /**
+             * Blue Alliance
+             */
             case BLL:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 4.36, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 0.62, Rotation2d.fromDegrees(180));
                 System.out.println("bll");
                 break;
             case BLM:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 3.81, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 1.32, Rotation2d.fromDegrees(180));
                 System.out.println("blm");
                 break;
             case BLR:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 3.26, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 1.90, Rotation2d.fromDegrees(180));
                 System.out.println("blr");
                 break;
             case BML:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 2.71, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 2.42, Rotation2d.fromDegrees(180));
                 System.out.println("bml");
                 break;
             case BMM:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 2.16, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 2.94, Rotation2d.fromDegrees(180));
                 System.out.println("bmm");
                 break;
             case BMR:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 1.61, Rotation2d.fromDegrees(180));
-                System.out.print("bmr");
+                desiredAutoAimPose = new Pose2d(1.85, 3.53, Rotation2d.fromDegrees(180));
+                System.out.println("bmr");
                 break;
             case BRL:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 1.06, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 4.08, Rotation2d.fromDegrees(180));
                 System.out.println("brl");
                 break;
             case BRM:
-                desiredAutoAimPose = new Pose2d(getPose().getX(), 0.51, Rotation2d.fromDegrees(180));
+                desiredAutoAimPose = new Pose2d(1.85, 4.61, Rotation2d.fromDegrees(180));
                 System.out.println("brm");
                 break;
             case BRR:
-                // no bueno
+                desiredAutoAimPose = new Pose2d(1.66, 4.57, Rotation2d.fromDegrees(155));
+                System.out.println("brr");
                 break;
+            /**
+             * Red Alliance
+             */
             case RLM:
                 desiredAutoAimPose = new Pose2d();
                 break;
@@ -488,11 +497,11 @@ public class Swerve extends Submodule {
     }
 
     /** Update auto aim */
-    public void updateAutoAim() { 
+    public void updateAutoAim() {
         double xSpeed = autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX());
         double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
         double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-        desiredAutoAimPose.getRotation().getRadians());
+                desiredAutoAimPose.getRotation().getRadians());
 
         SmartDashboard.putNumber("x speed", xSpeed);
         SmartDashboard.putNumber("y speed", ySpeed);
@@ -503,7 +512,7 @@ public class Swerve extends Submodule {
                 thetaSpeed,
                 getPose().getRotation());
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.2);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
