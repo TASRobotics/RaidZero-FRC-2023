@@ -195,15 +195,16 @@ public class Constants {
         public static final double[] BRM = { 1.85, 1.32, 180 };
         public static final double[] BRR = { 1.85, 0.62, 180 };
         // Red Alliance
-        public static final double[] RLL = { 1.85, 0.62, 180 };
-        public static final double[] RLM = { 1.85, 1.32, 180 };
-        public static final double[] RLR = { 1.85, 1.90, 180 };
-        public static final double[] RML = { 1.85, 2.42, 180 };
-        public static final double[] RMM = { 1.85, 2.94, 180 };
-        public static final double[] RMR = { 1.85, 3.53, 180 };
-        public static final double[] RRL = { 1.85, 4.08, 180 };
-        public static final double[] RRM = { 1.85, 4.61, 180 };
-        public static final double[] RRR = { 1.66, 4.57, 155 };
+        public static final double[] RLL = { 14.65, 0.62, 0 };
+        public static final double[] RLM = { 14.65, 1.32, 0 };
+        public static final double[] RLR = { 14.65, 1.90, 0 };
+        public static final double[] RML = { 14.65, 2.42, 0 };
+        public static final double[] RMM = { 14.65, 2.94, 0 };
+        public static final double[] RMR = { 14.65, 3.53, 0 };
+        public static final double[] RRL = { 14.65, 4.08, 0 };
+        public static final double[] RRM = { 14.65, 4.61, 0 };
+        public static final double[] RRR = { 14.87, 4.57, 25 };
+
     }
 
     public static final class ArmConstants {
