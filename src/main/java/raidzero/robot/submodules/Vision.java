@@ -50,7 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Vision extends Submodule {
 
-    private Swerve robotDrive;
+    private static final Swerve robotDrive = Swerve.getInstance();
     // private String tablename;
     private TimeInterpolatableBuffer<Rotation2d> angleInterpolate;
     // private UnscentedKalmanFilter<N2,N1,N1> aprilYawFilter;
@@ -93,7 +93,6 @@ public class Vision extends Submodule {
 
 
     private Vision(){
-        robotDrive = Swerve.getInstance();
         robotPose = new Pose2d();
         pigeon = new WPI_Pigeon2_Helper(SwerveConstants.IMU_ID, Constants.CANBUS_STRING);
         aprilTagGlobalPoses = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH);

@@ -68,7 +68,6 @@ public class Intake extends Submodule {
                 ControlType.kSmartMotion,
                 IntakeConstants.PID_SLOT
             );
-            System.out.println("Keeping position at " + mDesiredPosition);
         } 
     }
 

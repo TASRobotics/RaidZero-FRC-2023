@@ -101,7 +101,7 @@ public class Constants {
 		public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(5);
 
 		/** AutoAim Constants */
-		public static final double AA_XCONTROLLER_KP = 1.5;
+		public static final double AA_XCONTROLLER_KP = 0.0;
 		public static final double AA_YCONTROLLER_KP = 1.5;
 		public static final double AA_THETACONTROLLER_KP = 0.5;
 		public static final double AA_THETACONTROLLER_KD = 0;
