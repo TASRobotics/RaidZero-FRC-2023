@@ -433,6 +433,7 @@ public class Swerve extends Submodule {
                 desiredAutoAimPose = new Pose2d(VisionConstants.BLR[0], VisionConstants.BLR[1], Rotation2d.fromDegrees(VisionConstants.BLR[2]));
                 System.out.println("blr");
                 break;
+                
             case BML:
                 desiredAutoAimPose = new Pose2d(VisionConstants.BML[0], VisionConstants.BML[1], Rotation2d.fromDegrees(VisionConstants.BML[2]));
                 System.out.println("bml");
@@ -445,6 +446,7 @@ public class Swerve extends Submodule {
                 desiredAutoAimPose = new Pose2d(VisionConstants.BMR[0], VisionConstants.BMR[1], Rotation2d.fromDegrees(VisionConstants.BMR[2]));
                 System.out.println("bmr");
                 break;
+                
             case BRL:
                 desiredAutoAimPose = new Pose2d(VisionConstants.BRL[0], VisionConstants.BRL[1], Rotation2d.fromDegrees(VisionConstants.BRL[2]));
                 System.out.println("brl");
@@ -464,6 +466,9 @@ public class Swerve extends Submodule {
                 desiredAutoAimPose = new Pose2d(VisionConstants.RLL[0], VisionConstants.RLL[1], Rotation2d.fromDegrees(VisionConstants.RLL[2]));
                 System.out.println("rll");
                 break;
+            /**
+             * Red Alliance
+             */
             case RLM:
                 desiredAutoAimPose = new Pose2d(VisionConstants.RLM[0], VisionConstants.RLM[1], Rotation2d.fromDegrees(VisionConstants.RLM[2]));
                 System.out.println("rlm");
@@ -509,7 +514,9 @@ public class Swerve extends Submodule {
         updateAutoAim();
     }
 
-    /** Update auto aim */
+    /**
+     * Update Auto Aim 
+     */
     public void updateAutoAim() {
         double xSpeed = autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX());
         double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
