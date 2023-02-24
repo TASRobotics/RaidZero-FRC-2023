@@ -76,8 +76,6 @@ public class Swerve extends Submodule {
     private WPI_Pigeon2_Helper pigeon;
 
     private SwerveDrivePoseEstimator odometry;
-    private SwerveDrivePoseEstimator autoAimOdometry;
-    private Pose2d autoAimOdometryCurrentPose;
 
     private Pose2d currentPose;
     private Pose2d prevPose;
@@ -134,14 +132,6 @@ public class Swerve extends Submodule {
                 DriveConstants.STARTING_POSE,
                 DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
-                autoAimOdometry = new SwerveDrivePoseEstimator(
-                    SwerveConstants.KINEMATICS,
-                    Rotation2d.fromDegrees(pigeon.getAngle()),
-                    getModulePositions(),
-                    DriveConstants.STARTING_POSE,
-                    DriveConstants.STATE_STDEVS_MATRIX,
-                    DriveConstants.VISION_STDEVS_MATRIX);
-
 
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
@@ -182,8 +172,6 @@ public class Swerve extends Submodule {
         prevPose = currentPose;
         currentPose = updateOdometry();
         fieldPose.setRobotPose(currentPose);
-
-        autoAimOdometryCurrentPose = null;
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -310,16 +298,6 @@ public class Swerve extends Submodule {
             System.out.println(e);
             return odometry.getEstimatedPosition();
         }
-    }
-
-    private Pose2d updateAutoAimOdometry() {
-        SwerveModulePosition[] positions = {
-            topLeftModule.getModulePosition(), 
-            topRightModule.getModulePosition(), 
-            bottomLeftModule.getModulePosition(), 
-            bottomRightModule.getModulePosition()
-        };
-        return autoAimOdometry.update(Rotation2d.fromDegrees(pigeon.getAngle()), positions);
     }
 
     /**
