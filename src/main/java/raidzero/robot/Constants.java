@@ -204,15 +204,12 @@ public class Constants {
         public static final Pose2d RRL = new Pose2d(14.65, 3.82, Rotation2d.fromDegrees(0));
         public static final Pose2d RRM = new Pose2d(14.65, 4.26, Rotation2d.fromDegrees(0));
         public static final Pose2d RRR = new Pose2d(14.65, 4.72, Rotation2d.fromDegrees(0));
-        // public static final Pose2d RLL = new Pose2d(14.79, 0.97, Rotation2d.fromDegrees(158));
-        // public static final Pose2d RLM = new Pose2d(14.65, 0.94, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RLR = new Pose2d(14.65, 1.53, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RML = new Pose2d(14.65, 2.12, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RMM = new Pose2d(14.65, 2.64, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RMR = new Pose2d(14.65, 3.25, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RRL = new Pose2d(14.65, 3.82, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RRM = new Pose2d(14.65, 4.26, Rotation2d.fromDegrees(180));
-        // public static final Pose2d RRR = new Pose2d(14.65, 4.72, Rotation2d.fromDegrees(180));
+
+        public static final Pose2d BL_LOAD = new Pose2d(15.53, 7.67, Rotation2d.fromDegrees(0));
+        public static final Pose2d BR_LOAD = new Pose2d(15.53, 5.99, Rotation2d.fromDegrees(0));
+        public static final Pose2d RL_LOAD = new Pose2d(0.79, 5.99, Rotation2d.fromDegrees(180));
+        public static final Pose2d RR_LOAD = new Pose2d(0.79, 7.67, Rotation2d.fromDegrees(180));
+
     }
 
     public static final class ArmConstants {
@@ -304,7 +301,6 @@ public class Constants {
         public static final double Y_EXTENSION_LIMIT = 1.4;
 
         public static final double LOWER_KF = 0.000166;
-
         public static final double LOWER_KP = 0.000088;
         public static final double LOWER_KI = 0.0;
         public static final double LOWER_KD = 0.00000;

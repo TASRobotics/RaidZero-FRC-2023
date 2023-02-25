@@ -43,8 +43,8 @@ public class Swerve extends Submodule {
     public enum AutoAimLocation {
         BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
         RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
-        B_LOAD,
-        R_LOAD
+        BR_LOAD, BL_LOAD,
+        RR_LOAD, RL_LOAD
     };
 
     private Alliance alliance;
@@ -520,11 +520,21 @@ public class Swerve extends Submodule {
                 System.out.println("rrr");
                 break;
 
-            case B_LOAD:
-                desiredAutoAimPose = null;
+            case BR_LOAD:
+                desiredAutoAimPose = VisionConstants.BR_LOAD;
+                System.out.println("brload");
                 break;
-            case R_LOAD:
-                desiredAutoAimPose = null;
+            case BL_LOAD:
+                desiredAutoAimPose = VisionConstants.BL_LOAD;
+                System.out.println("blload");
+                break;
+            case RR_LOAD:
+                desiredAutoAimPose = VisionConstants.RR_LOAD;
+                System.out.println("rrload");
+                break;
+            case RL_LOAD:
+                desiredAutoAimPose = VisionConstants.RL_LOAD;
+                System.out.println("rlload");
                 break;
             default:
                 break;

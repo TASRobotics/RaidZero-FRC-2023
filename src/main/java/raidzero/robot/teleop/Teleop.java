@@ -12,7 +12,6 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Wrist;
-import raidzero.robot.submodules.Vision;
 import raidzero.robot.utils.JoystickUtils;
 
 public class Teleop {
@@ -26,7 +25,6 @@ public class Teleop {
     private static final Swerve swerve = Swerve.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
-    private static final Vision vision = Vision.getInstance();
 
     private double rampRate = 0.0;
     private Alliance alliance;
@@ -86,9 +84,6 @@ public class Teleop {
         if (p.getXButtonPressed()) {
             swerve.zero();
         }
-        // if (p.getRightBumperPressed()) {
-        // swerve.square();
-        // }
 
         if (!aiming)
             swerve.drive(
@@ -102,6 +97,22 @@ public class Teleop {
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getRightX() * 0.25 * reverse),
                     true);
+
+        // Auto Alignments
+        if (blue && ((!arm.isGoingHome() && arm.isSafe())
+                || noSafenoProblemo)) {
+            if (p.getRightBumperPressed())
+                swerve.autoAim(AutoAimLocation.BR_LOAD);
+            else if (p.getLeftBumperPressed())
+                swerve.autoAim(AutoAimLocation.BL_LOAD);
+
+        } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
+                || noSafenoProblemo)) {
+            if (p.getRightBumperPressed())
+                swerve.autoAim(AutoAimLocation.RR_LOAD);
+            else if (p.getLeftBumperPressed())
+                swerve.autoAim(AutoAimLocation.RL_LOAD);
+        }
     }
 
     private int mode = 0;
