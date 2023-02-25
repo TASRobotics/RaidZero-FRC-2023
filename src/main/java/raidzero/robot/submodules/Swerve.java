@@ -47,8 +47,6 @@ public class Swerve extends Submodule {
         RR_LOAD, RL_LOAD
     };
 
-    private Alliance alliance;
-
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
         public WPI_Pigeon2_Helper(int deviceNumber, String canbus) {
             super(deviceNumber, canbus);
@@ -92,6 +90,7 @@ public class Swerve extends Submodule {
     // private Rotation2d targetAngle;
     private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
+    private Alliance alliance;
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
@@ -101,6 +100,7 @@ public class Swerve extends Submodule {
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
         zero();
+        alliance = DriverStation.getAlliance();
         firstPath = true;
     }
 
@@ -214,9 +214,9 @@ public class Swerve extends Submodule {
     @Override
     public void zero() {
         if (alliance == Alliance.Blue)
-            bZero();
+            oneEightyZero();
         else if (alliance == Alliance.Red)
-            rZero();
+            zeroHeading();
         setPose(new Pose2d());
         topRightModule.zero();
         topLeftModule.zero();
@@ -224,11 +224,14 @@ public class Swerve extends Submodule {
         bottomRightModule.zero();
     }
 
-    public void bZero() {
+    public void oneEightyZero() {
         pigeon.setYaw(180, Constants.TIMEOUT_MS);
     }
 
-    public void rZero() {
+    /**
+     * Zeroes the heading of the swerve.
+     */
+    public void zeroHeading() {
         pigeon.setYaw(0, Constants.TIMEOUT_MS);
     }
 
@@ -260,13 +263,6 @@ public class Swerve extends Submodule {
      */
     public boolean isOverLimit() {
         return overLimit;
-    }
-
-    /**
-     * Zeroes the heading of the swerve.
-     */
-    public void zeroHeading() {
-        pigeon.setYaw(0, Constants.TIMEOUT_MS);
     }
 
     public void setPose(Pose2d pose) {
@@ -622,7 +618,7 @@ public class Swerve extends Submodule {
     }
 
     public void rotorBrake(boolean enable) {
-        if(enable) {
+        if (enable) {
             topRightModule.setRotorAngle(-45);
             topLeftModule.setRotorAngle(-135);
             bottomRightModule.setRotorAngle(225);
