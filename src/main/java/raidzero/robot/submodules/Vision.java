@@ -143,6 +143,7 @@ public class Vision extends Submodule {
         // Shuffleboard.getTab("Main").add("April Tag Y Pose", robotPose.getY());
         SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
         SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
+        SmartDashboard.putNumber("Cone Translation", getConeTranslation());
         SmartDashboard.putBoolean("Apples?",  !noApples());
 
         // table.putValue("April Tag X Pose", robotPose.getX());
@@ -391,7 +392,7 @@ public class Vision extends Submodule {
             // robotPose = new Pose2d(finalPose.getX(), finalPose.getY(),
             // robotDrive.getPose().getRotation());
         } else {
-            ;
+            robotPose = null;
         }
     }
 
@@ -408,12 +409,7 @@ public class Vision extends Submodule {
         return aprilTagIDs.length == 0;
     }
 
-    // public void updateConeTransform(){
-    // double coneX = cameraSubTable.getEntry("xTranslation").getDouble();
-    // coneTransform = new Transform2d(new Translation2d(0, coneX));
-    // }
-
-    // public Transform2d getConeTransform(){
-
-    // }
+    public double getConeTranslation(){
+        return table.getSubTable("Camera 0").getEntry("X Translation").getDouble(0) * VisionConstants.CONE_PIXELS_TO_METERS;
+    }
 }
