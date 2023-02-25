@@ -40,8 +40,7 @@ public class Swerve extends Submodule {
     public enum AutoAimLocation {
         BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
         RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
-        BR_LOAD, BL_LOAD,
-        RR_LOAD, RL_LOAD
+        BR_LOAD, BL_LOAD, RR_LOAD, RL_LOAD
     };
 
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
@@ -183,9 +182,9 @@ public class Swerve extends Submodule {
         SmartDashboard.putNumber("Theta pose", odometry.getEstimatedPosition().getRotation().getDegrees());
 
         checkThrottleSpeed();
-        
+
         // if(vision.getRobotPose() != null) {
-        //     setPose(vision.getRobotPose());
+        // setPose(vision.getRobotPose());
         // }
     }
 
@@ -215,9 +214,9 @@ public class Swerve extends Submodule {
     @Override
     public void zero() {
         if (alliance == Alliance.Blue)
-            oneEightyZero();
+            zeroHeading(180);
         else if (alliance == Alliance.Red)
-            zeroHeading();
+            zeroHeading(0);
         setPose(new Pose2d());
         topRightModule.zero();
         topLeftModule.zero();
@@ -225,15 +224,11 @@ public class Swerve extends Submodule {
         bottomRightModule.zero();
     }
 
-    public void oneEightyZero() {
-        pigeon.setYaw(180, Constants.TIMEOUT_MS);
-    }
-
     /**
-     * Zeroes the heading of the swerve.
+     * Zeroes the heading of the swerve at set Yaw
      */
-    public void zeroHeading() {
-        pigeon.setYaw(0, Constants.TIMEOUT_MS);
+    public void zeroHeading(double q) {
+        pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -539,10 +534,10 @@ public class Swerve extends Submodule {
                 break;
         }
 
-        if (desiredAutoAimPose != null){
+        if (desiredAutoAimPose != null) {
             desiredAutoAimPose.transformBy(vision.getConeTransform());
         }
-        
+
         updateAutoAim();
     }
 
@@ -566,32 +561,6 @@ public class Swerve extends Submodule {
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
-
-    // /**
-    // * Square Bot
-    // */
-    // public void square() {
-    // controlState = ControlState.AUTO_AIM;
-    // double xSpeed = autoAimXController.calculate(getPose().getX(),
-    // getPose().getX());
-    // double ySpeed = autoAimYController.calculate(getPose().getY(),
-    // getPose().getY());
-    // double thetaSpeed =
-    // autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-    // 0);
-    // ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-    // xSpeed,
-    // ySpeed,
-    // thetaSpeed,
-    // getPose().getRotation());
-    // SwerveModuleState[] desiredState =
-    // SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-    // SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
-    // topLeftModule.setTargetState(desiredState[0], false, true, true);
-    // topRightModule.setTargetState(desiredState[1], false, true, true);
-    // bottomLeftModule.setTargetState(desiredState[2], false, true, true);
-    // bottomRightModule.setTargetState(desiredState[3], false, true, true);
-    // }
 
     /**
      * Test swerve modules

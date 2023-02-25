@@ -12,7 +12,6 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Wrist;
-import raidzero.robot.submodules.Vision;
 import raidzero.robot.utils.JoystickUtils;
 
 public class Teleop {
@@ -26,9 +25,7 @@ public class Teleop {
     private static final Swerve swerve = Swerve.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
-    private static final Vision vision = Vision.getInstance();
 
-    private double rampRate = 0.0;
     private Alliance alliance;
     private boolean blue = false;
     private double reverse = 1; // joystick reverse
@@ -85,9 +82,9 @@ public class Teleop {
         // }
         if (p.getXButtonPressed()) {
             if(blue)
-                swerve.zeroHeading();
+                swerve.zeroHeading(0);
             else
-                swerve.oneEightyZero();
+                swerve.zeroHeading(180);
         }
 
         if (!aiming)

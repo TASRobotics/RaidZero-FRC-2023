@@ -204,7 +204,7 @@ public class Constants {
         public static final Pose2d RRL = new Pose2d(14.65, 3.82, Rotation2d.fromDegrees(0));
         public static final Pose2d RRM = new Pose2d(14.65, 4.26, Rotation2d.fromDegrees(0));
         public static final Pose2d RRR = new Pose2d(14.65, 4.72, Rotation2d.fromDegrees(0));
-
+        // Human Pickup Station
         public static final Pose2d BL_LOAD = new Pose2d(15.73, 7.67, Rotation2d.fromDegrees(0));
         public static final Pose2d BR_LOAD = new Pose2d(15.73, 5.99, Rotation2d.fromDegrees(0));
         public static final Pose2d RL_LOAD = new Pose2d(0.79, 5.99, Rotation2d.fromDegrees(180));
