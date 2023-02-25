@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -91,6 +92,10 @@ public class Swerve extends Submodule {
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
+
+    private TrapezoidProfile autoAimXProfile, autoAimYProfile, autoAimThetaProfile;
+    private TrapezoidProfile.State desiredAutoAimXState, desiredAutoAimYState, desiredAutoAimThetaState;
+    private TrapezoidProfile.State initialAutoAimXState, initialAutoAimYState, initialAutoAimThetaState;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -242,6 +247,15 @@ public class Swerve extends Submodule {
                 topRightModule.getModulePosition(),
                 bottomLeftModule.getModulePosition(),
                 bottomRightModule.getModulePosition()
+        };
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            topLeftModule.getModuleState(), 
+            topRightModule.getModuleState(), 
+            bottomLeftModule.getModuleState(), 
+            bottomRightModule.getModuleState()
         };
     }
 
@@ -542,6 +556,22 @@ public class Swerve extends Submodule {
         if (desiredAutoAimPose != null){
             desiredAutoAimPose.transformBy(vision.getConeTransform());
         }
+
+        ChassisSpeeds currentSpeeds = SwerveConstants.KINEMATICS.toChassisSpeeds(getModuleStates());
+        initialAutoAimXState = new TrapezoidProfile.State(getPose().getX(), currentSpeeds.vxMetersPerSecond);
+        initialAutoAimYState = new TrapezoidProfile.State(getPose().getX(), currentSpeeds.vyMetersPerSecond);
+        initialAutoAimThetaState = new TrapezoidProfile.State(getPose().getRotation().getRadians(), currentSpeeds.omegaRadiansPerSecond);
+
+        desiredAutoAimXState = new TrapezoidProfile.State(desiredAutoAimPose.getX(), 0);
+        desiredAutoAimYState = new TrapezoidProfile.State(desiredAutoAimPose.getY(), 0);
+        desiredAutoAimThetaState = new TrapezoidProfile.State(desiredAutoAimPose.getRotation().getRadians(), 0);
+
+        autoAimXProfile = new TrapezoidProfile(SwerveConstants.AA_PROFILE_TRANSLATION_CONSTRAINTS, desiredAutoAimXState, initialAutoAimXState);
+        autoAimYProfile = new TrapezoidProfile(SwerveConstants.AA_PROFILE_TRANSLATION_CONSTRAINTS, desiredAutoAimYState, initialAutoAimYState);
+        autoAimThetaProfile = new TrapezoidProfile(SwerveConstants.AA_PROFILE_ROTATION_CONSTRAINTS, desiredAutoAimThetaState, initialAutoAimThetaState);
+
+        timer.reset();
+        timer.start();
         
         updateAutoAim();
     }
@@ -549,11 +579,22 @@ public class Swerve extends Submodule {
     /**
      * Update Auto Aim
      */
-    public void updateAutoAim() {
-        double xSpeed = autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX());
-        double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
-        double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-                desiredAutoAimPose.getRotation().getRadians());
+    public void updateAutoAim(boolean usingMotionProfile) {
+        double xSpeed = 0.0, ySpeed = 0.0, thetaSpeed = 0.0;
+        if(usingMotionProfile) {
+            TrapezoidProfile.State xState = autoAimXProfile.calculate(timer.get());
+            TrapezoidProfile.State yState = autoAimYProfile.calculate(timer.get());
+            TrapezoidProfile.State thetaState = autoAimThetaProfile.calculate(timer.get());
+
+            xSpeed = autoAimXController.calculate(getPose().getX(), xState.position);
+            ySpeed = autoAimYController.calculate(getPose().getY(), yState.position);
+            thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(), thetaState.position);
+        } else {
+            xSpeed = autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX());
+            ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
+            thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+                    desiredAutoAimPose.getRotation().getRadians());
+        }
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
                 ySpeed,
@@ -566,6 +607,11 @@ public class Swerve extends Submodule {
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
+
+    public void updateAutoAim() {
+        updateAutoAim(false);
+    }
+
 
     // /**
     // * Square Bot
