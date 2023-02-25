@@ -30,6 +30,8 @@ public class Teleop {
 
     private double rampRate = 0.0;
     private Alliance alliance;
+    private boolean blue = false;
+    private double reverse = 1; // joystick reverse
 
     public static Teleop getInstance() {
         if (instance == null) {
@@ -39,8 +41,13 @@ public class Teleop {
     }
 
     public void onStart() {
-        alliance = DriverStation.getAlliance();
-        swerve.zeroHeading();
+        if (DriverStation.getAlliance() == Alliance.Blue) {
+            blue = true;
+            reverse = 1;
+        } else {
+            blue = false;
+            reverse = -1;
+        }
     }
 
     public void onLoop() {
@@ -60,6 +67,7 @@ public class Teleop {
     }
 
     private double[] target = { 0, 0.15 };
+
     private boolean aiming = false;
     private boolean noSafenoProblemo = false;
 
@@ -67,32 +75,32 @@ public class Teleop {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
         if (p.getYButtonPressed()) {
-            aiming = !aiming;
+            aiming = true;
+        }
+        if (p.getBButtonPressed()) {
+            aiming = false;
         }
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo;
         // }
         if (p.getXButtonPressed()) {
             swerve.zero();
-            // if (alliance == Alliance.Blue)
-            //     swerve.zero();
-            // else if (alliance == Alliance.Red)
-            //     swerve.zero();
         }
         // if (p.getRightBumperPressed()) {
         // swerve.square();
         // }
+
         if (!aiming)
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious()),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
+                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),
+                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * reverse),
+                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() * reverse),
                     true);
         else
             swerve.drive(
-                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25),
-                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
+                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
+                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
+                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25 * reverse),
                     true);
     }
 
@@ -282,9 +290,8 @@ public class Teleop {
         }
 
         // Auto Alignments
-        if (alliance == Alliance.Blue
-                && ((!arm.isGoingHome() && arm.isSafe())
-                        || noSafenoProblemo)) {
+        if (blue && ((!arm.isGoingHome() && arm.isSafe())
+                || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.BLL);
             } else if (p.getRawButton(8)) {
@@ -305,9 +312,8 @@ public class Teleop {
                 swerve.autoAim(AutoAimLocation.BRR);
             } else {
             }
-        } else if (alliance == Alliance.Red
-                && ((!arm.isGoingHome() && arm.isSafe())
-                        || noSafenoProblemo)) {
+        } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
+                || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.RLL);
             } else if (p.getRawButton(8)) {

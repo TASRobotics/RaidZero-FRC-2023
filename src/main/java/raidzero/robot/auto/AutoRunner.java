@@ -96,10 +96,6 @@ public class AutoRunner {
                     "[Auto] Stopping auto sequence '" + selectedSequence.getName() + "'...");
             selectedSequence.stop();
             Alliance alliance = DriverStation.getAlliance();
-            if (alliance == Alliance.Blue)
-                swerve.bAutonZero();
-            else if (alliance == Alliance.Red)
-                swerve.rAutonZero();
         }
     }
 
