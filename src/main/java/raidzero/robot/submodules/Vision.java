@@ -416,4 +416,16 @@ public class Vision extends Submodule {
         return table.getSubTable("Camera 0").getEntry("X Translation").getDouble(0)
                 * VisionConstants.CONE_PIXELS_TO_METERS;
     }
+
+    public Transform2d getConeTransform(){
+        double pigeonAngle = pigeon.getAngle();
+        Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
+
+        if (robotRotation.getDegrees() < 90 && robotRotation.getDegrees() > -90){
+            return new Transform2d(new Translation2d(0, getConeTranslation()), new Rotation2d());
+        }
+        else{
+            return new Transform2d(new Translation2d(0, -getConeTranslation()), new Rotation2d());
+        }
+    }
 }

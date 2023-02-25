@@ -186,6 +186,10 @@ public class Swerve extends Submodule {
         SmartDashboard.putNumber("Theta pose", odometry.getEstimatedPosition().getRotation().getDegrees());
 
         checkThrottleSpeed();
+        
+        // if(vision.getRobotPose() != null) {
+        //     setPose(vision.getRobotPose());
+        // }
     }
 
     /**
@@ -428,6 +432,8 @@ public class Swerve extends Submodule {
             if (vision.getRobotPose() != null) {
                 setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
                         Rotation2d.fromDegrees(pigeon.getAngle())));
+            } else {
+                return;
             }
         }
         prevAutoAimLocation = location;
@@ -536,6 +542,10 @@ public class Swerve extends Submodule {
                 break;
         }
 
+        if (desiredAutoAimPose != null){
+            desiredAutoAimPose.transformBy(vision.getConeTransform());
+        }
+        
         updateAutoAim();
     }
 
