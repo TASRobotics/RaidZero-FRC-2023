@@ -1,5 +1,6 @@
 package raidzero.robot.submodules;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
