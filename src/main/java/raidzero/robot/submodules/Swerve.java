@@ -620,4 +620,13 @@ public class Swerve extends Submodule {
         bottomRightModule.setRotorRampRate(val);
         bottomLeftModule.setRotorRampRate(val);
     }
+
+    public void rotorBrake(boolean enable) {
+        if(enable) {
+            topRightModule.setRotorAngle(-45);
+            topLeftModule.setRotorAngle(-135);
+            bottomRightModule.setRotorAngle(225);
+            bottomLeftModule.setRotorAngle(315);
+        }
+    }
 }
