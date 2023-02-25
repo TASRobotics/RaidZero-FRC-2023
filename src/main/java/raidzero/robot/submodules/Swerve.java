@@ -540,6 +540,10 @@ public class Swerve extends Submodule {
                 break;
         }
 
+        if (desiredAutoAimPose != null){
+            desiredAutoAimPose.transformBy(vision.getConeTransform());
+        }
+        
         updateAutoAim();
     }
 
