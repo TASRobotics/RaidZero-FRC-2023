@@ -167,8 +167,8 @@ public class Constants {
         private static final Pose2d[] CAMERALOCATIONS = {
                 new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
                 new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1]) };
-        public static final Transform2d[] CAMERATRANSFORMS = { new Transform2d(CAMERALOCATIONS[0], new Pose2d()),
-                new Transform2d(CAMERALOCATIONS[1], new Pose2d()) };
+        public static final Transform2d[] CAMERATRANSFORMS = {new Transform2d(CAMERALOCATIONS[0],new Pose2d()),
+                new Transform2d( CAMERALOCATIONS[1], new Pose2d()) };
 
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;

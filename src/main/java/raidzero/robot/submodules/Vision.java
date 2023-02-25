@@ -367,27 +367,30 @@ public class Vision extends Submodule {
         aprilDetect(subTable);
         if (aprilTagIDs.length > 0) {
             double pigeonAngle = pigeon.getAngle();
-            Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle - 180);
+            Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
 
             Pose2d aprilTagPose = aprilTagGlobalPoses[aprilTagIDs[0]];
-            Transform2d globalToAprilTag = new Transform2d(new Pose2d(0, 0, Rotation2d.fromDegrees(0)), aprilTagPose);
+            Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(),robotRotation);
 
-            Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
-            Transform2d aprilTagTransform = new Transform2d(
-                    new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]),
-                    Rotation2d.fromRadians(0));
-            Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
-            Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
+            // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
+            Transform2d aprilTagTransform = new Transform2d(new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]), new Rotation2d());
+            SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
+            SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
+            SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
+            // Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
+            // Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
 
             Transform2d cameraToRobot = VisionConstants.CAMERATRANSFORMS[0];
 
-            robotPose = new Pose2d().transformBy(globalToAprilTag).transformBy(aprilTagToCamera)
-                    .transformBy(cameraToRobot);
+            Transform2d aprilToRobot = aprilTagTransform.plus(cameraToRobot);
+            robotPose = globalToAprilTag.plus(aprilToRobot);
 
             // Pose2d finalPose = new
             // Pose2d().transformBy(globalToAprilTag).transformBy(aprilTagToCamera).transformBy(cameraToRobot);
             // robotPose = new Pose2d(finalPose.getX(), finalPose.getY(),
             // robotDrive.getPose().getRotation());
+        } else {
+            ;
         }
     }
 
