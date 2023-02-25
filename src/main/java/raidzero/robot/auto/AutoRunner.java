@@ -22,8 +22,6 @@ public class AutoRunner {
     private AutoSequence[] availableSequences = {
             new TestSequence(),
             new EmptySequence(),
-            new TwoConeClimbSequence(),
-            new ClimbSequence(),
             new SingleConeClimbSequence()
     };
 

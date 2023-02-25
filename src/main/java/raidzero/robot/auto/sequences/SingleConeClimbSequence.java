@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.wpilibj.DriverStation;
+
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
@@ -14,17 +15,14 @@ import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
-import raidzero.robot.auto.actions.WaitAction;
-import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 
 public class SingleConeClimbSequence extends AutoSequence {
-    private final static Intake mIntake = Intake.getInstance();
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("TCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("TCC Balance", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("SCC Balance", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
     public SingleConeClimbSequence() {
