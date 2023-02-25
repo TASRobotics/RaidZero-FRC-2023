@@ -143,6 +143,7 @@ public class Vision extends Submodule {
         // Shuffleboard.getTab("Main").add("April Tag Y Pose", robotPose.getY());
         SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
         SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
+        SmartDashboard.putBoolean("Apples?",  !noApples());
 
         // table.putValue("April Tag X Pose", robotPose.getX());
         // table.putValue("April Tag X Pose", robotPose.getX());

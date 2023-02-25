@@ -414,9 +414,7 @@ public class Swerve extends Submodule {
             setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
                     Rotation2d.fromDegrees(pigeon.getAngle())));
         }
-
         prevAutoAimLocation = location;
-        // zero();
         switch (location) {
             /**
              * Blue Alliance
@@ -523,10 +521,28 @@ public class Swerve extends Submodule {
         double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
         double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
                 desiredAutoAimPose.getRotation().getRadians());
+        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed,
+                ySpeed,
+                thetaSpeed,
+                getPose().getRotation());
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
 
-        SmartDashboard.putNumber("x speed", xSpeed);
-        SmartDashboard.putNumber("y speed", ySpeed);
-
+    /**
+     * Square Bot
+     */
+    public void square() {
+        controlState = ControlState.AUTO_AIM;
+        double xSpeed = autoAimXController.calculate(getPose().getX(), getPose().getX());
+        double ySpeed = autoAimYController.calculate(getPose().getY(), getPose().getY());
+        double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+                0);
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
                 ySpeed,

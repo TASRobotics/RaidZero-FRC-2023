@@ -103,11 +103,11 @@ public class Constants {
         /** AutoAim Constants */
         public static final double AA_XCONTROLLER_KP = 1.78;
         public static final double AA_YCONTROLLER_KP = 1.78;
-        public static final double AA_THETACONTROLLER_KP = 0.7;
-        public static final double AA_THETACONTROLLER_KD = 0;
+        public static final double AA_THETACONTROLLER_KP = 1.2;
+        public static final double AA_THETACONTROLLER_KD = 0.1;
         public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
-        public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.7);
+        public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
@@ -192,8 +192,8 @@ public class Constants {
         public static final Pose2d BMM = new Pose2d(1.85, 2.94, Rotation2d.fromDegrees(180));
         public static final Pose2d BMR = new Pose2d(1.85, 2.42, Rotation2d.fromDegrees(180));
         public static final Pose2d BRL = new Pose2d(1.85, 1.90, Rotation2d.fromDegrees(180));
-        public static final Pose2d BRM = new Pose2d(1.85, 1.32, Rotation2d.fromDegrees(180));
-        public static final Pose2d BRR = new Pose2d(1.85, 0.62, Rotation2d.fromDegrees(180));
+        public static final Pose2d BRM = new Pose2d(1.85, 1.36, Rotation2d.fromDegrees(180));
+        public static final Pose2d BRR = new Pose2d(1.85, 0.48, Rotation2d.fromDegrees(180));
         // Red Alliance
         public static final Pose2d RLL = new Pose2d(14.65, 0.62, Rotation2d.fromDegrees(0));
         public static final Pose2d RLM = new Pose2d(14.65, 1.32, Rotation2d.fromDegrees(0));
@@ -234,8 +234,8 @@ public class Constants {
         public static final double[] INTER_FLOOR_INTAKE = { 0.55, 0.5 };
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
-        public static final double[] GRID_MEDIUM = { 0.93, 0.97 };
-        public static final double[] GRID_HIGH = { 1.28, 1.25 };
+        public static final double[] GRID_MEDIUM = { 0.93, 1.00 };
+        public static final double[] GRID_HIGH = { 1.28, 1.28 };
         public static final double[] FLOOR_INTAKE = { 0.7, 0.02 };
 
         /**

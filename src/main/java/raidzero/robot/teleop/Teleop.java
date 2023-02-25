@@ -68,8 +68,15 @@ public class Teleop {
         if (p.getYButtonPressed()) {
             aiming = !aiming;
         }
-        if (p.getAButtonPressed()) {
-            noSafenoProblemo = !noSafenoProblemo;
+        // if (p.getAButtonPressed()) {
+        //     noSafenoProblemo = !noSafenoProblemo;
+        // }
+        if (p.getXButtonPressed()) {
+            //swerve.zeroHeading();
+            swerve.zero();
+        }
+        if (p.getRightBumperPressed()) {
+            swerve.square();
         }
         if (!aiming)
             swerve.drive(
@@ -273,7 +280,7 @@ public class Teleop {
 
         // Auto Alignments
         if (alliance == Alliance.Blue
-                && ((!arm.isGoingHome() && arm.isSafe() && !vision.noApples())
+                && ((!arm.isGoingHome() && arm.isSafe() )
                         || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.BLL);
@@ -296,7 +303,7 @@ public class Teleop {
             } else {
             }
         } else if (alliance == Alliance.Red
-                && ((!arm.isGoingHome() && arm.isSafe() && !vision.noApples())
+                && ((!arm.isGoingHome() && arm.isSafe() )
                         || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
                 swerve.autoAim(AutoAimLocation.RLL);
