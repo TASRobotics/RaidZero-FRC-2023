@@ -379,7 +379,7 @@ public class Arm extends Submodule {
      */
     public double tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.3 || Math.abs(state[0].getX()) > 0.2)
-            return 0.1;
+            return 0.22;
         else
             return 1;
     }
@@ -654,9 +654,9 @@ public class Arm extends Submodule {
         return pos;
     }
 
-
     /**
-     * Calculates proximal and distal angles to reach target x and y end-effector state using inverse kinematics
+     * Calculates proximal and distal angles to reach target x and y end-effector
+     * state using inverse kinematics
      * 
      * @param target_x Target End-effector x coord
      * @param target_y Target End-effector y coord

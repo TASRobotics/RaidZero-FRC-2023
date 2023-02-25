@@ -14,7 +14,8 @@ import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
 
 public class Intake extends Submodule {
-    private Intake() {}
+    private Intake() {
+    }
 
     private static Intake instance = null;
 
@@ -47,7 +48,8 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
     public void update(double timestamp) {
@@ -56,7 +58,7 @@ public class Intake extends Submodule {
 
     @Override
     public void run() {
-        if(Math.abs(mPercentOut) < 0.05) {
+        if (Math.abs(mPercentOut) < 0.05) {
             holdPosition();
         }
         if (mControlState == ControlState.OPEN_LOOP) {
@@ -64,11 +66,10 @@ public class Intake extends Submodule {
             mPrevOpenLoopPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredPosition,
-                ControlType.kSmartMotion,
-                IntakeConstants.PID_SLOT
-            );
-        } 
+                    mDesiredPosition,
+                    ControlType.kSmartMotion,
+                    IntakeConstants.PID_SLOT);
+        }
     }
 
     @Override
@@ -94,9 +95,9 @@ public class Intake extends Submodule {
     /** Hold position of intake */
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
-        if(Math.signum(mPercentOut)<0)
+        if (Math.signum(mPercentOut) < 0)
             mDesiredPosition = mPrevOpenLoopPosition - 3;
-        else     
+        else
             mDesiredPosition = mPrevOpenLoopPosition + 3;
     }
 
@@ -117,7 +118,8 @@ public class Intake extends Submodule {
         mPIDController.setSmartMotionMinOutputVelocity(IntakeConstants.MIN_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxVelocity(IntakeConstants.MAX_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxAccel(IntakeConstants.MAX_ACCEL, IntakeConstants.SMART_MOTION_SLOT);
-        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR, IntakeConstants.SMART_MOTION_SLOT);
+        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR,
+                IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, IntakeConstants.SMART_MOTION_SLOT);
     }
 }
