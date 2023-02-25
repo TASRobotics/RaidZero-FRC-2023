@@ -153,11 +153,12 @@ public class Swerve extends Submodule {
         autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
         autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        Alliance alliance = DriverStation.getAlliance();
-        if (alliance == Alliance.Blue)
-            bZero();
-        else if (alliance == Alliance.Red)
-            rZero();
+        // Alliance alliance = DriverStation.getAlliance();
+        // if (alliance == Alliance.Blue)
+        //     bZero();
+        // else if (alliance == Alliance.Red)
+        //     rZero();
+        zero();
 
         prevPose = new Pose2d();
 
@@ -224,11 +225,12 @@ public class Swerve extends Submodule {
         bottomRightModule.zero();
     }
 
-    public void bZero() {
-        pigeon.setYaw(180, Constants.TIMEOUT_MS);
+    public void bAutonZero() {
+        pigeon.setYaw(0, Constants.TIMEOUT_MS);
+        // setPose(new Pose2d(0,0, Rotation2d.fromDegrees(180)));
     }
 
-    public void rZero() {
+    public void rAutonZero() {
         pigeon.setYaw(0, Constants.TIMEOUT_MS);
         // setPose(new Pose2d(0,0, Rotation2d.fromDegrees(180)));
     }
