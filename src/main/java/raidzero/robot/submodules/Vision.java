@@ -139,12 +139,13 @@ public class Vision extends Submodule {
     public void update(double timestamp) {
         // angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
         updateRobotPose();
-        // Shuffleboard.getTab("Main").add("April Tag X Pose", robotPose.getX());
-        // Shuffleboard.getTab("Main").add("April Tag Y Pose", robotPose.getY());
-        SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
-        SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
-        SmartDashboard.putNumber("Cone Translation", getConeTranslation());
-        SmartDashboard.putBoolean("Apples?",  !noApples());
+        if (robotPose != null) {
+            SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
+            SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
+            SmartDashboard.putNumber("Cone Translation", getConeTranslation());
+        }
+
+        SmartDashboard.putBoolean("Apples?", !noApples());
 
         // table.putValue("April Tag X Pose", robotPose.getX());
         // table.putValue("April Tag X Pose", robotPose.getX());
@@ -372,10 +373,12 @@ public class Vision extends Submodule {
             Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
 
             Pose2d aprilTagPose = aprilTagGlobalPoses[aprilTagIDs[0]];
-            Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(),robotRotation);
+            Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(), robotRotation);
 
             // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
-            Transform2d aprilTagTransform = new Transform2d(new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]), new Rotation2d());
+            Transform2d aprilTagTransform = new Transform2d(
+                    new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]),
+                    new Rotation2d());
             SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
             SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
             SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
@@ -409,7 +412,8 @@ public class Vision extends Submodule {
         return aprilTagIDs.length == 0;
     }
 
-    public double getConeTranslation(){
-        return table.getSubTable("Camera 0").getEntry("X Translation").getDouble(0) * VisionConstants.CONE_PIXELS_TO_METERS;
+    public double getConeTranslation() {
+        return table.getSubTable("Camera 0").getEntry("X Translation").getDouble(0)
+                * VisionConstants.CONE_PIXELS_TO_METERS;
     }
 }

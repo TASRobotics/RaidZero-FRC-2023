@@ -379,7 +379,7 @@ public class Arm extends Submodule {
      */
     public double tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.3 || Math.abs(state[0].getX()) > 0.2)
-            return 0.22;
+            return 0.20;
         else
             return 1;
     }

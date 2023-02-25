@@ -6,6 +6,8 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.server.PathPlannerServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
@@ -151,7 +153,12 @@ public class Swerve extends Submodule {
         autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
         autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        zero();
+        Alliance alliance = DriverStation.getAlliance();
+        if (alliance == Alliance.Blue)
+            bZero();
+        else if (alliance == Alliance.Red)
+            rZero();
+
         prevPose = new Pose2d();
 
         PathPlannerServer.startServer(5811);
@@ -215,6 +222,15 @@ public class Swerve extends Submodule {
         topLeftModule.zero();
         bottomLeftModule.zero();
         bottomRightModule.zero();
+    }
+
+    public void bZero() {
+        pigeon.setYaw(180, Constants.TIMEOUT_MS);
+    }
+
+    public void rZero() {
+        pigeon.setYaw(0, Constants.TIMEOUT_MS);
+        // setPose(new Pose2d(0,0, Rotation2d.fromDegrees(180)));
     }
 
     public SwerveModulePosition[] getModulePositions() {
@@ -409,10 +425,15 @@ public class Swerve extends Submodule {
      * @param location auto aim location
      */
     public void autoAim(AutoAimLocation location) {
+        // if(vision.getRobotPose() == null) {
+        // return;
+        // }
         controlState = ControlState.AUTO_AIM;
         if (prevAutoAimLocation != location) {
-            setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
-                    Rotation2d.fromDegrees(pigeon.getAngle())));
+            if (vision.getRobotPose() != null) {
+                setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
+                        Rotation2d.fromDegrees(pigeon.getAngle())));
+            }
         }
         prevAutoAimLocation = location;
         switch (location) {
@@ -535,25 +556,29 @@ public class Swerve extends Submodule {
     }
 
     // /**
-    //  * Square Bot
-    //  */
+    // * Square Bot
+    // */
     // public void square() {
-    //     controlState = ControlState.AUTO_AIM;
-    //     double xSpeed = autoAimXController.calculate(getPose().getX(), getPose().getX());
-    //     double ySpeed = autoAimYController.calculate(getPose().getY(), getPose().getY());
-    //     double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-    //             0);
-    //     ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-    //             xSpeed,
-    //             ySpeed,
-    //             thetaSpeed,
-    //             getPose().getRotation());
-    //     SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-    //     SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
-    //     topLeftModule.setTargetState(desiredState[0], false, true, true);
-    //     topRightModule.setTargetState(desiredState[1], false, true, true);
-    //     bottomLeftModule.setTargetState(desiredState[2], false, true, true);
-    //     bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    // controlState = ControlState.AUTO_AIM;
+    // double xSpeed = autoAimXController.calculate(getPose().getX(),
+    // getPose().getX());
+    // double ySpeed = autoAimYController.calculate(getPose().getY(),
+    // getPose().getY());
+    // double thetaSpeed =
+    // autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+    // 0);
+    // ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+    // xSpeed,
+    // ySpeed,
+    // thetaSpeed,
+    // getPose().getRotation());
+    // SwerveModuleState[] desiredState =
+    // SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+    // SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+    // topLeftModule.setTargetState(desiredState[0], false, true, true);
+    // topRightModule.setTargetState(desiredState[1], false, true, true);
+    // bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+    // bottomRightModule.setTargetState(desiredState[3], false, true, true);
     // }
 
     /**

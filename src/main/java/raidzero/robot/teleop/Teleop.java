@@ -40,6 +40,10 @@ public class Teleop {
 
     public void onStart() {
         alliance = DriverStation.getAlliance();
+        if (alliance == Alliance.Blue)
+            swerve.bZero();
+        else if (alliance == Alliance.Red)
+            swerve.rZero();
     }
 
     public void onLoop() {
@@ -69,14 +73,17 @@ public class Teleop {
             aiming = !aiming;
         }
         // if (p.getAButtonPressed()) {
-        //     noSafenoProblemo = !noSafenoProblemo;
+        // noSafenoProblemo = !noSafenoProblemo;
         // }
         if (p.getXButtonPressed()) {
-            //swerve.zeroHeading();
-            swerve.zero();
+            // swerve.zeroHeading();
+            if (alliance == Alliance.Blue)
+                swerve.bZero();
+            else if (alliance == Alliance.Red)
+                swerve.bZero();
         }
         // if (p.getRightBumperPressed()) {
-        //     swerve.square();
+        // swerve.square();
         // }
         if (!aiming)
             swerve.drive(
@@ -136,7 +143,6 @@ public class Teleop {
                         ArmConstants.GRID_HIGH[1],
                         155);
             }
-
             // Medium Grid
             else if (p.getAButtonPressed() &&
                     !swerve.isOverLimit() &&
