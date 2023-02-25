@@ -422,103 +422,86 @@ public class Swerve extends Submodule {
              * Blue Alliance
              */
             case BLL:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BLL[0], VisionConstants.BLL[1],
-                        Rotation2d.fromDegrees(VisionConstants.BLL[2]));
+                desiredAutoAimPose = VisionConstants.BLL;
                 System.out.println("bll");
                 break;
             case BLM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BLM[0], VisionConstants.BLM[1],
-                        Rotation2d.fromDegrees(VisionConstants.BLM[2]));
+                desiredAutoAimPose = VisionConstants.BLM;
                 System.out.println("blm");
                 break;
             case BLR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BLR[0], VisionConstants.BLR[1],
-                        Rotation2d.fromDegrees(VisionConstants.BLR[2]));
+                desiredAutoAimPose = VisionConstants.BLR;
                 System.out.println("blr");
                 break;
 
             case BML:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BML[0], VisionConstants.BML[1],
-                        Rotation2d.fromDegrees(VisionConstants.BML[2]));
+                desiredAutoAimPose = VisionConstants.BML;
                 System.out.println("bml");
                 break;
             case BMM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BMM[0], VisionConstants.BMM[1],
-                        Rotation2d.fromDegrees(VisionConstants.BMM[2]));
+                desiredAutoAimPose = VisionConstants.BMM;
                 System.out.println("bmm");
                 break;
             case BMR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BMR[0], VisionConstants.BMR[1],
-                        Rotation2d.fromDegrees(VisionConstants.BMR[2]));
+                desiredAutoAimPose = VisionConstants.BMR;
                 System.out.println("bmr");
                 break;
 
             case BRL:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BRL[0], VisionConstants.BRL[1],
-                        Rotation2d.fromDegrees(VisionConstants.BRL[2]));
+                desiredAutoAimPose = VisionConstants.BRL;
                 System.out.println("brl");
                 break;
             case BRM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BRM[0], VisionConstants.BRM[1],
-                        Rotation2d.fromDegrees(VisionConstants.BRM[2]));
+                desiredAutoAimPose = VisionConstants.BRM;
                 System.out.println("brm");
                 break;
             case BRR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.BRR[0], VisionConstants.BRR[1],
-                        Rotation2d.fromDegrees(VisionConstants.BRR[2]));
+                desiredAutoAimPose = VisionConstants.BRR;
                 System.out.println("brr");
                 break;
+
             /**
              * Red Alliance
              */
             case RLL:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RLL[0], VisionConstants.RLL[1],
-                        Rotation2d.fromDegrees(VisionConstants.RLL[2]));
+                desiredAutoAimPose = VisionConstants.RLL;
                 System.out.println("rll");
                 break;
-            /**
-             * Red Alliance
-             */
             case RLM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RLM[0], VisionConstants.RLM[1],
-                        Rotation2d.fromDegrees(VisionConstants.RLM[2]));
+                desiredAutoAimPose = VisionConstants.RLM;
                 System.out.println("rlm");
                 break;
             case RLR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RLR[0], VisionConstants.RLR[1],
-                        Rotation2d.fromDegrees(VisionConstants.RLR[2]));
+                desiredAutoAimPose = VisionConstants.RLR;
                 System.out.println("rlr");
                 break;
+
             case RML:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RML[0], VisionConstants.RML[1],
-                        Rotation2d.fromDegrees(VisionConstants.RML[2]));
+                desiredAutoAimPose = VisionConstants.RML;
                 System.out.println("rml");
                 break;
             case RMM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RMM[0], VisionConstants.RMM[1],
-                        Rotation2d.fromDegrees(VisionConstants.RMM[2]));
+                desiredAutoAimPose = VisionConstants.RMM;
                 System.out.println("rmm");
                 break;
             case RMR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RMR[0], VisionConstants.RMR[1],
-                        Rotation2d.fromDegrees(VisionConstants.RMR[2]));
+                desiredAutoAimPose = VisionConstants.RMR;
                 System.out.println("rmr");
                 break;
+
             case RRL:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RRL[0], VisionConstants.RRL[1],
-                        Rotation2d.fromDegrees(VisionConstants.RRL[2]));
+                desiredAutoAimPose = VisionConstants.RRL;
                 System.out.println("rrl");
                 break;
             case RRM:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RRM[0], VisionConstants.RRM[1],
-                        Rotation2d.fromDegrees(VisionConstants.RRM[2]));
+                desiredAutoAimPose = VisionConstants.RRM;
                 System.out.println("rrm");
                 break;
             case RRR:
-                desiredAutoAimPose = new Pose2d(VisionConstants.RRR[0], VisionConstants.RRR[1],
-                        Rotation2d.fromDegrees(VisionConstants.RRR[2]));
+                desiredAutoAimPose = VisionConstants.RRR;
                 System.out.println("rrr");
                 break;
+
             case B_LOAD:
                 desiredAutoAimPose = null;
                 break;

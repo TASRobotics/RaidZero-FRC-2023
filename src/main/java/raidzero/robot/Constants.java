@@ -185,25 +185,25 @@ public class Constants {
          * Auto Alignment Constants
          */
         // Blue Alliance
-        public static final double[] BLL = { 1.66, 4.57, 155 };
-        public static final double[] BLM = { 1.85, 4.61, 180 };
-        public static final double[] BLR = { 1.85, 4.08, 180 };
-        public static final double[] BML = { 1.85, 3.53, 180 };
-        public static final double[] BMM = { 1.85, 2.94, 180 };
-        public static final double[] BMR = { 1.85, 2.42, 180 };
-        public static final double[] BRL = { 1.85, 1.90, 180 };
-        public static final double[] BRM = { 1.85, 1.32, 180 };
-        public static final double[] BRR = { 1.85, 0.62, 180 };
+        public static final Pose2d BLL = new Pose2d(1.66, 4.57, Rotation2d.fromDegrees(155));
+        public static final Pose2d BLM = new Pose2d(1.85, 4.61, Rotation2d.fromDegrees(180));
+        public static final Pose2d BLR = new Pose2d(1.85, 4.08, Rotation2d.fromDegrees(180));
+        public static final Pose2d BML = new Pose2d(1.85, 3.53, Rotation2d.fromDegrees(180));
+        public static final Pose2d BMM = new Pose2d(1.85, 2.94, Rotation2d.fromDegrees(180));
+        public static final Pose2d BMR = new Pose2d(1.85, 2.42, Rotation2d.fromDegrees(180));
+        public static final Pose2d BRL = new Pose2d(1.85, 1.90, Rotation2d.fromDegrees(180));
+        public static final Pose2d BRM = new Pose2d(1.85, 1.32, Rotation2d.fromDegrees(180));
+        public static final Pose2d BRR = new Pose2d(1.85, 0.62, Rotation2d.fromDegrees(180));
         // Red Alliance
-        public static final double[] RLL = { 14.65, 0.62, 0 };
-        public static final double[] RLM = { 14.65, 1.32, 0 };
-        public static final double[] RLR = { 14.65, 1.90, 0 };
-        public static final double[] RML = { 14.65, 2.42, 0 };
-        public static final double[] RMM = { 14.65, 2.94, 0 };
-        public static final double[] RMR = { 14.65, 3.53, 0 };
-        public static final double[] RRL = { 14.65, 4.08, 0 };
-        public static final double[] RRM = { 14.65, 4.61, 0 };
-        public static final double[] RRR = { 14.87, 4.57, 25 };
+        public static final Pose2d RLL = new Pose2d(14.65, 0.62, Rotation2d.fromDegrees(0));
+        public static final Pose2d RLM = new Pose2d(14.65, 1.32, Rotation2d.fromDegrees(0));
+        public static final Pose2d RLR = new Pose2d(14.65, 1.90, Rotation2d.fromDegrees(0));
+        public static final Pose2d RML = new Pose2d(14.65, 2.42, Rotation2d.fromDegrees(0));
+        public static final Pose2d RMM = new Pose2d(14.65, 2.94, Rotation2d.fromDegrees(0));
+        public static final Pose2d RMR = new Pose2d(14.65, 3.53, Rotation2d.fromDegrees(0));
+        public static final Pose2d RRL = new Pose2d(14.65, 4.08, Rotation2d.fromDegrees(0));
+        public static final Pose2d RRM = new Pose2d(14.65, 4.61, Rotation2d.fromDegrees(0));
+        public static final Pose2d RRR = new Pose2d(14.87, 4.57, Rotation2d.fromDegrees(25));
     }
 
     public static final class ArmConstants {
