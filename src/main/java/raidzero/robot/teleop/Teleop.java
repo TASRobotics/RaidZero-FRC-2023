@@ -12,6 +12,7 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Wrist;
+import raidzero.robot.submodules.Vision;
 import raidzero.robot.utils.JoystickUtils;
 
 public class Teleop {
@@ -25,6 +26,7 @@ public class Teleop {
     private static final Swerve swerve = Swerve.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
+    private static final Vision vision = Vision.getInstance();
 
     private double rampRate = 0.0;
     private Alliance alliance;
@@ -82,35 +84,38 @@ public class Teleop {
         // noSafenoProblemo = !noSafenoProblemo;
         // }
         if (p.getXButtonPressed()) {
-            swerve.zero();
+            if(blue)
+                swerve.zeroHeading();
+            else
+                swerve.oneEightyZero();
         }
 
         if (!aiming)
             swerve.drive(
                     JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),
                     JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * reverse),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() * reverse),
+                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
                     true);
         else
             swerve.drive(
                     JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25 * reverse),
+                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
                     true);
 
         // Auto Alignments
         if (blue && ((!arm.isGoingHome() && arm.isSafe())
                 || noSafenoProblemo)) {
-            if (p.getRightBumperPressed())
+            if (p.getRightBumper())
                 swerve.autoAim(AutoAimLocation.BR_LOAD);
-            else if (p.getLeftBumperPressed())
+            else if (p.getLeftBumper())
                 swerve.autoAim(AutoAimLocation.BL_LOAD);
 
         } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
                 || noSafenoProblemo)) {
-            if (p.getRightBumperPressed())
+            if (p.getRightBumper())
                 swerve.autoAim(AutoAimLocation.RR_LOAD);
-            else if (p.getLeftBumperPressed())
+            else if (p.getLeftBumper())
                 swerve.autoAim(AutoAimLocation.RL_LOAD);
         }
     }
