@@ -50,7 +50,7 @@ public class Constants {
         public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
         public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
         public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
-
+        
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
         public static final double WHEEL_DIAMETER_METERS = 0.1016;

@@ -717,9 +717,12 @@ public class Arm extends Submodule {
         // return s2;
 
         // Check for wacko solutions
-        if (Math.signum(s1[0]) < 0) {
+        if (Math.signum(s1[0]) < 0)
             return s2;
-        } else
+        // else if (s2[1] > -180)
+        //     return s2;
+        else
             return s1;
+        // negative elbow solution check
     }
 }

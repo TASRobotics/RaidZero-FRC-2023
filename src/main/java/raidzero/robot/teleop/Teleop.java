@@ -3,6 +3,7 @@ package raidzero.robot.teleop;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -81,7 +82,7 @@ public class Teleop {
         // noSafenoProblemo = !noSafenoProblemo;
         // }
         if (p.getXButtonPressed()) {
-            if(blue)
+            if (blue)
                 swerve.zeroHeading(0);
             else
                 swerve.zeroHeading(180);
@@ -115,6 +116,22 @@ public class Teleop {
             else if (p.getLeftBumper())
                 swerve.autoAim(AutoAimLocation.RL_LOAD);
         }
+
+        // if (p.getAButtonPressed())
+        //     p.setRumble(RumbleType.kBothRumble,0.0 );
+
+        // // Floor Intake Test
+        // if (p.getAButtonPressed() &&
+        //         ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+        //                 || noSafenoProblemo)) {
+        //     arm.moveTwoPronged(
+        //             ArmConstants.INTER_FLOOR_INTAKE[0],
+        //             ArmConstants.INTER_FLOOR_INTAKE[1],
+        //             155,
+        //             ArmConstants.FLOOR_INTAKE[0],
+        //             ArmConstants.FLOOR_INTAKE[1],
+        //             155);
+        // }
     }
 
     private int mode = 0;
@@ -270,18 +287,18 @@ public class Teleop {
                     ArmConstants.GRID_MEDIUM[1],
                     155);
         }
-        // Floor Intake
-        else if (p.getRawButtonPressed(16) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
-                        || noSafenoProblemo)) {
-            arm.moveTwoPronged(
-                    -ArmConstants.INTER_FLOOR_INTAKE[0],
-                    ArmConstants.INTER_FLOOR_INTAKE[1],
-                    155,
-                    -ArmConstants.FLOOR_INTAKE[0],
-                    ArmConstants.FLOOR_INTAKE[1],
-                    155);
-        }
+        // // Floor Intake
+        // else if (p.getRawButtonPressed(16) &&
+        //         ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+        //                 || noSafenoProblemo)) {
+        //     arm.moveTwoPronged(
+        //             -ArmConstants.INTER_FLOOR_INTAKE[0],
+        //             ArmConstants.INTER_FLOOR_INTAKE[1],
+        //             155,
+        //             -ArmConstants.FLOOR_INTAKE[0],
+        //             ArmConstants.FLOOR_INTAKE[1],
+        //             155);
+        // }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())
