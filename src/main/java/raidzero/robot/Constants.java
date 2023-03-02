@@ -50,7 +50,7 @@ public class Constants {
         public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
         public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
         public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
-        
+
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
@@ -167,8 +167,8 @@ public class Constants {
         private static final Pose2d[] CAMERALOCATIONS = {
                 new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
                 new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1]) };
-        public static final Transform2d[] CAMERATRANSFORMS = {new Transform2d(CAMERALOCATIONS[0],new Pose2d()),
-                new Transform2d( CAMERALOCATIONS[1], new Pose2d()) };
+        public static final Transform2d[] CAMERATRANSFORMS = { new Transform2d(CAMERALOCATIONS[0], new Pose2d()),
+                new Transform2d(CAMERALOCATIONS[1], new Pose2d()) };
 
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
@@ -237,12 +237,13 @@ public class Constants {
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15 };
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
-        public static final double[] INTER_FLOOR_INTAKE = { 0.55, 0.5 };
+        public static final double[] INTER_FLOOR_INTAKE = { 0.69, 0.367 };
+        public static final double[] INTER2_FLOOR_INTAKE = { 0.97, 0.25 };
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
         public static final double[] GRID_MEDIUM = { 0.93, 1.00 };
         public static final double[] GRID_HIGH = { 1.28, 1.28 };
-        public static final double[] FLOOR_INTAKE = { 0.7, 0.02 };
+        public static final double[] FLOOR_INTAKE = { 0.57, 0.02 };
 
         /**
          * Constants for a DC brushed motor.
@@ -405,8 +406,8 @@ public class Constants {
         public static final double KD = 0.0;
 
         public static final double MIN_VEL = 0.0;
-        public static final double MAX_VEL = 1000.0;
-        public static final double MAX_ACCEL = 1500.0;
+        public static final double MAX_VEL = 3000.0;
+        public static final double MAX_ACCEL = 4500.0;
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;

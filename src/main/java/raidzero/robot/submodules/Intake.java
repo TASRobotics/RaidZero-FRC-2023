@@ -96,7 +96,7 @@ public class Intake extends Submodule {
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
         if (Math.signum(mPercentOut) < 0)
-            mDesiredPosition = mPrevOpenLoopPosition - 3;
+            mDesiredPosition = mPrevOpenLoopPosition - 7;
         else
             mDesiredPosition = mPrevOpenLoopPosition + 3;
     }

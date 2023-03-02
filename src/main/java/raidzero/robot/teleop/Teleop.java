@@ -287,18 +287,21 @@ public class Teleop {
                     ArmConstants.GRID_MEDIUM[1],
                     155);
         }
-        // // Floor Intake
-        // else if (p.getRawButtonPressed(16) &&
-        //         ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
-        //                 || noSafenoProblemo)) {
-        //     arm.moveTwoPronged(
-        //             -ArmConstants.INTER_FLOOR_INTAKE[0],
-        //             ArmConstants.INTER_FLOOR_INTAKE[1],
-        //             155,
-        //             -ArmConstants.FLOOR_INTAKE[0],
-        //             ArmConstants.FLOOR_INTAKE[1],
-        //             155);
-        // }
+        // Floor Intake
+        else if (p.getRawButtonPressed(16) &&
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                        || noSafenoProblemo)) {
+            arm.moveThreePronged(
+                    ArmConstants.INTER_FLOOR_INTAKE[0],
+                    ArmConstants.INTER_FLOOR_INTAKE[1],
+                    45,
+                    ArmConstants.INTER2_FLOOR_INTAKE[0],
+                    ArmConstants.INTER2_FLOOR_INTAKE[1],
+                    90,
+                    ArmConstants.FLOOR_INTAKE[0],
+                    ArmConstants.FLOOR_INTAKE[1],
+                    165);
+        }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())

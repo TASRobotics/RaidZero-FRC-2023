@@ -17,20 +17,17 @@ import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.submodules.Swerve;
 
-public class TwoConeClimbSequence extends AutoSequence {
+public class ConeCubeSequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mCube = PathPlanner.loadPath("TCC Cube", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Out", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("TCC Return", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("TCC Return", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
-    public TwoConeClimbSequence() {
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mCube, DriverStation.getAlliance());
-                PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
+    public ConeCubeSequence() {
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
     }
 
     @Override
@@ -42,9 +39,8 @@ public class TwoConeClimbSequence extends AutoSequence {
                                 -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 155),
                         new RunIntakeAction(0.5, -1),
                         new ArmHomeAction(),
-                        new DrivePath(mCube),
-                        new DrivePath(mBalance),
-                        new LambdaAction(() -> mSwerve.rotorBrake(true)))));
+                        new DrivePath(mOut),
+                        new DrivePath(mReturn))));
     }
 
     @Override
@@ -53,6 +49,6 @@ public class TwoConeClimbSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Two Cone Climb Sequence";
+        return "Cone Cube Sequence";
     }
 }
