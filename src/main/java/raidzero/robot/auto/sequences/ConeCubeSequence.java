@@ -12,6 +12,7 @@ import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
+import raidzero.robot.auto.actions.MoveThreePronged;
 import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
@@ -40,7 +41,21 @@ public class ConeCubeSequence extends AutoSequence {
                         new RunIntakeAction(0.5, -1),
                         new ArmHomeAction(),
                         new DrivePath(mOut),
-                        new DrivePath(mReturn))));
+                        //Parallel Out
+                        new MoveThreePronged(
+                                ArmConstants.INTER_FLOOR_INTAKE[0],
+                                ArmConstants.INTER_FLOOR_INTAKE[1],
+                                45,
+                                ArmConstants.INTER2_FLOOR_INTAKE[0],
+                                ArmConstants.INTER2_FLOOR_INTAKE[1],
+                                90,
+                                ArmConstants.FLOOR_INTAKE[0],
+                                ArmConstants.FLOOR_INTAKE[1],
+                                165),
+                        new DrivePath(mReturn),
+                        // Parallel In
+                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], 70,
+                        -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 155))));
     }
 
     @Override
