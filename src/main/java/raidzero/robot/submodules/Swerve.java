@@ -3,6 +3,10 @@ package raidzero.robot.submodules;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -172,6 +176,8 @@ public class Swerve extends Submodule {
 
         prevPose = currentPose;
         currentPose = updateOdometry();
+        updateVisionMeasurement();
+        
         fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
@@ -273,18 +279,11 @@ public class Swerve extends Submodule {
         return odometry;
     }
 
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
-            Matrix<N3, N1> visionMeasurementStdDevs) {
-        try {
-            // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
-            // Nat.N1()).fill(0.2, 0.2, 0.1);
-            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-            // visionMeasurementStdDevs);
-        } catch (Exception e) {
-            System.out.println("Cholesky decomposition failed, reverting...:");
-            // pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
-            // setPose(visionRobotPoseMeters);
+    public void updateVisionMeasurement() {
+        Optional<EstimatedRobotPose> result = vision.getEstimatedGlobalPose(odometry.getEstimatedPosition());
+        if(result.isPresent()) {
+            EstimatedRobotPose pose = result.get();
+            odometry.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
         }
     }
 

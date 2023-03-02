@@ -4,6 +4,9 @@ import java.nio.file.Path;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
@@ -210,6 +214,11 @@ public class Constants {
         public static final Pose2d RL_LOAD = new Pose2d(0.79, 5.99, Rotation2d.fromDegrees(180));
         public static final Pose2d RR_LOAD = new Pose2d(0.79, 7.67, Rotation2d.fromDegrees(180));
 
+    }
+
+    public static final class PhotonVisionConstants {
+        public static final String CAMERA_NAME = "deez nuts";
+        public static final Transform3d CAMERA_DIST_TO_CENTER = new Transform3d();
     }
 
     public static final class ArmConstants {
