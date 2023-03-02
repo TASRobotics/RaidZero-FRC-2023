@@ -297,6 +297,11 @@ public class Teleop {
         }
         // Go Home
         else if (p.getRawButtonPressed(13)) {
+            // arm.configSmartMotionConstraints(
+            //         ArmConstants.LOWER_MAX_VEL * 1.5,
+            //         ArmConstants.LOWER_MAX_ACCEL * 1.5,
+            //         ArmConstants.UPPER_MAX_VEL * 1.5,
+            //         ArmConstants.UPPER_MAX_ACCEL * 1.5);
             arm.goHome();
         }
 
