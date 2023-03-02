@@ -118,20 +118,7 @@ public class Teleop {
         }
 
         // if (p.getAButtonPressed())
-        //     p.setRumble(RumbleType.kBothRumble,0.0 );
-
-        // // Floor Intake Test
-        // if (p.getAButtonPressed() &&
-        //         ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
-        //                 || noSafenoProblemo)) {
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_FLOOR_INTAKE[0],
-        //             ArmConstants.INTER_FLOOR_INTAKE[1],
-        //             155,
-        //             ArmConstants.FLOOR_INTAKE[0],
-        //             ArmConstants.FLOOR_INTAKE[1],
-        //             155);
-        // }
+        // p.setRumble(RumbleType.kBothRumble,0.0 );
     }
 
     private int mode = 0;

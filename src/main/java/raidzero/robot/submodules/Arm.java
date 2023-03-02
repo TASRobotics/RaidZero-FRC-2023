@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.WristConstants;
 
 public class Arm extends Submodule {
 
@@ -211,6 +212,16 @@ public class Arm extends Submodule {
         // Check Going Home
         if (Math.abs(state[1].getX()) < 0.15 && Math.abs(state[1].getY() - 0.15) < 0.15) {
             goingHome = false;
+            configSmartMotionConstraints(
+                ArmConstants.LOWER_MAX_VEL * 2.0,
+                ArmConstants.LOWER_MAX_ACCEL * 2.0,
+                ArmConstants.UPPER_MAX_VEL * 1.25,
+                ArmConstants.UPPER_MAX_ACCEL * 1.25);
+
+            wrist.configSmartMotionConstraints(
+                    WristConstants.MAX_VEL,
+                    WristConstants.MAX_ACCEL);
+
         }
 
         // Check Safe Zone
@@ -587,10 +598,14 @@ public class Arm extends Submodule {
      */
     public void goHome() {
         configSmartMotionConstraints(
-                ArmConstants.LOWER_MAX_VEL * 2.0,
-                ArmConstants.LOWER_MAX_ACCEL * 2.0,
-                ArmConstants.UPPER_MAX_VEL * 1.25,
-                ArmConstants.UPPER_MAX_ACCEL * 1.25);
+                ArmConstants.LOWER_MAX_VEL * 3.0,
+                ArmConstants.LOWER_MAX_ACCEL * 3.0,
+                ArmConstants.UPPER_MAX_VEL * 2.50,
+                ArmConstants.UPPER_MAX_ACCEL * 2.50);
+        wrist.configSmartMotionConstraints(
+                WristConstants.MAX_VEL * 2.5,
+                WristConstants.MAX_ACCEL * 2.5);
+
         goingHome = true;
         if (state[1].getY() < 0.15) {
             moveTwoPronged(state[1].getX(), 0.5, 0, 0, 0.15, 0);
@@ -601,7 +616,6 @@ public class Arm extends Submodule {
         } else if (stage == 0) {
             moveToAngle(new double[] { 90, -180 }, 0);
         }
-
     }
 
     public double calculateWristAbsoluteAngle(double relativeAngle) {
