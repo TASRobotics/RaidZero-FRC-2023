@@ -109,6 +109,15 @@ public class Constants {
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
 
+        /** AutoBalance Constants */
+        public static final double AB_XCONTROLLER_KP = 0.7;
+        public static final double AB_YCONTROLLER_KP = 0.7;
+        public static final double AB_THETACONTROLLER_KP = 1.2;
+        public static final double AB_THETACONTROLLER_KD = 0.1;
+        public static final double AB_XCONTROLLER_TOLERANCE = 0.01;
+        public static final double AB_YCONTROLLER_TOLERANCE = 0.01;
+        public static final double AB_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
+
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
                 / (2048 * (1 / THROTTLE_REDUCTION));

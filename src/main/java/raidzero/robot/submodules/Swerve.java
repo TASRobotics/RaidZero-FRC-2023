@@ -91,6 +91,9 @@ public class Swerve extends Submodule {
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
 
+    private Pose2d desiredAutoBalPose;
+    private PIDController autoBalXController, autoBalYController, autoBalThetaController;
+
     private ControlState controlState = ControlState.OPEN_LOOP;
 
     public void onStart(double timestamp) {
@@ -149,6 +152,15 @@ public class Swerve extends Submodule {
         autoAimYController.setTolerance(SwerveConstants.AA_YCONTROLLER_TOLERANCE);
         autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
         autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        autoBalXController = new PIDController(SwerveConstants.AB_XCONTROLLER_KP, 0, 0);
+        autoBalYController = new PIDController(SwerveConstants.AB_YCONTROLLER_KP, 0.0, 0.0);
+        autoBalThetaController = new PIDController(SwerveConstants.AB_THETACONTROLLER_KP, 0,
+                SwerveConstants.AB_THETACONTROLLER_KD);
+        autoBalXController.setTolerance(SwerveConstants.AB_XCONTROLLER_TOLERANCE);
+        autoBalYController.setTolerance(SwerveConstants.AB_YCONTROLLER_TOLERANCE);
+        autoBalThetaController.setTolerance(SwerveConstants.AB_THETACONTROLLER_TOLERANCE);
+        autoBalThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         zero();
 
@@ -549,6 +561,27 @@ public class Swerve extends Submodule {
         double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
         double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
                 desiredAutoAimPose.getRotation().getRadians());
+        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                xSpeed,
+                ySpeed,
+                thetaSpeed,
+                getPose().getRotation());
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    /**
+     * Update Auto Balance
+     */
+    public void updateAutoBal() {
+        double xSpeed = autoBalXController.calculate(getPose().getX(), desiredAutoBalPose.getX());
+        double ySpeed = autoBalYController.calculate(getPose().getY(), desiredAutoBalPose.getY());
+        double thetaSpeed = autoBalThetaController.calculate(getPose().getRotation().getRadians(),
+                desiredAutoBalPose.getRotation().getRadians());
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
                 ySpeed,
