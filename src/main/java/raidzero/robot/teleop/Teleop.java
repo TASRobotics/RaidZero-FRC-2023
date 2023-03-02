@@ -118,19 +118,20 @@ public class Teleop {
         }
 
         // if (p.getAButtonPressed())
-        //     p.setRumble(RumbleType.kBothRumble,0.0 );
+        // p.setRumble(RumbleType.kBothRumble,0.0 );
 
         // // Floor Intake Test
         // if (p.getAButtonPressed() &&
-        //         ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
-        //                 || noSafenoProblemo)) {
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_FLOOR_INTAKE[0],
-        //             ArmConstants.INTER_FLOOR_INTAKE[1],
-        //             155,
-        //             ArmConstants.FLOOR_INTAKE[0],
-        //             ArmConstants.FLOOR_INTAKE[1],
-        //             155);
+        // ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() &&
+        // arm.isSafe())
+        // || noSafenoProblemo)) {
+        // arm.moveTwoPronged(
+        // ArmConstants.INTER_FLOOR_INTAKE[0],
+        // ArmConstants.INTER_FLOOR_INTAKE[1],
+        // 155,
+        // ArmConstants.FLOOR_INTAKE[0],
+        // ArmConstants.FLOOR_INTAKE[1],
+        // 155);
         // }
     }
 
@@ -310,6 +311,11 @@ public class Teleop {
         }
         // Go Home
         else if (p.getRawButtonPressed(13)) {
+            // arm.configSmartMotionConstraints(
+            //         ArmConstants.LOWER_MAX_VEL * 1.5,
+            //         ArmConstants.LOWER_MAX_ACCEL * 1.5,
+            //         ArmConstants.UPPER_MAX_VEL * 1.5,
+            //         ArmConstants.UPPER_MAX_ACCEL * 1.5);
             arm.goHome();
         }
 
