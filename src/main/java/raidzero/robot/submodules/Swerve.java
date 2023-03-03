@@ -244,9 +244,9 @@ public class Swerve extends Submodule {
      * Checks the Speed of the throttle and updates the overlimit boolean
      */
     public void checkThrottleSpeed() {
-        if (topLeftModule.getThrottlePercentSpeed() > 0.3 || topRightModule.getThrottlePercentSpeed() > 0.3
-                || bottomLeftModule.getThrottlePercentSpeed() > 0.3
-                || bottomRightModule.getThrottlePercentSpeed() > 0.3)
+        if (topLeftModule.getThrottlePercentSpeed() > 0.5 || topRightModule.getThrottlePercentSpeed() > 0.3
+                || bottomLeftModule.getThrottlePercentSpeed() > 0.5
+                || bottomRightModule.getThrottlePercentSpeed() > 0.5)
             overLimit = true;
         else
             overLimit = false;

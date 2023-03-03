@@ -210,13 +210,13 @@ public class Arm extends Submodule {
         }
 
         // Check Going Home
-        if (Math.abs(state[1].getX()) < 0.15 && Math.abs(state[1].getY() - 0.15) < 0.15) {
+        if (Math.abs(state[1].getX()) < 0.25 && Math.abs(state[1].getY() - 0.30) < 0.15) {
             goingHome = false;
             configSmartMotionConstraints(
-                ArmConstants.LOWER_MAX_VEL * 2.0,
-                ArmConstants.LOWER_MAX_ACCEL * 2.0,
-                ArmConstants.UPPER_MAX_VEL * 1.25,
-                ArmConstants.UPPER_MAX_ACCEL * 1.25);
+                    ArmConstants.LOWER_MAX_VEL * 2.0,
+                    ArmConstants.LOWER_MAX_ACCEL * 2.0,
+                    ArmConstants.UPPER_MAX_VEL * 1.25,
+                    ArmConstants.UPPER_MAX_ACCEL * 1.25);
 
             wrist.configSmartMotionConstraints(
                     WristConstants.MAX_VEL,
@@ -225,10 +225,10 @@ public class Arm extends Submodule {
         }
 
         // Check Safe Zone
-        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.2
-                && Math.abs(state[1].getY() - 0.15) < 0.15) {
+        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.25
+                && Math.abs(state[1].getY() - 0.30) < 0.15)
             safeZone = true;
-        } else
+        else
             safeZone = false;
     }
 
@@ -389,7 +389,7 @@ public class Arm extends Submodule {
      * @return Speed Reduction
      */
     public double tooFasttooFurious() {
-        if (Math.abs(state[1].getX()) > 0.3 || Math.abs(state[0].getX()) > 0.2)
+        if (Math.abs(state[1].getX()) > 0.35 || Math.abs(state[0].getX()) > 0.3)
             return 0.20;
         else
             return 1;
