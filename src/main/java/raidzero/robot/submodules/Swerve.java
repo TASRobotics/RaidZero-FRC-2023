@@ -3,6 +3,9 @@ package raidzero.robot.submodules;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -14,12 +17,16 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -90,6 +97,8 @@ public class Swerve extends Submodule {
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
+
+    private Trajectory desiredAutoAimTrajectory;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -238,6 +247,27 @@ public class Swerve extends Submodule {
                 bottomLeftModule.getModulePosition(),
                 bottomRightModule.getModulePosition()
         };
+    }
+
+    public SwerveModuleState[] getModuleStates(boolean usePercentOutAsVel) {
+        if(usePercentOutAsVel) {
+            return new SwerveModuleState[] {
+                new SwerveModuleState(topLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topLeftModule.getRotorAngle())),
+                new SwerveModuleState(topRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topRightModule.getRotorAngle())),
+                new SwerveModuleState(bottomLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomLeftModule.getRotorAngle())),
+                new SwerveModuleState(bottomRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomRightModule.getRotorAngle()))
+            };
+        } 
+        return new SwerveModuleState[] {
+            topLeftModule.getModuleState(),
+            topRightModule.getModuleState(),
+            bottomLeftModule.getModuleState(),
+            bottomRightModule.getModuleState()
+        };
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        return getModuleStates(false);
     }
 
     /**
@@ -415,20 +445,50 @@ public class Swerve extends Submodule {
      * 
      * @param location auto aim location
      */
-    public void autoAim(AutoAimLocation location) {
+    public void autoAim(AutoAimLocation location, boolean justPressed) {
         // if(vision.getRobotPose() == null) {
         // return;
         // }
         controlState = ControlState.AUTO_AIM;
-        if (prevAutoAimLocation != location) {
-            if (vision.getRobotPose() != null) {
-                setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
-                        Rotation2d.fromDegrees(pigeon.getAngle())));
-                prevAutoAimLocation = location;
-            } else {
-                return;
-            }
+        // if (prevAutoAimLocation != location) {
+        //     if (vision.getRobotPose() != null) {
+        //         setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
+        //                 Rotation2d.fromDegrees(pigeon.getAngle())));
+                
+        //         // Trajectory
+        //         TrajectoryConfig config = new TrajectoryConfig(0.75, 0.5);
+        //         ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(
+        //             getModuleStates(true)[0], 
+        //             getModuleStates(true)[1], 
+        //             getModuleStates(true)[2], 
+        //             getModuleStates(true)[3]
+        //         );
+        //         double currMovementMag = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        //         config.setStartVelocity(currMovementMag);
+        //         List<Translation2d> interPoints = new ArrayList<Translation2d>();
+        //         desiredAutoAimTrajectory = TrajectoryGenerator.generateTrajectory(getPose(), interPoints, desiredAutoAimPose, config);
+        //         prevAutoAimLocation = location;
+        //     } else {
+        //         return;
+        //     }
+        // }
+
+        if(justPressed) {
+            TrajectoryConfig config = new TrajectoryConfig(0.75, 0.5);
+            ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(
+                getModuleStates(true)[0], 
+                getModuleStates(true)[1], 
+                getModuleStates(true)[2], 
+                getModuleStates(true)[3]
+            );
+            double currMovementMag = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+            config.setStartVelocity(currMovementMag);
+            List<Translation2d> interPoints = new ArrayList<Translation2d>();
+            desiredAutoAimTrajectory = TrajectoryGenerator.generateTrajectory(getPose(), interPoints, desiredAutoAimPose, config);
+            timer.reset();
+            timer.start();
         }
+
         switch (location) {
             /**
              * Blue Alliance
@@ -538,7 +598,7 @@ public class Swerve extends Submodule {
             desiredAutoAimPose.transformBy(vision.getConeTransform());
         }
 
-        updateAutoAim();
+        updateAutoAim(true);
     }
 
     /**
@@ -554,6 +614,30 @@ public class Swerve extends Submodule {
                 ySpeed,
                 thetaSpeed,
                 getPose().getRotation());
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    public void updateAutoAim(boolean isUsingTrajectory) {
+        if(!isUsingTrajectory) {
+            updateAutoAim();
+            return;
+        }
+        Trajectory.State currState = desiredAutoAimTrajectory.sample(timer.get());
+        double xSpeed = autoAimXController.calculate(getPose().getX(), currState.poseMeters.getX());
+        double ySpeed = autoAimYController.calculate(getPose().getY(), currState.poseMeters.getY());
+        double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+                currState.poseMeters.getRotation().getRadians());
+        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+            xSpeed,
+            ySpeed,
+            thetaSpeed,
+            getPose().getRotation()
+        );
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
