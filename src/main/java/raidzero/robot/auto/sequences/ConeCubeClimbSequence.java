@@ -19,7 +19,7 @@ import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.submodules.Swerve;
 
-public class ConeCubeSequence extends AutoSequence {
+public class ConeCubeClimbSequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
     private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
@@ -27,9 +27,14 @@ public class ConeCubeSequence extends AutoSequence {
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
-    public ConeCubeSequence() {
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
+
+    public ConeCubeClimbSequence() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
     }
 
     @Override
@@ -69,9 +74,11 @@ public class ConeCubeSequence extends AutoSequence {
                         new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], ArmConstants.INTER_GRID_HIGH[2],
                                 -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], ArmConstants.GRID_HIGH[2]),
                         new RunIntakeAction(0.5, 1),
-                        new ArmHomeAction()
 
-                )));
+                        // Balance
+                        new ParallelAction(Arrays.asList(
+                                new ArmHomeAction(),
+                                new DrivePath(mBalance))))));
     }
 
     @Override
@@ -80,6 +87,6 @@ public class ConeCubeSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Sequence";
+        return "Cone Cube Climb Sequence";
     }
 }

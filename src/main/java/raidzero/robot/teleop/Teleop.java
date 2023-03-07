@@ -56,12 +56,11 @@ public class Teleop {
         /**
          * p2 controls
          */
-        // p2Loop(p2);
+        p2Loop(p2);
         /**
          * p3 controls
          */
         p3Loop(p3);
-
     }
 
     private double[] target = { 0, 0.15 };
@@ -101,21 +100,21 @@ public class Teleop {
                     JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
                     true);
 
-        // Auto Alignments
-        if (blue && ((!arm.isGoingHome() && arm.isSafe())
-                || noSafenoProblemo)) {
-            if (p.getRightBumper())
-                swerve.autoAim(AutoAimLocation.BR_LOAD);
-            else if (p.getLeftBumper())
-                swerve.autoAim(AutoAimLocation.BL_LOAD);
+        // // Auto Alignments
+        // if (blue && ((!arm.isGoingHome() && arm.isSafe())
+        // || noSafenoProblemo)) {
+        // if (p.getRightBumper())
+        // swerve.autoAim(AutoAimLocation.BR_LOAD);
+        // else if (p.getLeftBumper())
+        // swerve.autoAim(AutoAimLocation.BL_LOAD);
 
-        } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
-                || noSafenoProblemo)) {
-            if (p.getRightBumper())
-                swerve.autoAim(AutoAimLocation.RR_LOAD);
-            else if (p.getLeftBumper())
-                swerve.autoAim(AutoAimLocation.RL_LOAD);
-        }
+        // } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
+        // || noSafenoProblemo)) {
+        // if (p.getRightBumper())
+        // swerve.autoAim(AutoAimLocation.RR_LOAD);
+        // else if (p.getLeftBumper())
+        // swerve.autoAim(AutoAimLocation.RL_LOAD);
+        // }
 
         // if (p.getAButtonPressed())
         // p.setRumble(RumbleType.kBothRumble,0.0 );
@@ -147,7 +146,9 @@ public class Teleop {
                         ArmConstants.UPPER_MAX_VEL * 0.75,
                         ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-                arm.moveThreePronged(-.10, 0.7, 90, -.01, 1.4, 90,
+                arm.moveThreePronged(-ArmConstants.INTER_HUMAN_PICKUP_STATION[0],
+                        ArmConstants.INTER2_HUMAN_PICKUP_STATION[1], 90,
+                        -ArmConstants.INTER2_HUMAN_PICKUP_STATION[0], ArmConstants.INTER2_HUMAN_PICKUP_STATION[1], 90,
                         -ArmConstants.HUMAN_PICKUP_STATION[0],
                         ArmConstants.HUMAN_PICKUP_STATION[1], 180);
             }
@@ -242,13 +243,13 @@ public class Teleop {
             arm.moveThreePronged(
                     -ArmConstants.INTER_HUMAN_PICKUP_STATION[0],
                     ArmConstants.INTER_HUMAN_PICKUP_STATION[1],
-                    90,
+                    ArmConstants.INTER_HUMAN_PICKUP_STATION[2],
                     -ArmConstants.INTER2_HUMAN_PICKUP_STATION[0],
                     ArmConstants.INTER2_HUMAN_PICKUP_STATION[1],
-                    90,
+                    ArmConstants.INTER2_HUMAN_PICKUP_STATION[2],
                     -ArmConstants.HUMAN_PICKUP_STATION[0],
                     ArmConstants.HUMAN_PICKUP_STATION[1],
-                    160);
+                    ArmConstants.HUMAN_PICKUP_STATION[2]);
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
@@ -257,10 +258,10 @@ public class Teleop {
             arm.moveTwoPronged(
                     -ArmConstants.INTER_GRID_HIGH[0],
                     ArmConstants.INTER_GRID_HIGH[1],
-                    70,
+                    ArmConstants.INTER_GRID_HIGH[2],
                     -ArmConstants.GRID_HIGH[0],
                     ArmConstants.GRID_HIGH[1],
-                    155);
+                    ArmConstants.GRID_HIGH[2]);
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
@@ -269,25 +270,35 @@ public class Teleop {
             arm.moveTwoPronged(
                     -ArmConstants.INTER_GRID_MEDIUM[0],
                     ArmConstants.INTER_GRID_MEDIUM[1],
-                    70,
+                    ArmConstants.INTER_GRID_MEDIUM[2],
                     -ArmConstants.GRID_MEDIUM[0],
                     ArmConstants.GRID_MEDIUM[1],
-                    155);
+                    ArmConstants.GRID_MEDIUM[2]);
         }
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
                         || noSafenoProblemo)) {
-            arm.moveThreePronged(
-                    ArmConstants.INTER_FLOOR_INTAKE[0],
-                    ArmConstants.INTER_FLOOR_INTAKE[1],
-                    45,
-                    ArmConstants.INTER2_FLOOR_INTAKE[0],
-                    ArmConstants.INTER2_FLOOR_INTAKE[1],
-                    90,
-                    ArmConstants.FLOOR_INTAKE[0],
-                    ArmConstants.FLOOR_INTAKE[1],
-                    165);
+            // arm.moveThreePronged(
+            // ArmConstants.INTER_FLOOR_INTAKE[0],
+            // ArmConstants.INTER_FLOOR_INTAKE[1],
+            // ArmConstants.INTER_FLOOR_INTAKE[2],
+            // ArmConstants.INTER2_FLOOR_INTAKE[0],
+            // ArmConstants.INTER2_FLOOR_INTAKE[1],
+            // ArmConstants.INTER2_FLOOR_INTAKE[2],
+            // ArmConstants.FLOOR_INTAKE[0],
+            // ArmConstants.FLOOR_INTAKE[1],
+            // ArmConstants.FLOOR_INTAKE[2]
+            // );
+            // arm.moveTwoPronged(
+            // ArmConstants.INTER_CONE_FLOOR_INTAKE[0],
+            // ArmConstants.INTER_CONE_FLOOR_INTAKE[1],
+            // ArmConstants.INTER_CONE_FLOOR_INTAKE[2],
+            // ArmConstants.CONE_FLOOR_INTAKE[0],
+            // ArmConstants.CONE_FLOOR_INTAKE[1],
+            // ArmConstants.CONE_FLOOR_INTAKE[2]);
+            arm.moveToPoint(ArmConstants.CONE_FLOOR_INTAKE[0], ArmConstants.CONE_FLOOR_INTAKE[1],
+                    ArmConstants.CONE_FLOOR_INTAKE[2]);
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
@@ -297,11 +308,6 @@ public class Teleop {
         }
         // Go Home
         else if (p.getRawButtonPressed(13)) {
-            // arm.configSmartMotionConstraints(
-            //         ArmConstants.LOWER_MAX_VEL * 1.5,
-            //         ArmConstants.LOWER_MAX_ACCEL * 1.5,
-            //         ArmConstants.UPPER_MAX_VEL * 1.5,
-            //         ArmConstants.UPPER_MAX_ACCEL * 1.5);
             arm.goHome();
         }
 
