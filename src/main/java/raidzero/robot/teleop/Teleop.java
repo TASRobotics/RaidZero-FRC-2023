@@ -290,15 +290,19 @@ public class Teleop {
             // ArmConstants.FLOOR_INTAKE[1],
             // ArmConstants.FLOOR_INTAKE[2]
             // );
+
+            // Flipped Cone
             // arm.moveTwoPronged(
-            // ArmConstants.INTER_CONE_FLOOR_INTAKE[0],
-            // ArmConstants.INTER_CONE_FLOOR_INTAKE[1],
-            // ArmConstants.INTER_CONE_FLOOR_INTAKE[2],
-            // ArmConstants.CONE_FLOOR_INTAKE[0],
-            // ArmConstants.CONE_FLOOR_INTAKE[1],
-            // ArmConstants.CONE_FLOOR_INTAKE[2]);
-            arm.moveToPoint(ArmConstants.CONE_FLOOR_INTAKE[0], ArmConstants.CONE_FLOOR_INTAKE[1],
-                    ArmConstants.CONE_FLOOR_INTAKE[2]);
+            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[2],
+            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[2]);
+
+            // Upright Cone
+            arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE[0], ArmConstants.REV_CONE_FLOOR_INTAKE[1],
+                    ArmConstants.REV_CONE_FLOOR_INTAKE[2]);
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&

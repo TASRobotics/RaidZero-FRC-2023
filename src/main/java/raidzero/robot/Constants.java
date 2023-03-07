@@ -249,8 +249,11 @@ public class Constants {
         public static final double[] INTER2_FLOOR_INTAKE = { 0.97, 0.25, 90 };
         public static final double[] FLOOR_INTAKE = { 0.57, 0.02, 165 };
 
-        public static final double[] INTER_CONE_FLOOR_INTAKE = { 0.69, 0.367, 45 };
-        public static final double[] CONE_FLOOR_INTAKE = { 0.52, 0.23, -170 };
+        public static final double[] REV_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
+
+        public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.09, -70 };
+        //public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.04, -76 };
 
         /**
          * Constants for a DC brushed motor.
