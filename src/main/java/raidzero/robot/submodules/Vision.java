@@ -158,7 +158,7 @@ public class Vision extends Submodule {
 
     }
 
-    private void aprilDetect(NetworkTable cameraSubTable) {
+    private synchronized void aprilDetect(NetworkTable cameraSubTable) {
         // System.out.println("Detecting Apriltags");
         // System.out.println("Camera Subtable " +
         // cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[1])[0]);
@@ -170,9 +170,8 @@ public class Vision extends Submodule {
         yawRotationNT = cameraSubTable.getEntry("yawRotation").getDoubleArray(new double[aprilTagIDs.length]);
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0' - 1;
-        // updatePose(zTranslationNT, xTranslationNT, yawRotationNT, aprilTagIDs,
-        // VisionConstants.CAMERATRANSFORMS[cameraNum],
-        // cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
+        updatePose(VisionConstants.CAMERATRANSFORMS[cameraNum],
+        cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
     }
 
     // /**
@@ -219,16 +218,12 @@ public class Vision extends Submodule {
     // robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID],
     // -cameraTranslationX[aTagID],new Rotation2d(aTagRotation[aTagID]));
 
-    private void updatePose(double[] cameraTranslationZ, double[] cameraTranslationX, double[] aTagRotation,
-            int[] aTagIDs, Transform2d cameraTransform, double timestamp) {
+    private synchronized void updatePose(Transform2d cameraTransform, double timestamp) {
         // Setup different poses of apriltags and robots relative to each other
-        Rotation2d aprilTagYaw;
-        // Pose2d aprilTagRelativePose;
-        // Rotation2d robotRelativeAngle;
-        Pose2d robotRelativePose;
-        Transform2d aprilTagRelativeTransformation;
-        Pose2d newCameraPose = new Pose2d();
+
         Pose2d newRobotPose = new Pose2d();
+
+
         // int foundAngleLocation=-1;
         // for(int i=historyLoc+timestampHistory.length-1;i>historyLoc;i--){
         // if(timestamp>timestampHistory[i%timestampHistory.length]) foundAngleLocation
@@ -238,16 +233,15 @@ public class Vision extends Submodule {
         // Interpolate between two rotation poses
         // double interpolateTime =
         // (timestamp-timestampHistory[foundAngleLocation])/(timestampHistory[(foundAngleLocation+1)%timestampHistory.length]-timestampHistory[foundAngleLocation]);
-        for (int aTagID : aTagIDs) {
+        for (int aTagID : aprilTagIDs) {
             // aTag2int = (int)aTagIDs[i];
-            boolean canInterpolate = false;
+            
             System.out.println("Targeting Apriltag " + aTagID);
             // Create pose of robot with respect to the apriltag;
-            robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID], -cameraTranslationX[aTagID],
-                    new Rotation2d(aTagRotation[aTagID]));
+            // robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID], -cameraTranslationX[aTagID],
+            //         new Rotation2d(aTagRotation[aTagID]));
 
             // Create rotation of apriltag with respect to the robot
-            aprilTagYaw = robotRelativePose.getRotation();
 
             // Negative of Angle that robot must rotate to center the apriltag in vision
             // robotRelativeAngle = new Rotation2d(cameraTranslationZ[aTagID],
@@ -256,35 +250,51 @@ public class Vision extends Submodule {
             // Create transformation of robot with respect to the apriltag, angle is the
             // corrected angle based on apriltag relative pose
             if (angleInterpolate.getSample(timestamp).isPresent()) {
-                canInterpolate = true;
-                aprilTagRelativeTransformation = new Transform2d(robotRelativePose.getTranslation(),
-                        aprilTagGlobalPoses[aTagID].getRotation().plus(aprilTagYaw)
-                                .minus(angleInterpolate.getSample(timestamp).get()));
+                // double pigeonAngle = pigeon.getAngle();
+                // Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
+    
+                Pose2d aprilTagPose = aprilTagGlobalPoses[aprilTagIDs[0]];
+                Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(), angleInterpolate.getSample(timestamp).get());
+    
+                // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
+                Transform2d aprilTagTransform = new Transform2d(
+                        new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]),
+                        new Rotation2d());
+                // SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
+                // SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
+                // SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
+                // Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
+                // Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
+    
+    
+                Transform2d aprilToRobot = aprilTagTransform.plus(cameraTransform);
+                newRobotPose = globalToAprilTag.plus(aprilToRobot);
+                double positionError;
+                try{
+                    positionError = VisionConstants.DISTANCEERRORFACTOR*Math.abs(zTranslationNT[aTagID])/confidenceNT[aTagID];
+                } catch (Exception e){
+                    positionError = 1;
+                }
+                double angleError = 0.01;
+            
+                robotDrive.addVisionMeasurement(newRobotPose, timestamp,
+                        new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
+                                angleError));
+
+    
+                // aprilTagRelativeTransformation = new Transform2d(robotRelativePose.getTranslation(),
+                //         aprilTagGlobalPoses[aTagID].getRotation().plus(aprilTagYaw)
+                //                 .minus(angleInterpolate.getSample(timestamp).get()));
 
                 // System.out.println("Calculating Pose: " +
                 // angleInterpolate.getSample(timestamp));
 
-                newCameraPose = (new Pose2d(aprilTagGlobalPoses[aTagID].getTranslation(),
-                        angleInterpolate.getSample(timestamp).get())).plus(aprilTagRelativeTransformation);
-                newRobotPose = newCameraPose.plus(cameraTransform);
+                // newCameraPose = (new Pose2d(aprilTagGlobalPoses[aTagID].getTranslation(),
+                //         angleInterpolate.getSample(timestamp).get())).plus(aprilTagRelativeTransformation);
+                // newRobotPose = newCameraPose.plus(cameraTransform);
+
             }
 
-            // Transformation that brings the origin to the apriltag position at an angle
-            // that the robot was at
-            // at the particular timestamp the image was taken.
-            // System.out.println("Relative Pose: " + robotRelativePose);
-            // System.out.println("Added Pose: " + aprilTagRelativeTransformation);
-            // System.out.println("Interpolated angle "+
-            // angleInterpolate.getSample(timestamp));
-            double angleError = confidenceNT[aTagID] > 0
-                    && cameraTranslationZ[aTagID] < VisionConstants.DISTANCETOLERANCE
-                            ? DriveConstants.CONFIDENCE_TO_ERROR / confidenceNT[aTagID]
-                            : 10;
-            double positionError = angleError * cameraTranslationZ[aTagID] / 3.0;
-            if (canInterpolate)
-                robotDrive.addVisionMeasurement(newRobotPose, timestamp,
-                        new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(0.2 * positionError, 0.2 * positionError,
-                                0.5 * angleError));
 
         }
     }
