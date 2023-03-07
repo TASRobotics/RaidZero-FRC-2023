@@ -210,7 +210,7 @@ public class Arm extends Submodule {
         }
 
         // Check Going Home
-        if (Math.abs(state[1].getX()) < 0.25 && Math.abs(state[1].getY() - 0.30) < 0.15) {
+        if (Math.abs(state[1].getX()) < 0.25 && Math.abs(state[1].getY() - 0.15) < 0.30) {
             goingHome = false;
             configSmartMotionConstraints(
                     ArmConstants.LOWER_MAX_VEL * 2.0,
@@ -226,7 +226,7 @@ public class Arm extends Submodule {
 
         // Check Safe Zone
         if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.25
-                && Math.abs(state[1].getY() - 0.30) < 0.15)
+                && Math.abs(state[1].getY() - 0.15) < 0.30)
             safeZone = true;
         else
             safeZone = false;
@@ -388,9 +388,10 @@ public class Arm extends Submodule {
      * 
      * @return Speed Reduction
      */
-    public double tooFasttooFurious() {
+    public double 
+    tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.35 || Math.abs(state[0].getX()) > 0.3)
-            return 0.20;
+            return 0.30;
         else
             return 1;
     }
