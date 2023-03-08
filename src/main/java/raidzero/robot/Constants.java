@@ -238,7 +238,7 @@ public class Constants {
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
 
         public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 1.05, -83 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.93, -83 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
@@ -261,6 +261,7 @@ public class Constants {
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
         public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
+        
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
         public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.04, -120 };
 
@@ -416,7 +417,7 @@ public class Constants {
         public static final boolean INVERSION = false;
 
         public static final int STALL_CURRENT_LIMIT = 5;
-        public static final int FREE_CURRENT_LIMIT = 20;
+        public static final int FREE_CURRENT_LIMIT = 15;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;

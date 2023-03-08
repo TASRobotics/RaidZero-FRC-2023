@@ -386,21 +386,31 @@ public class Arm extends Submodule {
      * @return Speed Reduction
      */
     public double tooFasttooFurious() {
-        return (Math.abs(state[1].getX()) > 0.25 || Math.abs(state[0].getX()) > 0.15) ? 0.50 : 1.0;
+        return (Math.abs(state[1].getX()) > 0.25 || Math.abs(state[0].getX()) > 0.15) ? 0.75 : 1.0;
     }
 
-    // /**
-    //  * Rate limits the swerve if floor intaking
-    //  * 
-    //  * @return Speed Reduction
-    //  */
-    // public double slurping() {
-    //     if (Math.abs(state[1].getX() - ArmConstants.FLOOR_INTAKE[0]) > 0.15
-    //             || Math.abs(state[1].getY() - ArmConstants.FLOOR_INTAKE[1]) > 0.15)
-    //         return 0.50;
-    //     else
-    //         return 1;
-    // }
+    /**
+     * Rate limits the swerve if floor intaking
+     * 
+     * @return Speed Reduction
+     */
+    public double slurping() {
+        if (Math.abs(state[1].getX() - ArmConstants.FLOOR_INTAKE[0]) > 0.05
+                || Math.abs(state[1].getY() - ArmConstants.FLOOR_INTAKE[1]) > 0.05
+                || Math.abs(state[1].getX() - ArmConstants.REV_CONE_FLOOR_INTAKE[0]) > 0.05
+                || Math.abs(state[1].getY() - ArmConstants.REV_CONE_FLOOR_INTAKE[1]) > 0.05
+                || Math.abs(state[1].getX() - ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0]) > 0.05
+                || Math.abs(state[1].getY() - ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1]) > 0.05
+                || Math.abs(state[1].getX() - ArmConstants.REV_CUBE_FLOOR_INTAKE[0]) > 0.05
+                || Math.abs(state[1].getY() - ArmConstants.REV_CUBE_FLOOR_INTAKE[1]) > 0.05
+                || Math.abs(state[1].getX() - ArmConstants.EXT_HUMAN_PICKUP_STATION[0]) > 0.05
+                || Math.abs(state[1].getY() - ArmConstants.EXT_HUMAN_PICKUP_STATION[1]) > 0.05)
+            return 0.50;
+        else
+            return 1;
+    }
+
+    
 
     /**
      * OpenLoop Arm Control

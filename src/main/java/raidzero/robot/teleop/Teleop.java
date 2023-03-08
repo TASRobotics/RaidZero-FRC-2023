@@ -89,15 +89,15 @@ public class Teleop {
 
         if (!aiming)
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * reverse),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
+                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse),
+                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * arm.slurping() * reverse),
+                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() * arm.slurping() * 2.0),
                     true);
         else
             swerve.drive(
                     JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
+                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
                     true);
 
         // // Auto Alignments
@@ -271,6 +271,7 @@ public class Teleop {
             // ArmConstants.GRID_HIGH[1],
             // ArmConstants.GRID_HIGH[2]);
 
+            // Cube
             arm.moveTwoPronged(
                     -ArmConstants.INTER_CUBE_GRID_HIGH[0],
                     ArmConstants.INTER_CUBE_GRID_HIGH[1],
@@ -308,15 +309,6 @@ public class Teleop {
             // ArmConstants.FLOOR_INTAKE[2]
             // );
 
-            // Flipped Cone
-            arm.moveTwoPronged(
-                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[0],
-                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[1],
-                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[2],
-                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0],
-                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1],
-                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[2]);
-
             // Cube
             // arm.moveTwoPronged(
             // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[0],
@@ -325,6 +317,15 @@ public class Teleop {
             // ArmConstants.REV_CUBE_FLOOR_INTAKE[0],
             // ArmConstants.REV_CUBE_FLOOR_INTAKE[1],
             // ArmConstants.REV_CUBE_FLOOR_INTAKE[2]);
+
+            // Flipped Cone
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[2],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[2]);
 
             // Upright Cone
             // arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE[0],

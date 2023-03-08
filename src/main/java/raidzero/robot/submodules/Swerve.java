@@ -319,9 +319,9 @@ public class Swerve extends Submodule {
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
-        if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
-            ignoreAngle = true;
-        }
+        // if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
+        //     ignoreAngle = true;
+        // }
         var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
