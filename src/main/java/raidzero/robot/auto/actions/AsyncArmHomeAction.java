@@ -26,7 +26,6 @@ public class AsyncArmHomeAction implements Action {
 
     @Override
     public boolean isFinished() {
-        Pose2d endPose = mArm.getState()[1];
-        return Math.abs(endPose.getX()) < 0.7 && Math.abs(endPose.getY() - 0.15) < 0.3;
+        return true;
     }
 }

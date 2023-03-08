@@ -68,21 +68,22 @@ public class ConeCubeSequence extends AutoSequence {
                                                 ArmConstants.FLOOR_INTAKE[0],
                                                 ArmConstants.FLOOR_INTAKE[1],
                                                 ArmConstants.FLOOR_INTAKE[2]))),
-                                new RunIntakeAction(2, -0.7))),
+                                new RunIntakeAction(2.5, -0.7))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
+                                new AsyncArmHomeAction(),
                                 new DrivePath(mReturn),
+                                new SeriesAction(Arrays.asList(
+                                        new WaitAction(1.0),
+                                        new MoveTwoPronged(-ArmConstants.INTER_CUBE_GRID_HIGH[0],
+                                                ArmConstants.INTER_CUBE_GRID_HIGH[1],
+                                                ArmConstants.INTER_CUBE_GRID_HIGH[2],
+                                                -ArmConstants.CUBE_GRID_HIGH[0], ArmConstants.CUBE_GRID_HIGH[1],
+                                                ArmConstants.CUBE_GRID_HIGH[2]))),
                                 new RunIntakeAction(3, -0.7))),
 
                         // Score Cube
-                        new MoveTwoPronged(-ArmConstants.INTER_CUBE_GRID_HIGH[0],
-                                ArmConstants.INTER_CUBE_GRID_HIGH[1],
-                                ArmConstants.INTER_CUBE_GRID_HIGH[2],
-                                -ArmConstants.CUBE_GRID_HIGH[0], ArmConstants.CUBE_GRID_HIGH[1],
-                                ArmConstants.CUBE_GRID_HIGH[2]),
-
                         new RunIntakeAction(0.5, 0.5),
 
                         new ParallelAction(Arrays.asList(
