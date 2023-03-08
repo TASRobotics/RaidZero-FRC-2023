@@ -264,12 +264,12 @@ public class Teleop {
                         || noSafenoProblemo)) {
             // Cone
             // arm.moveTwoPronged(
-            //         -ArmConstants.INTER_GRID_HIGH[0],
-            //         ArmConstants.INTER_GRID_HIGH[1],
-            //         ArmConstants.INTER_GRID_HIGH[2],
-            //         -ArmConstants.GRID_HIGH[0],
-            //         ArmConstants.GRID_HIGH[1],
-            //         ArmConstants.GRID_HIGH[2]);
+            // -ArmConstants.INTER_GRID_HIGH[0],
+            // ArmConstants.INTER_GRID_HIGH[1],
+            // ArmConstants.INTER_GRID_HIGH[2],
+            // -ArmConstants.GRID_HIGH[0],
+            // ArmConstants.GRID_HIGH[1],
+            // ArmConstants.GRID_HIGH[2]);
 
             arm.moveTwoPronged(
                     -ArmConstants.INTER_CUBE_GRID_HIGH[0],
@@ -309,17 +309,27 @@ public class Teleop {
             // );
 
             // Flipped Cone
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+                    ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[2],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1],
+                    ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[2]);
+
+            // Cube
             // arm.moveTwoPronged(
-            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[0],
-            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[1],
-            // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE[2],
-            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[0],
-            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[1],
-            // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE[2]);
+            // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[0],
+            // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[1],
+            // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[2],
+            // ArmConstants.REV_CUBE_FLOOR_INTAKE[0],
+            // ArmConstants.REV_CUBE_FLOOR_INTAKE[1],
+            // ArmConstants.REV_CUBE_FLOOR_INTAKE[2]);
 
             // Upright Cone
-            arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE[0], ArmConstants.REV_CONE_FLOOR_INTAKE[1],
-                    ArmConstants.REV_CONE_FLOOR_INTAKE[2]);
+            // arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE[0],
+            // ArmConstants.REV_CONE_FLOOR_INTAKE[1],
+            // ArmConstants.REV_CONE_FLOOR_INTAKE[2]);
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&

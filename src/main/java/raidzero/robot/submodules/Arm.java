@@ -377,23 +377,30 @@ public class Arm extends Submodule {
      * @return Converted Angle
      */
     public double angleConv(double org) {
-        if (Math.signum(org) > 0)
-            return -360 + org;
-        else
-            return org;
+        return Math.signum(org) > 0 ? -360 + org : org;
     }
 
     /**
-     * Rate limits the swerve is proximal or distal joint is outside bumper
+     * Rate limits the swerve if proximal or distal joint is outside bumper
      * 
      * @return Speed Reduction
      */
     public double tooFasttooFurious() {
-        if (Math.abs(state[1].getX()) > 0.35 || Math.abs(state[0].getX()) > 0.3)
-            return 0.30;
-        else
-            return 1;
+        return (Math.abs(state[1].getX()) > 0.25 || Math.abs(state[0].getX()) > 0.15) ? 0.50 : 1.0;
     }
+
+    // /**
+    //  * Rate limits the swerve if floor intaking
+    //  * 
+    //  * @return Speed Reduction
+    //  */
+    // public double slurping() {
+    //     if (Math.abs(state[1].getX() - ArmConstants.FLOOR_INTAKE[0]) > 0.15
+    //             || Math.abs(state[1].getY() - ArmConstants.FLOOR_INTAKE[1]) > 0.15)
+    //         return 0.50;
+    //     else
+    //         return 1;
+    // }
 
     /**
      * OpenLoop Arm Control
@@ -612,7 +619,7 @@ public class Arm extends Submodule {
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
             moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
-                    0.15 * Math.signum(state[1].getX()), 0.5, -70, 0.0, 0.15, 0);
+                    0.15 * Math.signum(state[1].getX()), 0.5, 0, 0.0, 0.15, 0);
         } else if (stage == 0) {
             moveToAngle(new double[] { 90, -180 }, 0);
         }
