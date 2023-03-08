@@ -388,8 +388,7 @@ public class Arm extends Submodule {
      * 
      * @return Speed Reduction
      */
-    public double 
-    tooFasttooFurious() {
+    public double tooFasttooFurious() {
         if (Math.abs(state[1].getX()) > 0.35 || Math.abs(state[0].getX()) > 0.3)
             return 0.30;
         else
@@ -736,5 +735,10 @@ public class Arm extends Submodule {
             return s2;
         else
             return s1;
+        // if (Math.abs(s1[0] - 90) < Math.abs(s2[0] - 90)) {
+        // return s1;
+        // } else {
+        // return s2;
+        // }
     }
 }

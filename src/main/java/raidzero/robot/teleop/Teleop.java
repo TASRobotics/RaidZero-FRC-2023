@@ -234,22 +234,27 @@ public class Teleop {
         if (p.getRawButtonPressed(10) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
                         || noSafenoProblemo)) {
-            arm.configSmartMotionConstraints(
-                    ArmConstants.LOWER_MAX_VEL * 1.5,
-                    ArmConstants.LOWER_MAX_ACCEL * 1.5,
-                    ArmConstants.UPPER_MAX_VEL * 0.75,
-                    ArmConstants.UPPER_MAX_ACCEL * 0.75);
+            // Safe Human Pickup
+            // arm.configSmartMotionConstraints(
+            // ArmConstants.LOWER_MAX_VEL * 1.5,
+            // ArmConstants.LOWER_MAX_ACCEL * 1.5,
+            // ArmConstants.UPPER_MAX_VEL * 0.75,
+            // ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-            arm.moveThreePronged(
-                    -ArmConstants.INTER_HUMAN_PICKUP_STATION[0],
-                    ArmConstants.INTER_HUMAN_PICKUP_STATION[1],
-                    ArmConstants.INTER_HUMAN_PICKUP_STATION[2],
-                    -ArmConstants.INTER2_HUMAN_PICKUP_STATION[0],
-                    ArmConstants.INTER2_HUMAN_PICKUP_STATION[1],
-                    ArmConstants.INTER2_HUMAN_PICKUP_STATION[2],
-                    -ArmConstants.HUMAN_PICKUP_STATION[0],
-                    ArmConstants.HUMAN_PICKUP_STATION[1],
-                    ArmConstants.HUMAN_PICKUP_STATION[2]);
+            // arm.moveThreePronged(
+            // -ArmConstants.INTER_HUMAN_PICKUP_STATION[0],
+            // ArmConstants.INTER_HUMAN_PICKUP_STATION[1],
+            // ArmConstants.INTER_HUMAN_PICKUP_STATION[2],
+            // -ArmConstants.INTER2_HUMAN_PICKUP_STATION[0],
+            // ArmConstants.INTER2_HUMAN_PICKUP_STATION[1],
+            // ArmConstants.INTER2_HUMAN_PICKUP_STATION[2],
+            // -ArmConstants.HUMAN_PICKUP_STATION[0],
+            // ArmConstants.HUMAN_PICKUP_STATION[1],
+            // ArmConstants.HUMAN_PICKUP_STATION[2]);
+            arm.moveTwoPronged(ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[0],
+                    ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[1], ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[2],
+                    ArmConstants.EXT_HUMAN_PICKUP_STATION[0], ArmConstants.EXT_HUMAN_PICKUP_STATION[1],
+                    ArmConstants.EXT_HUMAN_PICKUP_STATION[2]);
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
@@ -279,6 +284,7 @@ public class Teleop {
         else if (p.getRawButtonPressed(16) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
                         || noSafenoProblemo)) {
+            // Cube Scoop
             // arm.moveThreePronged(
             // ArmConstants.INTER_FLOOR_INTAKE[0],
             // ArmConstants.INTER_FLOOR_INTAKE[1],
