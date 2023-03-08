@@ -249,6 +249,9 @@ public class Constants {
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
         public static final double[] GRID_HIGH = { 1.28, 1.28, 155 };
 
+        public static final double[] INTER_CUBE_GRID_HIGH = { 0.50, 1.0, 70 };
+        public static final double[] CUBE_GRID_HIGH = { 1.28, 1.03, 97 };
+
         public static final double[] INTER_FLOOR_INTAKE = { 0.69, 0.367, 45 };
         public static final double[] INTER2_FLOOR_INTAKE = { 0.97, 0.25, 90 };
         public static final double[] FLOOR_INTAKE = { 0.57, 0.02, 165 };

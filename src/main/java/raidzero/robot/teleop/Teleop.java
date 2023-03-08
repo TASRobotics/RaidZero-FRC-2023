@@ -262,6 +262,7 @@ public class Teleop {
         else if (p.getRawButtonPressed(14) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
                         || noSafenoProblemo)) {
+            // Cone
             arm.moveTwoPronged(
                     -ArmConstants.INTER_GRID_HIGH[0],
                     ArmConstants.INTER_GRID_HIGH[1],
@@ -269,6 +270,14 @@ public class Teleop {
                     -ArmConstants.GRID_HIGH[0],
                     ArmConstants.GRID_HIGH[1],
                     ArmConstants.GRID_HIGH[2]);
+
+            arm.moveTwoPronged(
+                    -ArmConstants.INTER_CUBE_GRID_HIGH[0],
+                    ArmConstants.INTER_CUBE_GRID_HIGH[1],
+                    ArmConstants.INTER_CUBE_GRID_HIGH[2],
+                    -ArmConstants.CUBE_GRID_HIGH[0],
+                    ArmConstants.CUBE_GRID_HIGH[1],
+                    ArmConstants.CUBE_GRID_HIGH[2]);
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
