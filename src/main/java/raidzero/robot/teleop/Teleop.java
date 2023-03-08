@@ -56,7 +56,7 @@ public class Teleop {
         /**
          * p2 controls
          */
-        p2Loop(p2);
+        // p2Loop(p2);
         /**
          * p3 controls
          */
@@ -251,6 +251,8 @@ public class Teleop {
             // -ArmConstants.HUMAN_PICKUP_STATION[0],
             // ArmConstants.HUMAN_PICKUP_STATION[1],
             // ArmConstants.HUMAN_PICKUP_STATION[2]);
+
+            // Extended Human Pickup
             arm.moveTwoPronged(ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[0],
                     ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[1], ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION[2],
                     ArmConstants.EXT_HUMAN_PICKUP_STATION[0], ArmConstants.EXT_HUMAN_PICKUP_STATION[1],

@@ -237,8 +237,8 @@ public class Constants {
         public static final double[] INTER2_HUMAN_PICKUP_STATION = { 0.01, 1.4, 90 };
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
 
-        public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, 250 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 1.05, 277 };
+        public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 1.05, -83 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };

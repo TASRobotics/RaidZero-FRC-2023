@@ -713,32 +713,8 @@ public class Arm extends Submodule {
         double[] s1 = { Math.toDegrees(theta - alpha), angleConv(Math.toDegrees(Math.PI - elbow_supplement)) };
         double[] s2 = { Math.toDegrees(theta + alpha), angleConv(Math.toDegrees(elbow_supplement - Math.PI)) };
 
-        // // Elbow Checks
-        // if (Math.abs(s1[0] - state[0].getRotation().getDegrees()) < 5) {
-        // return s1;
-        // } else {
-        // if (s1[1] > -180 && state[1].getRotation().getDegrees() > -180) {
-        // return s1;
-        // } else if (s1[1] < -180 && state[1].getRotation().getDegrees() < -180) {
-        // return s1;
-        // } else {
-        // return s2;
-        // }
-        // }
-        // if (bq1)
-        // return s1;
-        // else
-        // return s2;
-
         // Check for wacko solutions
-        if (s1[0] < 35)
-            return s2;
-        else
-            return s1;
-        // if (Math.abs(s1[0] - 90) < Math.abs(s2[0] - 90)) {
-        // return s1;
-        // } else {
-        // return s2;
-        // }
+        // return s1[0] < 35 ? s2 : s1;
+        return Math.abs(s1[0] - 90) < Math.abs(s2[0] - 90) ? s1 : s2;
     }
 }
