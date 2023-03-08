@@ -36,6 +36,7 @@ import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;
+import raidzero.robot.utils.Interpolable;
 
 public class Swerve extends Submodule {
 
@@ -168,9 +169,17 @@ public class Swerve extends Submodule {
 
     @Override
     public void update(double timestamp) {
+        String controlMode = "none";
+
         if (controlState == ControlState.PATHING) {
             updatePathing();
+            controlMode = "pathing";
+        } else if (controlState == ControlState.AUTO_AIM) {
+            updateAutoAim(true);
+            controlMode = "auto aim";
         }
+        controlMode = "open loop";
+        SmartDashboard.putString("Control Mode", controlMode);
         // else if (controlState == ControlState.AUTO_AIM) {
         // updateAutoAim();
         // }
@@ -628,10 +637,12 @@ public class Swerve extends Submodule {
             return;
         }
         Trajectory.State currState = desiredAutoAimTrajectory.sample(timer.get());
+        SmartDashboard.putNumber("traj x vel", currState.velocityMetersPerSecond);
         double xSpeed = autoAimXController.calculate(getPose().getX(), currState.poseMeters.getX());
         double ySpeed = autoAimYController.calculate(getPose().getY(), currState.poseMeters.getY());
-        double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-                currState.poseMeters.getRotation().getRadians());
+        // double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
+        //         currState.poseMeters.getRotation().getRadians());
+        double thetaSpeed = 0;
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
             xSpeed,
             ySpeed,
@@ -639,7 +650,34 @@ public class Swerve extends Submodule {
             getPose().getRotation()
         );
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
+        topLeftModule.setTargetState(desiredState[0], false, true, true);
+        topRightModule.setTargetState(desiredState[1], false, true, true);
+        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
+        bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    public void testSplineAutoAim(boolean enable) {
+        if(enable) {
+            controlState = ControlState.AUTO_AIM;
+            Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(90));
+            Pose2d endPose = new Pose2d(-2, 0, Rotation2d.fromDegrees(0));
+            TrajectoryConfig config = new TrajectoryConfig(1, 1);
+            config.setStartVelocity(1);
+            List<Translation2d> interPoints = new ArrayList<Translation2d>();
+            interPoints.add(new Translation2d(-1, 1));
+            desiredAutoAimTrajectory = TrajectoryGenerator.generateTrajectory(startPose, interPoints, endPose, config);
+
+            timer.reset();
+            timer.start();
+        } else {
+            controlState = ControlState.OPEN_LOOP;
+        }
+    }
+
+    public void setOpenLoopSpeeds(ChassisSpeeds speeds) {
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
