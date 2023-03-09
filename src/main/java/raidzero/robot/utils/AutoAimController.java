@@ -6,12 +6,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.submodules.Swerve;
 
 public class AutoAimController {
@@ -25,6 +26,8 @@ public class AutoAimController {
     private Trajectory mTrajectory;
     private Rotation2d mEndHeading;
     private static final Swerve mSwerve = Swerve.getInstance();
+
+    private Field2d field = new Field2d();
 
     /**
      * Create new Auto Aim Controller
@@ -71,8 +74,10 @@ public class AutoAimController {
     /** Update Controller */
     public void update() {
         Trajectory.State currState = mTrajectory.sample(mTimer.get());
+        field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(), mEndHeading);
+        SmartDashboard.putData(field);
         ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
-        mSwerve.setOpenLoopSpeeds(speeds);
+        // mSwerve.setOpenLoopSpeeds(speeds);
     }
 
     /**

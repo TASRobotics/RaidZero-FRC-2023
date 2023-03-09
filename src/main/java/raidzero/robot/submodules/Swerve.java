@@ -87,7 +87,7 @@ public class Swerve extends Submodule {
 
     private Pose2d currentPose;
     private Pose2d prevPose;
-    private Field2d fieldPose = new Field2d();
+    // private Field2d fieldPose = new Field2d();
 
     private PathPlannerTrajectory currentTrajectory;
     private boolean firstPath = true;
@@ -160,7 +160,7 @@ public class Swerve extends Submodule {
         autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0,
                 SwerveConstants.THETACONTROLLER_KD, SwerveConstants.AA_CONSTRAINTS);
 
-        trajectoryConfig = new TrajectoryConfig(0.75, 0.5);
+        trajectoryConfig = new TrajectoryConfig(1, 1);
         mAutoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, trajectoryConfig);
         mAutoAimController.setTolerance(new Pose2d(
             SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
@@ -195,10 +195,10 @@ public class Swerve extends Submodule {
 
         prevPose = currentPose;
         currentPose = updateOdometry();
-        fieldPose.setRobotPose(currentPose);
+        // fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
-        SmartDashboard.putData(fieldPose);
+        // SmartDashboard.putData(fieldPose);
 
         SmartDashboard.putNumber("X pose", odometry.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Y pose", odometry.getEstimatedPosition().getY());
@@ -643,8 +643,8 @@ public class Swerve extends Submodule {
             controlState = ControlState.AUTO_AIM;
 
             Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-            Pose2d midPoint0 = new Pose2d(-1, 1, Rotation2d.fromDegrees(0));
-            Pose2d endPose = new Pose2d(-2, 0, Rotation2d.fromDegrees(0));
+            Pose2d midPoint0 = new Pose2d(1, 1, Rotation2d.fromDegrees(90));
+            Pose2d endPose = new Pose2d(2, 2, Rotation2d.fromDegrees(0));
             List<Pose2d> points = new ArrayList<Pose2d>();
             points.add(startPose);
             points.add(midPoint0);
