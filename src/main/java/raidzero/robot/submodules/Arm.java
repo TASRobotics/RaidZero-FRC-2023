@@ -172,13 +172,15 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Proximal Y ", state[0].getY());
         SmartDashboard.putNumber("Distal X", state[1].getX());
         SmartDashboard.putNumber("Distal Y", state[1].getY());
-        SmartDashboard.putNumber("Drift",
-                Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90 - state[0].getRotation().getDegrees());
-        SmartDashboard.putNumber("Resets", dResets);
+        // SmartDashboard.putNumber("Drift",
+        // Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90 -
+        // state[0].getRotation().getDegrees());
+        // SmartDashboard.putNumber("Resets", dResets);
 
-        SmartDashboard.putNumber("Wrist Rotations", wrist.getRotations());
         SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
-        SmartDashboard.putNumber("TooFast", tooFasttooFurious());
+
+        SmartDashboard.putNumber("Proximal Current Draw", mLowerLeader.getOutputCurrent());
+        SmartDashboard.putNumber("Distal Current Draw", mUpperLeader.getOutputCurrent());
 
         // Multi-pronged Movement
         if (stage > 0) {
@@ -225,11 +227,10 @@ public class Arm extends Submodule {
         }
 
         // Check Safe Zone
-        if (Math.abs(state[1].getX()) < 0.35 && Math.abs(state[0].getX()) < 0.25
-                && Math.abs(state[1].getY() - 0.15) < 0.30)
-            safeZone = true;
-        else
-            safeZone = false;
+        safeZone = Math.abs(state[1].getX()) < 0.35
+                && Math.abs(state[0].getX()) < 0.25
+                && Math.abs(state[1].getY() - 0.15) < 0.30;
+
     }
 
     @Override
@@ -277,7 +278,8 @@ public class Arm extends Submodule {
     private void configLowerSparkMax() {
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
-        mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_CURRENT_LIMIT);
+        mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT, ArmConstants.LOWER_RPM_LIMIT);
+        mLowerFollower.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT, ArmConstants.LOWER_RPM_LIMIT);
         mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mLowerForwardLimitSwitch.enableLimitSwitch(true);
         mLowerReverseLimitSwitch.enableLimitSwitch(true);
@@ -312,7 +314,8 @@ public class Arm extends Submodule {
     private void configUpperSparkMax() {
         mUpperLeader.setIdleMode(IdleMode.kBrake);
         mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
-        mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_CURRENT_LIMIT);
+        mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT, ArmConstants.UPPER_RPM_LIMIT);
+        mUpperFollower.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT, ArmConstants.UPPER_RPM_LIMIT);
         mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mUpperForwardLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
         mUpperReverseLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
@@ -409,8 +412,6 @@ public class Arm extends Submodule {
         else
             return 1;
     }
-
-    
 
     /**
      * OpenLoop Arm Control

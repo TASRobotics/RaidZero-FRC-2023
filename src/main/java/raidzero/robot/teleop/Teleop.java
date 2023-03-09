@@ -39,13 +39,8 @@ public class Teleop {
     }
 
     public void onStart() {
-        if (DriverStation.getAlliance() == Alliance.Blue) {
-            blue = true;
-            reverse = 1;
-        } else {
-            blue = false;
-            reverse = -1;
-        }
+        blue = DriverStation.getAlliance() == Alliance.Blue;
+        reverse = blue ? 1 : -1;
     }
 
     public void onLoop() {
@@ -71,21 +66,18 @@ public class Teleop {
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
-        if (p.getYButtonPressed()) {
-            aiming = true;
-        }
-        if (p.getBButtonPressed()) {
-            aiming = false;
-        }
+
+        aiming = p.getYButtonPressed();
+        aiming = !p.getBButtonPressed() && aiming;
+
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo;
         // }
+
         if (p.getXButtonPressed()) {
-            if (blue)
-                swerve.zeroHeading(0);
-            else
-                swerve.zeroHeading(180);
+            swerve.zeroHeading(blue ? 0 : 180);
         }
+
 
         if (!aiming)
             swerve.drive(

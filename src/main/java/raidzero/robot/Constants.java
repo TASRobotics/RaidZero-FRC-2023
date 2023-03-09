@@ -260,10 +260,10 @@ public class Constants {
         public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
-        
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
+
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.04, -120 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.07, -125 };
 
         /**
          * Constants for a DC brushed motor.
@@ -291,8 +291,13 @@ public class Constants {
         public static final boolean LOWER_MOTOR_INVERSION = false;
         public static final boolean UPPER_MOTOR_INVERSION = false;
 
-        public static final int LOWER_CURRENT_LIMIT = 600;
-        public static final int UPPER_CURRENT_LIMIT = 600;
+        public static final int LOWER_CURRENT_LIMIT = 65;
+        public static final int LOWER_STALL_CURRENT_LIMIT = 1;
+        public static final int LOWER_RPM_LIMIT = 600;
+
+        public static final int UPPER_CURRENT_LIMIT = 65;
+        public static final int UPPER_STALL_CURRENT_LIMIT = 1;
+        public static final int UPPER_RPM_LIMIT = 600;
 
         public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
         public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
@@ -321,42 +326,42 @@ public class Constants {
         public static final double X_EXTENSION_LIMIT = 1.4;
         public static final double Y_EXTENSION_LIMIT = 1.4;
 
-        // public static final double LOWER_KF = 0.000166;
-        // public static final double LOWER_KP = 0.000088;
-        // public static final double LOWER_KI = 0.0;
-        // public static final double LOWER_KD = 0.00000;
-        // public static final double LOWER_MIN_VEL = 0.0;
-        // public static final double LOWER_MAX_VEL = 3670;
-        // public static final double LOWER_MAX_ACCEL = 2500;
-        // public static final double LOWER_MIN_ERROR = 0.0;
-
-        // public static final double UPPER_KF = 0.000166;
-        // public static final double UPPER_KP = 0.000088;
-        // public static final double UPPER_KI = 0.0;
-        // public static final double UPPER_KD = 0.00000;
-        // public static final double UPPER_MIN_VEL = 0.0;
-        // public static final double UPPER_MAX_VEL = 6900;
-        // public static final double UPPER_MAX_ACCEL = 4570;
-        // public static final double UPPER_MIN_ERROR = 0.0;
-
-        // Testing Speeds
         public static final double LOWER_KF = 0.000166;
-        public static final double LOWER_KP = 0.000156;
+        public static final double LOWER_KP = 0.000088;
         public static final double LOWER_KI = 0.0;
         public static final double LOWER_KD = 0.00000;
         public static final double LOWER_MIN_VEL = 0.0;
-        public static final double LOWER_MAX_VEL = 700;
-        public static final double LOWER_MAX_ACCEL = 350;
+        public static final double LOWER_MAX_VEL = 3670;
+        public static final double LOWER_MAX_ACCEL = 2500;
         public static final double LOWER_MIN_ERROR = 0.0;
 
         public static final double UPPER_KF = 0.000166;
-        public static final double UPPER_KP = 0.000156;
+        public static final double UPPER_KP = 0.000088;
         public static final double UPPER_KI = 0.0;
         public static final double UPPER_KD = 0.00000;
         public static final double UPPER_MIN_VEL = 0.0;
-        public static final double UPPER_MAX_VEL = 1500;
-        public static final double UPPER_MAX_ACCEL = 700;
+        public static final double UPPER_MAX_VEL = 6900;
+        public static final double UPPER_MAX_ACCEL = 4570;
         public static final double UPPER_MIN_ERROR = 0.0;
+
+        // Testing Speeds
+        // public static final double LOWER_KF = 0.000166;
+        // public static final double LOWER_KP = 0.000156;
+        // public static final double LOWER_KI = 0.0;
+        // public static final double LOWER_KD = 0.00000;
+        // public static final double LOWER_MIN_VEL = 0.0;
+        // public static final double LOWER_MAX_VEL = 700;
+        // public static final double LOWER_MAX_ACCEL = 350;
+        // public static final double LOWER_MIN_ERROR = 0.0;
+
+        // public static final double UPPER_KF = 0.000166;
+        // public static final double UPPER_KP = 0.000156;
+        // public static final double UPPER_KI = 0.0;
+        // public static final double UPPER_KD = 0.00000;
+        // public static final double UPPER_MIN_VEL = 0.0;
+        // public static final double UPPER_MAX_VEL = 1500;
+        // public static final double UPPER_MAX_ACCEL = 700;
+        // public static final double UPPER_MIN_ERROR = 0.0;
 
         public static final double TOTAL_MAX_ACCEL = LOWER_MAX_ACCEL + UPPER_MAX_ACCEL;
         public static final double TOTAL_MAX_VEL = LOWER_MAX_VEL + UPPER_MAX_VEL;
