@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,7 +37,7 @@ import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;
-import raidzero.robot.utils.Interpolable;
+import raidzero.robot.utils.AutoAimController;
 
 public class Swerve extends Submodule {
 
@@ -97,9 +98,12 @@ public class Swerve extends Submodule {
     private Alliance alliance;
 
     private Pose2d desiredAutoAimPose;
-    private PIDController autoAimXController, autoAimYController, autoAimThetaController;
+    private PIDController autoAimXController, autoAimYController;
+    private ProfiledPIDController autoAimThetaController;
 
     private Trajectory desiredAutoAimTrajectory;
+    private AutoAimController mAutoAimController;
+    private 
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -153,12 +157,14 @@ public class Swerve extends Submodule {
 
         autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0, 0);
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
-        autoAimThetaController = new PIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0,
-                SwerveConstants.THETACONTROLLER_KD);
+        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0,
+                SwerveConstants.THETACONTROLLER_KD, SwerveConstants.AA_CONSTRAINTS);
         autoAimXController.setTolerance(SwerveConstants.AA_XCONTROLLER_TOLERANCE);
         autoAimYController.setTolerance(SwerveConstants.AA_YCONTROLLER_TOLERANCE);
         autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
         autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+        mAutoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController);
 
         zero();
 
@@ -607,7 +613,6 @@ public class Swerve extends Submodule {
             desiredAutoAimPose.transformBy(vision.getConeTransform());
         }
 
-        updateAutoAim(true);
     }
 
     /**
@@ -625,32 +630,6 @@ public class Swerve extends Submodule {
                 getPose().getRotation());
         SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
-        topLeftModule.setTargetState(desiredState[0], false, true, true);
-        topRightModule.setTargetState(desiredState[1], false, true, true);
-        bottomLeftModule.setTargetState(desiredState[2], false, true, true);
-        bottomRightModule.setTargetState(desiredState[3], false, true, true);
-    }
-
-    public void updateAutoAim(boolean isUsingTrajectory) {
-        if(!isUsingTrajectory) {
-            updateAutoAim();
-            return;
-        }
-        Trajectory.State currState = desiredAutoAimTrajectory.sample(timer.get());
-        SmartDashboard.putNumber("traj x vel", currState.velocityMetersPerSecond);
-        double xSpeed = autoAimXController.calculate(getPose().getX(), currState.poseMeters.getX());
-        double ySpeed = autoAimYController.calculate(getPose().getY(), currState.poseMeters.getY());
-        // double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-        //         currState.poseMeters.getRotation().getRadians());
-        double thetaSpeed = 0;
-        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            xSpeed,
-            ySpeed,
-            thetaSpeed,
-            getPose().getRotation()
-        );
-        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);

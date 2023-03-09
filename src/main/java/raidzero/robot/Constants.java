@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -108,6 +110,9 @@ public class Constants {
         public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
+        public static final TrapezoidProfile.Constraints AA_CONSTRAINTS = new TrapezoidProfile.Constraints(
+                MAX_ANGULAR_VEL_RPS,
+                MAX_ANGULAR_ACCEL_RPSPS);
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS

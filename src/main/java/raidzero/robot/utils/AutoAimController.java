@@ -1,17 +1,30 @@
 package raidzero.robot.utils;
 
+import java.util.List;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.Timer;
+import raidzero.robot.submodules.Swerve;
 
 public class AutoAimController {
     private PIDController mXController, mYController;
     private ProfiledPIDController mThetaController;
+    private TrajectoryConfig mTrajectoryConfig;
     private Pose2d mPoseError = new Pose2d();
     private Rotation2d mRotationError = new Rotation2d();
+    private Timer mTimer = new Timer();
+
+    private Trajectory mTrajectory;
+    private Rotation2d mEndHeading;
+    private static final Swerve mSwerve = Swerve.getInstance();
 
     /**
      * Create new Auto Aim Controller
@@ -23,11 +36,43 @@ public class AutoAimController {
     public AutoAimController(
         PIDController xController, 
         PIDController yController, 
-        ProfiledPIDController thetaController
+        ProfiledPIDController thetaController, 
+        TrajectoryConfig trajectoryConfig
     ) {
         mXController = xController;
         mYController = yController;
         mThetaController = thetaController;
+        mTrajectoryConfig = trajectoryConfig;
+    }
+
+    public void setTarget(Pose2d currPose, List<Translation2d> interPoints, Pose2d finalPose, Rotation2d endHeading) {
+        Trajectory traj = TrajectoryGenerator.generateTrajectory(
+            currPose, 
+            interPoints, 
+            finalPose, 
+            mTrajectoryConfig
+        );
+        followPath(traj, endHeading);
+    }
+
+    /**
+     * Follow Trajectory
+     * 
+     * @param trajectory desired trajectory
+     * @param endHeading desired end heading
+     */
+    public void followPath(Trajectory trajectory, Rotation2d endHeading) {
+        mTimer.reset();
+        mTimer.start();
+        mTrajectory = trajectory;
+        mEndHeading = endHeading;
+    }
+
+    /** Update Controller */
+    public void update() {
+        Trajectory.State currState = mTrajectory.sample(mTimer.get());
+        ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
+        mSwerve.setOpenLoopSpeeds(speeds);
     }
 
     /**
@@ -38,7 +83,7 @@ public class AutoAimController {
      * @param desiredHeading desired final heading
      * @return output chassis speeds
      */
-    public ChassisSpeeds calculate(Pose2d currPose, Trajectory.State trajState, Rotation2d desiredHeading) {
+    private ChassisSpeeds calculate(Pose2d currPose, Trajectory.State trajState, Rotation2d desiredHeading) {
         double xFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getCos();
         double yFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getSin();
         double thetaFF =
