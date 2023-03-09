@@ -103,7 +103,7 @@ public class Swerve extends Submodule {
 
     private Trajectory desiredAutoAimTrajectory;
     private AutoAimController mAutoAimController;
-    private 
+    private TrajectoryConfig trajectoryConfig;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -159,12 +159,14 @@ public class Swerve extends Submodule {
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
         autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0,
                 SwerveConstants.THETACONTROLLER_KD, SwerveConstants.AA_CONSTRAINTS);
-        autoAimXController.setTolerance(SwerveConstants.AA_XCONTROLLER_TOLERANCE);
-        autoAimYController.setTolerance(SwerveConstants.AA_YCONTROLLER_TOLERANCE);
-        autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
-        autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        mAutoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController);
+        trajectoryConfig = new TrajectoryConfig(0.75, 0.5);
+        mAutoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, trajectoryConfig);
+        mAutoAimController.setTolerance(new Pose2d(
+            SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
+            SwerveConstants.AA_YCONTROLLER_TOLERANCE, 
+            Rotation2d.fromRadians(SwerveConstants.AA_THETACONTROLLER_TOLERANCE)
+        ));
 
         zero();
 
@@ -180,10 +182,11 @@ public class Swerve extends Submodule {
         if (controlState == ControlState.PATHING) {
             updatePathing();
             controlMode = "pathing";
-        } else if (controlState == ControlState.AUTO_AIM) {
-            updateAutoAim(true);
-            controlMode = "auto aim";
-        }
+        } 
+        // else if (controlState == ControlState.AUTO_AIM) {
+        //     updateAutoAim(true);
+        //     controlMode = "auto aim";
+        // }
         controlMode = "open loop";
         SmartDashboard.putString("Control Mode", controlMode);
         // else if (controlState == ControlState.AUTO_AIM) {
@@ -639,6 +642,9 @@ public class Swerve extends Submodule {
     public void testSplineAutoAim(boolean enable) {
         if(enable) {
             controlState = ControlState.AUTO_AIM;
+
+            
+
             Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(90));
             Pose2d endPose = new Pose2d(-2, 0, Rotation2d.fromDegrees(0));
             TrajectoryConfig config = new TrajectoryConfig(1, 1);

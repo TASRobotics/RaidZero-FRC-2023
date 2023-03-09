@@ -43,6 +43,8 @@ public class AutoAimController {
         mYController = yController;
         mThetaController = thetaController;
         mTrajectoryConfig = trajectoryConfig;
+
+        mThetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     public void setTarget(Pose2d currPose, List<Translation2d> interPoints, Pose2d finalPose, Rotation2d endHeading) {
