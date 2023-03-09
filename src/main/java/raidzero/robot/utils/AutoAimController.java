@@ -47,14 +47,12 @@ public class AutoAimController {
         mThetaController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
-    public void setTarget(Pose2d currPose, List<Translation2d> interPoints, Pose2d finalPose, Rotation2d endHeading) {
+    public void setTarget(List<Pose2d> points) {
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
-            currPose, 
-            interPoints, 
-            finalPose, 
+            points, 
             mTrajectoryConfig
         );
-        followPath(traj, endHeading);
+        followPath(traj, points.get(points.size()-1).getRotation());
     }
 
     /**

@@ -69,7 +69,8 @@ public class Teleop {
     private boolean aiming = false;
     private boolean noSafenoProblemo = false;
 
-    private boolean justPressed = false;
+    private boolean firstPress = false;
+    private boolean wasPreviouslyPressed = false;
 
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
@@ -90,32 +91,29 @@ public class Teleop {
                 swerve.zeroHeading(180);
         }
 
-        // if (!aiming)
-            // swerve.drive(
-            //         JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),
-            //         JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * reverse),
-            //         JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
-        //             true);
-        // else
-        //     swerve.drive(
-        //             JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
-        //             JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-        //             JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
-        //             true);
+        if (!aiming)
+            swerve.drive(
+                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),
+                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() * reverse),
+                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious()),
+                    true);
+        else
+            swerve.drive(
+                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
+                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
+                    JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
+                    true);
 
-        
-        if(p.getAButton()) {
+        if(p.getAButton() && !wasPreviouslyPressed) {
+            wasPreviouslyPressed = true;
             swerve.testSplineAutoAim(true);
         }
-        if(p.getLeftBumper()) {
-            swerve.drive(
-                JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
-                JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                JoystickUtils.aimingDeadband(-p.getRightX() * 0.25),
-                true
-            );
+        if(!p.getAButton()) {
+            wasPreviouslyPressed = false;
+            swerve.testSplineAutoAim(false);
         }
-
+        
+        
         // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
         //         || noSafenoProblemo)) {

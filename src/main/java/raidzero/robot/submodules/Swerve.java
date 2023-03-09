@@ -177,21 +177,17 @@ public class Swerve extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        String controlMode = "none";
+        String controlMode = "open loop";
 
         if (controlState == ControlState.PATHING) {
             updatePathing();
             controlMode = "pathing";
         } 
-        // else if (controlState == ControlState.AUTO_AIM) {
-        //     updateAutoAim(true);
-        //     controlMode = "auto aim";
-        // }
-        controlMode = "open loop";
+        else if (controlState == ControlState.AUTO_AIM) {
+            mAutoAimController.update();
+            controlMode = "auto aim";
+        }
         SmartDashboard.putString("Control Mode", controlMode);
-        // else if (controlState == ControlState.AUTO_AIM) {
-        // updateAutoAim();
-        // }
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -365,6 +361,9 @@ public class Swerve extends Submodule {
      * @param fieldOriented
      */
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
+        if(controlState == ControlState.AUTO_AIM) {
+            return;
+        }
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
         if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
@@ -643,18 +642,18 @@ public class Swerve extends Submodule {
         if(enable) {
             controlState = ControlState.AUTO_AIM;
 
-            
-
-            Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(90));
+            Pose2d startPose = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+            Pose2d midPoint0 = new Pose2d(-1, 1, Rotation2d.fromDegrees(0));
             Pose2d endPose = new Pose2d(-2, 0, Rotation2d.fromDegrees(0));
-            TrajectoryConfig config = new TrajectoryConfig(1, 1);
-            config.setStartVelocity(1);
-            List<Translation2d> interPoints = new ArrayList<Translation2d>();
-            interPoints.add(new Translation2d(-1, 1));
-            desiredAutoAimTrajectory = TrajectoryGenerator.generateTrajectory(startPose, interPoints, endPose, config);
+            List<Pose2d> points = new ArrayList<Pose2d>();
+            points.add(startPose);
+            points.add(midPoint0);
+            points.add(endPose);
 
-            timer.reset();
-            timer.start();
+            trajectoryConfig.setStartVelocity(0);
+
+            mAutoAimController.setTarget(points);
+
         } else {
             controlState = ControlState.OPEN_LOOP;
         }
