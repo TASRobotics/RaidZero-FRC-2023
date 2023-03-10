@@ -612,9 +612,9 @@ public class Swerve extends Submodule {
         controlState = ControlState.AUTO_BALANCE;
         autoBalXTranslate = SwerveConstants.K_PITCH * Math.max(SwerveConstants.MAX_PITCH_SPEED - Math.abs(pigeon.getPitchSpeed()), 0) * pigeon.getPitch();
         
-        double xSpeed = autoBalXProfiledController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
+        // double xSpeed = autoBalXProfiledController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
         
-        // double xSpeed = autoBalXController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
+        double xSpeed = autoBalXController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
         double ySpeed = autoBalYController.calculate(getPose().getY(), getPose().getY());
         double thetaSpeed = autoBalThetaController.calculate(getPose().getRotation().getRadians(),
                 getPose().getRotation().getRadians());
