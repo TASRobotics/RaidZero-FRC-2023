@@ -11,9 +11,9 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
-import raidzero.robot.submodules.Swerve.AutoAimLocation;
 import raidzero.robot.submodules.Wrist;
 import raidzero.robot.utils.JoystickUtils;
+import raidzero.robot.utils.AutoAimController.AutoAimLocation;
 
 public class Teleop {
 
@@ -345,48 +345,26 @@ public class Teleop {
         }
 
         // Auto Alignments
-        if (blue && ((!arm.isGoingHome() && arm.isSafe())
+        if (((!arm.isGoingHome() && arm.isSafe())
                 || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
-                swerve.autoAim(AutoAimLocation.BLL);
+                swerve.setAutoAimLocation(AutoAimLocation.LL);
             } else if (p.getRawButton(8)) {
-                swerve.autoAim(AutoAimLocation.BLM);
+                swerve.setAutoAimLocation(AutoAimLocation.LM);
             } else if (p.getRawButton(7)) {
-                swerve.autoAim(AutoAimLocation.BLR);
+                swerve.setAutoAimLocation(AutoAimLocation.LR);
             } else if (p.getRawButton(6)) {
-                swerve.autoAim(AutoAimLocation.BML);
+                swerve.setAutoAimLocation(AutoAimLocation.ML);
             } else if (p.getRawButton(5)) {
-                swerve.autoAim(AutoAimLocation.BMM);
+                swerve.setAutoAimLocation(AutoAimLocation.MM);
             } else if (p.getRawButton(4)) {
-                swerve.autoAim(AutoAimLocation.BMR);
+                swerve.setAutoAimLocation(AutoAimLocation.MR);
             } else if (p.getRawButton(3)) {
-                swerve.autoAim(AutoAimLocation.BRL);
+                swerve.setAutoAimLocation(AutoAimLocation.RL);
             } else if (p.getRawButton(2)) {
-                swerve.autoAim(AutoAimLocation.BRM);
+                swerve.setAutoAimLocation(AutoAimLocation.RM);
             } else if (p.getRawButton(1)) {
-                swerve.autoAim(AutoAimLocation.BRR);
-            } else {
-            }
-        } else if (!blue && ((!arm.isGoingHome() && arm.isSafe())
-                || noSafenoProblemo)) {
-            if (p.getRawButton(9)) {
-                swerve.autoAim(AutoAimLocation.RLL);
-            } else if (p.getRawButton(8)) {
-                swerve.autoAim(AutoAimLocation.RLM);
-            } else if (p.getRawButton(7)) {
-                swerve.autoAim(AutoAimLocation.RLR);
-            } else if (p.getRawButton(6)) {
-                swerve.autoAim(AutoAimLocation.RML);
-            } else if (p.getRawButton(5)) {
-                swerve.autoAim(AutoAimLocation.RMM);
-            } else if (p.getRawButton(4)) {
-                swerve.autoAim(AutoAimLocation.RMR);
-            } else if (p.getRawButton(3)) {
-                swerve.autoAim(AutoAimLocation.RRL);
-            } else if (p.getRawButton(2)) {
-                swerve.autoAim(AutoAimLocation.RRM);
-            } else if (p.getRawButton(1)) {
-                swerve.autoAim(AutoAimLocation.RRR);
+                swerve.setAutoAimLocation(AutoAimLocation.RR);
             } else {
             }
         }
