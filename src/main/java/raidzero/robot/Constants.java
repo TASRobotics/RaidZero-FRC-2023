@@ -244,18 +244,38 @@ public class Constants {
          * Constants for arm Distal endpoint locations for different
          * arm positions. Constants are measured in meters
          */
-        public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.1, 0.7 };
-        public static final double[] INTER2_HUMAN_PICKUP_STATION = { 0.1, 1.4 };
+        // Safe Human Pickup
+        public static final double[] INTER_HUMAN_PICKUP_STATION = { 0.1, 0.7, 90 };
+        public static final double[] INTER2_HUMAN_PICKUP_STATION = { 0.01, 1.4, 90 };
+        public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
+
+        public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.93, -83 };
+
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
-        public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15 };
-        public static final double[] INTER_GRID_HIGH = { 0.50, 1.25 };
-        public static final double[] INTER_FLOOR_INTAKE = { 0.69, 0.367 };
-        public static final double[] INTER2_FLOOR_INTAKE = { 0.97, 0.25 };
-        public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
-        public static final double[] GRID_MEDIUM = { 0.93, 1.00 };
-        public static final double[] GRID_HIGH = { 1.28, 1.28 };
-        public static final double[] FLOOR_INTAKE = { 0.57, 0.02 };
+
+        public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15, 70 };
+        public static final double[] GRID_MEDIUM = { 0.93, 1.00, 155 };
+
+        public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
+        public static final double[] GRID_HIGH = { 1.28, 1.28, 155 };
+
+        public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
+        public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
+
+        public static final double[] INTER_FLOOR_INTAKE = { 0.84, 0.39, 45 };
+        public static final double[] INTER2_FLOOR_INTAKE = { 1.12, 0.27, 90 };
+        public static final double[] FLOOR_INTAKE = { 0.57, 0.02, 165 };
+
+        // public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.19, -147 };
+        public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
+
+        public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
+
+        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.07, -125 };
 
         /**
          * Constants for a DC brushed motor.
@@ -283,8 +303,13 @@ public class Constants {
         public static final boolean LOWER_MOTOR_INVERSION = false;
         public static final boolean UPPER_MOTOR_INVERSION = false;
 
-        public static final int LOWER_CURRENT_LIMIT = 600;
-        public static final int UPPER_CURRENT_LIMIT = 600;
+        public static final int LOWER_CURRENT_LIMIT = 65;
+        public static final int LOWER_STALL_CURRENT_LIMIT = 1;
+        public static final int LOWER_RPM_LIMIT = 600;
+
+        public static final int UPPER_CURRENT_LIMIT = 65;
+        public static final int UPPER_STALL_CURRENT_LIMIT = 1;
+        public static final int UPPER_RPM_LIMIT = 600;
 
         public static final SparkMaxLimitSwitch.Type LOWER_FORWARD_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
         public static final SparkMaxLimitSwitch.Type LOWER_REVERSE_LIMIT_TYPE = SparkMaxLimitSwitch.Type.kNormallyOpen;
@@ -384,8 +409,8 @@ public class Constants {
         public static final double KD = 0.0;
 
         public static final double MIN_VEL = 0.0;
-        public static final double MAX_VEL = 4750.0;
-        public static final double MAX_ACCEL = 3960.0;
+        public static final double MAX_VEL = 5200.0;
+        public static final double MAX_ACCEL = 4300.0;
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;
@@ -409,7 +434,7 @@ public class Constants {
         public static final boolean INVERSION = false;
 
         public static final int STALL_CURRENT_LIMIT = 5;
-        public static final int FREE_CURRENT_LIMIT = 20;
+        public static final int FREE_CURRENT_LIMIT = 15;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;

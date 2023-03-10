@@ -20,7 +20,7 @@ import raidzero.robot.submodules.Swerve;
 public class SafetySequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Out", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("Safety", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
     public SafetySequence() {
@@ -32,8 +32,8 @@ public class SafetySequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.2, 0.5),
-                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], 70,
-                                -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 155),
+                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], ArmConstants.INTER_GRID_HIGH[2],
+                                -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], ArmConstants.GRID_HIGH[2]),
                         new RunIntakeAction(1, -1),
                         new ArmHomeAction(),
                         new DrivePath(mOut))));

@@ -282,9 +282,9 @@ public class Swerve extends Submodule {
      * Checks the Speed of the throttle and updates the overlimit boolean
      */
     public void checkThrottleSpeed() {
-        if (topLeftModule.getThrottlePercentSpeed() > 0.3 || topRightModule.getThrottlePercentSpeed() > 0.3
-                || bottomLeftModule.getThrottlePercentSpeed() > 0.3
-                || bottomRightModule.getThrottlePercentSpeed() > 0.3)
+        if (topLeftModule.getThrottlePercentSpeed() > 0.5 || topRightModule.getThrottlePercentSpeed() > 0.3
+                || bottomLeftModule.getThrottlePercentSpeed() > 0.5
+                || bottomRightModule.getThrottlePercentSpeed() > 0.5)
             overLimit = true;
         else
             overLimit = false;
@@ -357,9 +357,9 @@ public class Swerve extends Submodule {
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
-        if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
-            ignoreAngle = true;
-        }
+        // if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
+        //     ignoreAngle = true;
+        // }
         var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
