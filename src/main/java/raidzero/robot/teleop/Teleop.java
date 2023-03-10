@@ -68,6 +68,7 @@ public class Teleop {
 
     private boolean aiming = false;
     private boolean noSafenoProblemo = false;
+    private boolean balance = false;
 
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
@@ -77,6 +78,13 @@ public class Teleop {
         }
         if (p.getBButtonPressed()) {
             aiming = false;
+        }
+
+        if (p.getAButtonPressed()){
+            balance = true;
+        }
+        else{
+            balance = false;
         }
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo;
@@ -88,6 +96,10 @@ public class Teleop {
                 swerve.zeroHeading(180);
         }
 
+        if (balance){
+            swerve.autoBalance();
+        }
+        
         if (!aiming)
             swerve.drive(
                     JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() * reverse),

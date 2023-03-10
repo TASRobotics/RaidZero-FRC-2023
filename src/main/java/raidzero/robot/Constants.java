@@ -118,6 +118,9 @@ public class Constants {
         public static final double AB_YCONTROLLER_TOLERANCE = 0.01;
         public static final double AB_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
 
+        public static final double MAX_PITCH_SPEED = 20;
+        public static final double K_PITCH = 0.001;
+
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS
                 / (2048 * (1 / THROTTLE_REDUCTION));

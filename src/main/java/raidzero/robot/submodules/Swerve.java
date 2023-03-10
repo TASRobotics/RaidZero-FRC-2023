@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +35,7 @@ import raidzero.robot.dashboard.Tab;
 public class Swerve extends Submodule {
 
     private enum ControlState {
-        OPEN_LOOP, PATHING, AUTO_AIM
+        OPEN_LOOP, PATHING, AUTO_AIM, AUTO_BALANCE
     };
 
     // Auto-aim target Locations
@@ -44,12 +46,24 @@ public class Swerve extends Submodule {
     };
 
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
+        private double[] pigeonSpeeds;
+
         public WPI_Pigeon2_Helper(int deviceNumber, String canbus) {
             super(deviceNumber, canbus);
+            pigeonSpeeds = new double[3];
         }
 
         public double getAngle() {
             return -super.getAngle();
+        }
+
+        public double getPitch(){
+            return super.getPitch();
+        }
+
+        public double getPitchSpeed(){
+            getRawGyro(pigeonSpeeds);
+            return -pigeonSpeeds[0];
         }
     }
 
@@ -91,15 +105,19 @@ public class Swerve extends Submodule {
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController, autoAimThetaController;
 
-    private Pose2d desiredAutoBalPose;
     private PIDController autoBalXController, autoBalYController, autoBalThetaController;
+
+    private TrapezoidProfile.Constraints autoBalXConstraints;
+    private ProfiledPIDController autoBalXProfiledController;
+    private double autoBalXTranslate = 0.0;
+    private double kDt = 0.02;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
-        alliance = DriverStation.getAlliance();
         zero();
+        alliance = DriverStation.getAlliance();
         firstPath = true;
     }
 
@@ -157,6 +175,9 @@ public class Swerve extends Submodule {
         autoBalYController = new PIDController(SwerveConstants.AB_YCONTROLLER_KP, 0.0, 0.0);
         autoBalThetaController = new PIDController(SwerveConstants.AB_THETACONTROLLER_KP, 0,
                 SwerveConstants.AB_THETACONTROLLER_KD);
+        autoBalXConstraints = new TrapezoidProfile.Constraints(SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
+        autoBalXProfiledController = new ProfiledPIDController(SwerveConstants.AB_XCONTROLLER_KP, 0, 0, autoBalXConstraints, kDt);
+
         autoBalXController.setTolerance(SwerveConstants.AB_XCONTROLLER_TOLERANCE);
         autoBalYController.setTolerance(SwerveConstants.AB_YCONTROLLER_TOLERANCE);
         autoBalThetaController.setTolerance(SwerveConstants.AB_THETACONTROLLER_TOLERANCE);
@@ -192,6 +213,11 @@ public class Swerve extends Submodule {
         SmartDashboard.putNumber("X pose", odometry.getEstimatedPosition().getX());
         SmartDashboard.putNumber("Y pose", odometry.getEstimatedPosition().getY());
         SmartDashboard.putNumber("Theta pose", odometry.getEstimatedPosition().getRotation().getDegrees());
+
+        SmartDashboard.putNumber("Pitch Angle", pigeon.getPitch());
+        SmartDashboard.putNumber("Pitch Speed", pigeon.getPitchSpeed());
+
+        SmartDashboard.putNumber("Balance X", autoBalXTranslate);
 
         checkThrottleSpeed();
 
@@ -574,14 +600,24 @@ public class Swerve extends Submodule {
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
     }
 
+    public double getVelocityX(){
+        ChassisSpeeds chassisSpeeds = SwerveConstants.KINEMATICS.toChassisSpeeds(topLeftModule.getModuleState(), topRightModule.getModuleState(), bottomLeftModule.getModuleState(), bottomRightModule.getModuleState());
+        return chassisSpeeds.vxMetersPerSecond;
+    }
+
     /**
-     * Update Auto Balance
+     * Run Auto Balance
      */
-    public void updateAutoBal() {
-        double xSpeed = autoBalXController.calculate(getPose().getX(), desiredAutoBalPose.getX());
-        double ySpeed = autoBalYController.calculate(getPose().getY(), desiredAutoBalPose.getY());
+    public void autoBalance(){
+        controlState = ControlState.AUTO_BALANCE;
+        autoBalXTranslate = SwerveConstants.K_PITCH * Math.max(SwerveConstants.MAX_PITCH_SPEED - Math.abs(pigeon.getPitchSpeed()), 0) * pigeon.getPitch();
+        
+        double xSpeed = autoBalXProfiledController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
+        
+        // double xSpeed = autoBalXController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
+        double ySpeed = autoBalYController.calculate(getPose().getY(), getPose().getY());
         double thetaSpeed = autoBalThetaController.calculate(getPose().getRotation().getRadians(),
-                desiredAutoBalPose.getRotation().getRadians());
+                getPose().getRotation().getRadians());
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
                 ySpeed,
@@ -593,6 +629,14 @@ public class Swerve extends Submodule {
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    public double getAutoBalancePitch(){
+        return pigeon.getPitch();
+    }
+
+    public double getAutoBalancePitchSpeed(){
+        return pigeon.getPitchSpeed();
     }
 
     /**
