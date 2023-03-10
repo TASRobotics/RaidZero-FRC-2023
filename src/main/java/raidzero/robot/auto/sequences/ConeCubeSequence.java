@@ -24,8 +24,8 @@ import raidzero.robot.submodules.Swerve;
 public class ConeCubeSequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
@@ -58,16 +58,13 @@ public class ConeCubeSequence extends AutoSequence {
                                 new DrivePath(mOut),
                                 new SeriesAction(Arrays.asList(
                                         new WaitAction(1.3),
-                                        new MoveThreePronged(
-                                                ArmConstants.INTER_FLOOR_INTAKE[0],
-                                                ArmConstants.INTER_FLOOR_INTAKE[1],
-                                                ArmConstants.INTER_FLOOR_INTAKE[2],
-                                                ArmConstants.INTER2_FLOOR_INTAKE[0],
-                                                ArmConstants.INTER2_FLOOR_INTAKE[1],
-                                                ArmConstants.INTER2_FLOOR_INTAKE[2],
-                                                ArmConstants.FLOOR_INTAKE[0],
-                                                ArmConstants.FLOOR_INTAKE[1],
-                                                ArmConstants.FLOOR_INTAKE[2]))),
+                                        new MoveTwoPronged(
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[0],
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[1],
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[2],
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[0],
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[1],
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[2]))),
                                 new RunIntakeAction(2.5, -0.7))),
 
                         // Return to community
@@ -75,16 +72,16 @@ public class ConeCubeSequence extends AutoSequence {
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mReturn),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitAction(1.0),
+                                        new WaitAction(1.2),
                                         new MoveTwoPronged(-ArmConstants.INTER_CUBE_GRID_HIGH[0],
                                                 ArmConstants.INTER_CUBE_GRID_HIGH[1],
                                                 ArmConstants.INTER_CUBE_GRID_HIGH[2],
                                                 -ArmConstants.CUBE_GRID_HIGH[0], ArmConstants.CUBE_GRID_HIGH[1],
                                                 ArmConstants.CUBE_GRID_HIGH[2]))),
-                                new RunIntakeAction(3, -0.7))),
+                                new RunIntakeAction(2, -0.2))),
 
                         // Score Cube
-                        new RunIntakeAction(0.5, 0.5),
+                        new RunIntakeAction(0.3, 0.5),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),

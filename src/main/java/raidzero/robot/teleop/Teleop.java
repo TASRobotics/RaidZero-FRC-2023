@@ -67,17 +67,18 @@ public class Teleop {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
 
-        aiming = p.getYButtonPressed();
-        aiming = !p.getBButtonPressed() && aiming;
+        if (p.getYButtonPressed()) {
+            aiming = true;
+        }
+        if (p.getBButtonPressed()) {
+            aiming = false;
+        }
 
-        // if (p.getAButtonPressed()) {
-        // noSafenoProblemo = !noSafenoProblemo;
-        // }
+        // noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
 
         if (p.getXButtonPressed()) {
             swerve.zeroHeading(blue ? 0 : 180);
         }
-
 
         if (!aiming)
             swerve.drive(
@@ -91,6 +92,13 @@ public class Teleop {
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
                     true);
+
+        // double xSpeed = arm.tooFasttooFurious() * arm.slurping();
+        // double ySpeed = aiming ? -p.getLeftX() * 0.25 * reverse : -p.getLeftX() * arm.tooFasttooFurious() * arm.slurping() * reverse;
+        // double angularSpeed = aiming ? -p.getRightX() * 0.5 : -p.getRightX() * arm.tooFasttooFurious() * arm.slurping() * 2.0;
+
+        // swerve.drive(JoystickUtils.deadband(leftY * speed), JoystickUtils.deadband(leftX * speed),
+        //         JoystickUtils.deadband(rightX * speed), true);
 
         // // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
