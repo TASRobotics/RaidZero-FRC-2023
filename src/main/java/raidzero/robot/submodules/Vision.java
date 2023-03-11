@@ -137,8 +137,8 @@ public class Vision extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        // angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
-        updateRobotPose();
+        angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
+        // updateRobotPose();
         if (robotPose != null) {
             SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
             SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
@@ -169,7 +169,8 @@ public class Vision extends Submodule {
         zTranslationNT = cameraSubTable.getEntry("zTranslation").getDoubleArray(new double[aprilTagIDs.length]);
         yawRotationNT = cameraSubTable.getEntry("yawRotation").getDoubleArray(new double[aprilTagIDs.length]);
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
-        int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0' - 1;
+        int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
+        // System.out.println(cameraNum);
         updatePose(VisionConstants.CAMERATRANSFORMS[cameraNum],
         cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
     }
@@ -221,7 +222,7 @@ public class Vision extends Submodule {
     private synchronized void updatePose(Transform2d cameraTransform, double timestamp) {
         // Setup different poses of apriltags and robots relative to each other
 
-        Pose2d newRobotPose = new Pose2d();
+        Pose2d newRobotPose;
 
 
         // int foundAngleLocation=-1;
@@ -236,7 +237,6 @@ public class Vision extends Submodule {
         for (int aTagID : aprilTagIDs) {
             // aTag2int = (int)aTagIDs[i];
             
-            System.out.println("Targeting Apriltag " + aTagID);
             // Create pose of robot with respect to the apriltag;
             // robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID], -cameraTranslationX[aTagID],
             //         new Rotation2d(aTagRotation[aTagID]));
@@ -253,19 +253,22 @@ public class Vision extends Submodule {
                 // double pigeonAngle = pigeon.getAngle();
                 // Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
     
-                Pose2d aprilTagPose = aprilTagGlobalPoses[aprilTagIDs[0]];
+                Pose2d aprilTagPose = aprilTagGlobalPoses[aTagID];
                 Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(), angleInterpolate.getSample(timestamp).get());
     
                 // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
                 Transform2d aprilTagTransform = new Transform2d(
-                        new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]),
+                        new Translation2d(-zTranslationNT[aTagID], xTranslationNT[aTagID]),
                         new Rotation2d());
                 // SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
                 // SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
                 // SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
                 // Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
                 // Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
-    
+                
+
+            // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
+
     
                 Transform2d aprilToRobot = aprilTagTransform.plus(cameraTransform);
                 newRobotPose = globalToAprilTag.plus(aprilToRobot);
@@ -275,11 +278,18 @@ public class Vision extends Submodule {
                 } catch (Exception e){
                     positionError = 1;
                 }
-                double angleError = 0.01;
+                double angleError = 1;
             
+                System.out.println("Aligning with Apriltag " + aTagID);
                 robotDrive.addVisionMeasurement(newRobotPose, timestamp,
                         new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
                                 angleError));
+                
+                SmartDashboard.putNumber("Add Robot Pose x", newRobotPose.getTranslation().getX());
+                SmartDashboard.putNumber("Add Robot Pose y", newRobotPose.getTranslation().getY());
+                SmartDashboard.putNumber("Add Robot Pose theta", newRobotPose.getRotation().getDegrees());
+                SmartDashboard.putNumber("Timestamp addition", timestamp);
+                SmartDashboard.putNumber("Distance error", positionError);
 
     
                 // aprilTagRelativeTransformation = new Transform2d(robotRelativePose.getTranslation(),
@@ -389,9 +399,9 @@ public class Vision extends Submodule {
             Transform2d aprilTagTransform = new Transform2d(
                     new Translation2d(-zTranslationNT[aprilTagIDs[0]], xTranslationNT[aprilTagIDs[0]]),
                     new Rotation2d());
-            SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
-            SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
-            SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
+            // SmartDashboard.putNumber("transform x", globalToAprilTag.getTranslation().getX());
+            // SmartDashboard.putNumber("transform y", globalToAprilTag.getTranslation().getY());
+            // SmartDashboard.putNumber("transform theta", globalToAprilTag.getRotation().getDegrees());
             // Pose2d cameraPose = rotationPose.plus(aprilTagTransform);
             // Transform2d aprilTagToCamera = new Transform2d(new Pose2d(), cameraPose);
 
