@@ -110,16 +110,21 @@ public class Constants {
         public static final double AA_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
 
         /** AutoBalance Constants */
-        public static final double AB_XCONTROLLER_KP = 0.7;
-        public static final double AB_YCONTROLLER_KP = 0.7;
+        public static final double AB_XCONTROLLER_KP = 0.4;
+        public static final double AB_YCONTROLLER_KP = 0.4;
         public static final double AB_THETACONTROLLER_KP = 1.2;
         public static final double AB_THETACONTROLLER_KD = 0.1;
         public static final double AB_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AB_YCONTROLLER_TOLERANCE = 0.01;
         public static final double AB_THETACONTROLLER_TOLERANCE = Math.toRadians(0.2);
 
-        public static final double MAX_PITCH_SPEED = 20;
-        public static final double K_PITCH = 0.001;
+        public static final double AB_MAX_PITCH_SPEED = 13;
+        public static final double AB_FAR_SETPOINT = 0.1;
+        public static final double AB_CLOSE_SETPOINT = 0.1;
+        public static final double AB_ANGLE_TOLERANCE = 1;
+
+        public static final double AB_MAX_VEL_MPS = 0.2;
+        public static final double AB_MAX_ACCEL_MPSPS = AB_MAX_VEL_MPS * 1.5;
 
         // Using SDS 6.75 ratio
         public static final double THROTTLE_TICKS_TO_METERS = Math.PI * WHEEL_DIAMETER_METERS

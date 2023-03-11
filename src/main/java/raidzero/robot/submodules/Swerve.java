@@ -111,6 +111,7 @@ public class Swerve extends Submodule {
     private ProfiledPIDController autoBalXProfiledController;
     private double autoBalXTranslate = 0.0;
     private double kDt = 0.02;
+    private boolean autoBalFlag = false;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -175,7 +176,7 @@ public class Swerve extends Submodule {
         autoBalYController = new PIDController(SwerveConstants.AB_YCONTROLLER_KP, 0.0, 0.0);
         autoBalThetaController = new PIDController(SwerveConstants.AB_THETACONTROLLER_KP, 0,
                 SwerveConstants.AB_THETACONTROLLER_KD);
-        autoBalXConstraints = new TrapezoidProfile.Constraints(SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
+        autoBalXConstraints = new TrapezoidProfile.Constraints(SwerveConstants.AB_MAX_VEL_MPS, SwerveConstants.AB_MAX_ACCEL_MPSPS);
         autoBalXProfiledController = new ProfiledPIDController(SwerveConstants.AB_XCONTROLLER_KP, 0, 0, autoBalXConstraints, kDt);
 
         autoBalXController.setTolerance(SwerveConstants.AB_XCONTROLLER_TOLERANCE);
@@ -206,6 +207,8 @@ public class Swerve extends Submodule {
         prevPose = currentPose;
         currentPose = updateOdometry();
         fieldPose.setRobotPose(currentPose);
+
+        updateAutoBalance();
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -610,11 +613,9 @@ public class Swerve extends Submodule {
      */
     public void autoBalance(){
         controlState = ControlState.AUTO_BALANCE;
-        autoBalXTranslate = SwerveConstants.K_PITCH * Math.max(SwerveConstants.MAX_PITCH_SPEED - Math.abs(pigeon.getPitchSpeed()), 0) * pigeon.getPitch();
-        
-        // double xSpeed = autoBalXProfiledController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
-        
-        double xSpeed = autoBalXController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
+        zeroHeading(180);
+        updateAutoBalance();
+        double xSpeed = autoBalXProfiledController.calculate(getPose().getX(), getPose().getX() + autoBalXTranslate);
         double ySpeed = autoBalYController.calculate(getPose().getY(), getPose().getY());
         double thetaSpeed = autoBalThetaController.calculate(getPose().getRotation().getRadians(),
                 getPose().getRotation().getRadians());
@@ -629,6 +630,29 @@ public class Swerve extends Submodule {
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    public void updateAutoBalance(){
+        if (Math.abs(pigeon.getPitch()) < SwerveConstants.AB_ANGLE_TOLERANCE || autoBalFlag){
+            autoBalXTranslate = 0;
+        }
+        else if (pigeon.getPitch() * pigeon.getPitchSpeed() < 0){
+            autoBalXTranslate = SwerveConstants.AB_CLOSE_SETPOINT * pigeon.getPitch() / Math.abs(pigeon.getPitch());
+        }
+        else{
+            autoBalXTranslate = SwerveConstants.AB_FAR_SETPOINT * pigeon.getPitch() / Math.abs(pigeon.getPitch());
+        }
+        if (Math.abs(pigeon.getPitch()) > SwerveConstants.AB_MAX_PITCH_SPEED){
+            autoBalFlag = true;
+        }
+    }
+
+    public void resetAutoBalance(){
+        autoBalFlag = false;
+    }
+
+    public double getAutoBalXTranslate(){
+        return autoBalXTranslate;
     }
 
     public double getAutoBalancePitch(){

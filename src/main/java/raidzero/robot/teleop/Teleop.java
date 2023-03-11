@@ -74,22 +74,12 @@ public class Teleop {
         if (p.getBButtonPressed()) {
             aiming = false;
         }
-
-        if (p.getAButtonPressed()){
-            balance = true;
-        }
-        else{
-            balance = false;
-        }
+        
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo;
         // }
         if (p.getXButtonPressed()) {
             swerve.zeroHeading(blue ? 0 : 180);
-        }
-
-        if (balance){
-            swerve.autoBalance();
         }
 
         if (!aiming)
