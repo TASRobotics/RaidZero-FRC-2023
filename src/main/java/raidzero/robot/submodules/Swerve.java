@@ -98,6 +98,9 @@ public class Swerve extends Submodule {
         alliance = DriverStation.getAlliance();
         zero();
         firstPath = true;
+
+        // TEMPORARY
+        setPose(new Pose2d(4,1.2,Rotation2d.fromDegrees(180)));
     }
 
     public void onInit() {
@@ -155,14 +158,21 @@ public class Swerve extends Submodule {
         PathPlannerServer.startServer(5811);
     }
 
+    String control_state = "nada";
     @Override
     public void update(double timestamp) {
         if (controlState == ControlState.PATHING) {
+            control_state = "pathing";
             updatePathing();
         }
-        // else if (controlState == ControlState.AUTO_AIM) {
-        // updateAutoAim();
-        // }
+        else if (controlState == ControlState.AUTO_AIM) {
+            control_state = "auto aim";
+            autoAimController.update();
+        } 
+        else {
+            control_state = "open loop";
+        }
+        SmartDashboard.putString("control mode", control_state);
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -170,7 +180,7 @@ public class Swerve extends Submodule {
 
         prevPose = currentPose;
         currentPose = updateOdometry();
-        fieldPose.setRobotPose(currentPose);
+        // fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -229,6 +239,10 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
+    public Field2d getField() {
+        return fieldPose;
+    }
+
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
                 topLeftModule.getModulePosition(),
@@ -277,8 +291,8 @@ public class Swerve extends Submodule {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-            visionMeasurementStdDevs);
+            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
+            // visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             // pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
@@ -425,8 +439,17 @@ public class Swerve extends Submodule {
     }
 
     public void setAutoAimLocation(AutoAimLocation location) {
-        controlState = ControlState.AUTO_AIM;
+        // controlState = ControlState.AUTO_AIM;
         autoAimController.setTarget(getPose(), location);
+    }
+
+    public void enableAutoAimController(boolean isEnabled) {
+        if(isEnabled) {
+            controlState = ControlState.AUTO_AIM;
+            autoAimController.enable(isEnabled);
+        } else {
+            controlState = ControlState.OPEN_LOOP;
+        }
     }
 
     /**

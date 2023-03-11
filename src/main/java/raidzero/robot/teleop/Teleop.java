@@ -1,6 +1,8 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -40,6 +42,9 @@ public class Teleop {
     public void onStart() {
         blue = DriverStation.getAlliance() == Alliance.Blue;
         reverse = blue ? 1 : -1;
+
+        // TEMPORARY
+        
     }
 
     public void onLoop() {
@@ -220,6 +225,8 @@ public class Teleop {
         // }
     }
 
+    boolean buttonPressed = false;
+    boolean wasPreviouslyPressed = false;
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
@@ -347,25 +354,123 @@ public class Teleop {
         if (((!arm.isGoingHome() && arm.isSafe())
                 || noSafenoProblemo)) {
             if (p.getRawButton(9)) {
-                swerve.setAutoAimLocation(AutoAimLocation.LL);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.LL);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(8)) {
-                swerve.setAutoAimLocation(AutoAimLocation.LM);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.LM);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(7)) {
-                swerve.setAutoAimLocation(AutoAimLocation.LR);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.LR);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(6)) {
-                swerve.setAutoAimLocation(AutoAimLocation.ML);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.ML);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(5)) {
-                swerve.setAutoAimLocation(AutoAimLocation.MM);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.MM);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(4)) {
-                swerve.setAutoAimLocation(AutoAimLocation.MR);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.MR);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(3)) {
-                swerve.setAutoAimLocation(AutoAimLocation.RL);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.RL);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(2)) {
-                swerve.setAutoAimLocation(AutoAimLocation.RM);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.RM);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else if (p.getRawButton(1)) {
-                swerve.setAutoAimLocation(AutoAimLocation.RR);
+                buttonPressed = true;
+                if(buttonPressed && !wasPreviouslyPressed) {
+                    wasPreviouslyPressed = true;
+                    swerve.setAutoAimLocation(AutoAimLocation.RR);
+                    swerve.enableAutoAimController(true);
+                }
+                if(!buttonPressed) {
+                    wasPreviouslyPressed = false;
+                    swerve.enableAutoAimController(false);
+                }
             } else {
+                buttonPressed = false;
+                wasPreviouslyPressed = false;
+                swerve.enableAutoAimController(false);
             }
         }
+
+        SmartDashboard.putBoolean("button pressed", buttonPressed);
+        SmartDashboard.putBoolean("was previously pressed", wasPreviouslyPressed);
+
+        // if(buttonPressed && !wasPreviouslyPressed) {
+        //     wasPreviouslyPressed = true;
+        //     swerve.enableAutoAimController(true);
+        //     SmartDashboard.putBoolean("auto aiming", true);
+        // }
+        // if(!buttonPressed) {
+        //     wasPreviouslyPressed = false;
+        //     swerve.enableAutoAimController(false);
+        //     SmartDashboard.putBoolean("auto aiming", false);
+        // }
     }
 }
