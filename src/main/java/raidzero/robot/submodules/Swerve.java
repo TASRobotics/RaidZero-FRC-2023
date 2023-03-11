@@ -148,8 +148,13 @@ public class Swerve extends Submodule {
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
         autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0, 0, 
             new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
-        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
+        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS * 1, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1);
         autoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, autoAimTrajectoryConfig);
+        autoAimController.setTolerance(new Pose2d(
+            SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
+            SwerveConstants.AA_YCONTROLLER_TOLERANCE, 
+            Rotation2d.fromRadians(SwerveConstants.AA_THETACONTROLLER_TOLERANCE))
+        );
         
         zero();
 

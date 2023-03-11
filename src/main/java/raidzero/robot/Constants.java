@@ -68,8 +68,8 @@ public class Constants {
                 // Back right
                 new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
         /** 254 Pathing Constants (smooth): */
-        public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.5;
-        public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.5;
+        public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.6;
+        public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.25;
         public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
         public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(
                 MAX_ANGULAR_VEL_RPS,
@@ -101,9 +101,9 @@ public class Constants {
         public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(5);
 
         /** AutoAim Constants */
-        public static final double AA_XCONTROLLER_KP = 1.78;
-        public static final double AA_YCONTROLLER_KP = 1.78;
-        public static final double AA_THETACONTROLLER_KP = 1.2;
+        public static final double AA_XCONTROLLER_KP = 1.6;
+        public static final double AA_YCONTROLLER_KP = 1.6;
+        public static final double AA_THETACONTROLLER_KP = 0.0;
         public static final double AA_THETACONTROLLER_KD = 0.1;
         public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;

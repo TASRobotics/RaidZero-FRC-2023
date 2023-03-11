@@ -255,8 +255,10 @@ public class AutoAimController {
      * @return output chassis speeds
      */
     private ChassisSpeeds calculate(Pose2d currPose, Trajectory.State trajState, Rotation2d desiredHeading) {
-        double xFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getCos();
-        double yFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getSin();
+        // double xFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getCos();
+        // double yFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getSin();
+        double xFF = 0.0;
+        double yFF = 0.0;
         double thetaFF =
             mThetaController.calculate(
                 currPose.getRotation().getRadians(), desiredHeading.getRadians());
