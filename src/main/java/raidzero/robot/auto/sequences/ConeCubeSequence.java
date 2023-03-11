@@ -45,11 +45,8 @@ public class ConeCubeSequence extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0],
-                                ArmConstants.INTER_GRID_HIGH[1],
-                                ArmConstants.INTER_GRID_HIGH[2],
-                                -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1],
-                                ArmConstants.GRID_HIGH[2]),
+                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
+                                ArmConstants.GRID_HIGH, true),
                         new RunIntakeAction(0.5, -1),
 
                         // Go To Cube + Scoop
@@ -59,12 +56,8 @@ public class ConeCubeSequence extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitAction(1.3),
                                         new MoveTwoPronged(
-                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[0],
-                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[1],
-                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE[2],
-                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[0],
-                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[1],
-                                                ArmConstants.REV_CUBE_FLOOR_INTAKE[2]))),
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
                                 new RunIntakeAction(2.5, -0.7))),
 
                         // Return to community
@@ -73,11 +66,8 @@ public class ConeCubeSequence extends AutoSequence {
                                 new DrivePath(mReturn),
                                 new SeriesAction(Arrays.asList(
                                         new WaitAction(1.2),
-                                        new MoveTwoPronged(-ArmConstants.INTER_CUBE_GRID_HIGH[0],
-                                                ArmConstants.INTER_CUBE_GRID_HIGH[1],
-                                                ArmConstants.INTER_CUBE_GRID_HIGH[2],
-                                                -ArmConstants.CUBE_GRID_HIGH[0], ArmConstants.CUBE_GRID_HIGH[1],
-                                                ArmConstants.CUBE_GRID_HIGH[2]))),
+                                        new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
+                                                ArmConstants.CUBE_GRID_HIGH, true))),
                                 new RunIntakeAction(2, -0.2))),
 
                         // Score Cube

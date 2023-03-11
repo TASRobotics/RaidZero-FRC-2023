@@ -14,23 +14,26 @@ public class MoveThreePronged implements Action {
     private double[] yWaypointPositions = { 0, 0, 0 };
     private double[] wristWaypointPositions = { 0, 0, 0 };
 
-    public MoveThreePronged(double inter_x, double inter_y, double inter_wrist,
-            double inter_x2, double inter_y2, double inter_wrist2,
-            double target_x, double target_y, double target_wrist) {
+    public MoveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
+        if (front) {
+            inter[0] *= -1;
+            inter2[0] *= -1;
+            target[0] *= -1;
+        }
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = inter_x2;
-        xWaypointPositions[2] = target_x;
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = inter2[0];
+        xWaypointPositions[2] = target[0];
 
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = inter_y2;
-        yWaypointPositions[2] = target_y;
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = inter2[1];
+        yWaypointPositions[2] = target[1];
 
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = inter_wrist2;
-        wristWaypointPositions[2] = target_wrist;
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = inter2[2];
+        wristWaypointPositions[2] = target[2];
     }
 
     @Override
@@ -42,9 +45,9 @@ public class MoveThreePronged implements Action {
 
     @Override
     public void start() {
-        arm.moveThreePronged(xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0],
-                xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1], xWaypointPositions[2],
-                yWaypointPositions[2], wristWaypointPositions[2]);
+        arm.moveThreePronged(new double[] { xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0] },
+                new double[] { xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1] },
+                new double[] { xWaypointPositions[2], yWaypointPositions[2], wristWaypointPositions[2] });
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' started!");
     }
 

@@ -183,18 +183,31 @@ public class Arm extends Submodule {
         SmartDashboard.putNumber("Distal Current Draw", mUpperLeader.getOutputCurrent());
 
         // Multi-pronged Movement
-        if (stage > 0) {
-            // Attempt approximate linear motion
-            // Check for Intermediate Error and Proceed to Staged Target
-            if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.25
-                    && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.25) {
-                // Stage Check: Within Range, Proceed to Following Stage
-                if (stage < xWaypointPositions.length) {
-                    moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]);
-                    System.out.println("Moving to point");
-                    stage++;
-                    stage %= xWaypointPositions.length;
-                }
+        // if (stage > 0) {
+        // // Attempt approximate linear motion
+        // // Check for Intermediate Error and Proceed to Staged Target
+        // if (Math.abs(state[1].getX() - xWaypointPositions[stage - 1]) < 0.25
+        // && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.25) {
+        // // Stage Check: Within Range, Proceed to Following Stage
+        // if (stage < xWaypointPositions.length) {
+        // moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage],
+        // wristWaypointPositions[stage]);
+        // System.out.println("Moving to point");
+        // stage++;
+        // stage %= xWaypointPositions.length;
+        // }
+        // }
+        // }
+        if (stage > 0 && stage < xWaypointPositions.length) {
+            // Check if the robot is close enough to the current waypoint
+            double xDistance = Math.abs(state[1].getX() - xWaypointPositions[stage - 1]);
+            double yDistance = Math.abs(state[1].getY() - yWaypointPositions[stage - 1]);
+            if (xDistance < 0.25 && yDistance < 0.25) {
+                // Move to the next waypoint
+                moveToPoint(new double[] {xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]});
+                System.out.println("Moving to point");
+                stage++;
+                stage %= xWaypointPositions.length;
             }
         }
 
@@ -278,8 +291,10 @@ public class Arm extends Submodule {
     private void configLowerSparkMax() {
         mLowerLeader.setIdleMode(IdleMode.kBrake);
         mLowerLeader.setInverted(ArmConstants.LOWER_MOTOR_INVERSION);
-        mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT, ArmConstants.LOWER_RPM_LIMIT);
-        mLowerFollower.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT, ArmConstants.LOWER_RPM_LIMIT);
+        mLowerLeader.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT,
+                ArmConstants.LOWER_RPM_LIMIT);
+        mLowerFollower.setSmartCurrentLimit(ArmConstants.LOWER_STALL_CURRENT_LIMIT, ArmConstants.LOWER_CURRENT_LIMIT,
+                ArmConstants.LOWER_RPM_LIMIT);
         mLowerLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mLowerForwardLimitSwitch.enableLimitSwitch(true);
         mLowerReverseLimitSwitch.enableLimitSwitch(true);
@@ -314,8 +329,10 @@ public class Arm extends Submodule {
     private void configUpperSparkMax() {
         mUpperLeader.setIdleMode(IdleMode.kBrake);
         mUpperLeader.setInverted(ArmConstants.UPPER_MOTOR_INVERSION);
-        mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT, ArmConstants.UPPER_RPM_LIMIT);
-        mUpperFollower.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT, ArmConstants.UPPER_RPM_LIMIT);
+        mUpperLeader.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT,
+                ArmConstants.UPPER_RPM_LIMIT);
+        mUpperFollower.setSmartCurrentLimit(ArmConstants.UPPER_STALL_CURRENT_LIMIT, ArmConstants.UPPER_CURRENT_LIMIT,
+                ArmConstants.UPPER_RPM_LIMIT);
         mUpperLeader.enableVoltageCompensation(Constants.VOLTAGE_COMP);
         mUpperForwardLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
         mUpperReverseLimitSwitch.enableLimitSwitch(ArmConstants.UPPER_LIMIT_ENABLED);
@@ -460,9 +477,17 @@ public class Arm extends Submodule {
      * @param target_y   Target Y Distal Position
      * @param wristAngle Target Wrist Angle
      */
-    public void moveToPoint(double target_x, double target_y, double wristAngle) {
+    public void moveToPoint(double[] target) {
         mControlState = ControlState.CLOSED_LOOP;
-        moveToAngle(invKin(target_x, target_y), wristAngle);
+        moveToAngle(invKin(target[0], target[1]), target[2]);
+
+    }
+
+    public void moveToPoint(double[] target, boolean front) {
+        mControlState = ControlState.CLOSED_LOOP;
+        if (front)
+            target[0] *= -1;
+        moveToAngle(invKin(target[0], target[1]), target[2]);
 
     }
 
@@ -513,20 +538,38 @@ public class Arm extends Submodule {
      * @param target_y     Target Y Distal Position
      * @param target_wrist Target Wrist Angle Position
      */
-    public void moveTwoPronged(double inter_x, double inter_y, double inter_wrist,
-            double target_x, double target_y, double target_wrist) {
+    public void moveTwoPronged(double[] inter, double[] target, boolean front) {
+        stage = 1;
+        onPath = true;
+        if (front) {
+            inter[0] *= -1;
+            target[0] *= -1;
+        }
+        xWaypointPositions = new double[2];
+        yWaypointPositions = new double[2];
+        wristWaypointPositions = new double[2];
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = target[0];
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = target[1];
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = target[2];
+        moveToPoint(inter);
+    }
+
+    public void moveTwoPronged(double[] inter, double[] target) {
         stage = 1;
         onPath = true;
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = target_x;
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = target_y;
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = target_wrist;
-        moveToPoint(inter_x, inter_y, inter_wrist);
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = target[0];
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = target[1];
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = target[2];
+        moveToPoint(inter);
     }
 
     /**
@@ -542,26 +585,49 @@ public class Arm extends Submodule {
      * @param target_y     Target Y Distal Position
      * @param target_wrist Target Wrist Angle Position
      */
-    public void moveThreePronged(double inter_x, double inter_y, double inter_wrist,
-            double inter_x2, double inter_y2, double inter_wrist2,
-            double target_x, double target_y, double target_wrist) {
+    public void moveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
+        stage = 1;
+        onPath = true;
+        if (front) {
+            inter[0] *= -1;
+            inter2[0] *= -1;
+            target[0] *= -1;
+        }
+        xWaypointPositions = new double[3];
+        yWaypointPositions = new double[3];
+        wristWaypointPositions = new double[3];
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = inter2[0];
+        xWaypointPositions[2] = target[0];
+
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = inter2[1];
+        yWaypointPositions[2] = target[1];
+
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = inter2[2];
+        wristWaypointPositions[2] = target[2];
+        moveToPoint(inter);
+    }
+
+    public void moveThreePronged(double[] inter, double[] inter2, double[] target) {
         stage = 1;
         onPath = true;
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = inter_x2;
-        xWaypointPositions[2] = target_x;
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = inter2[0];
+        xWaypointPositions[2] = target[0];
 
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = inter_y2;
-        yWaypointPositions[2] = target_y;
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = inter2[1];
+        yWaypointPositions[2] = target[1];
 
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = inter_wrist2;
-        wristWaypointPositions[2] = target_wrist;
-        moveToPoint(inter_x, inter_y, inter_wrist);
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = inter2[2];
+        wristWaypointPositions[2] = target[2];
+        moveToPoint(inter);
     }
 
     /**
@@ -570,8 +636,8 @@ public class Arm extends Submodule {
     public void reverseStage() {
         if (stage == 0 || stage == 1) {
             stage = xWaypointPositions.length - 1;
-            moveToPoint(xWaypointPositions[stage - 1], yWaypointPositions[stage - 1],
-                    wristWaypointPositions[stage - 1]);
+            moveToPoint(new double[] { xWaypointPositions[stage - 1], yWaypointPositions[stage - 1],
+                    wristWaypointPositions[stage - 1] });
         }
     }
 
@@ -626,11 +692,12 @@ public class Arm extends Submodule {
 
         goingHome = true;
         if (state[1].getY() < 0.15) {
-            moveTwoPronged(state[1].getX(), 0.5, 0, 0, 0.15, 0);
+            moveTwoPronged(new double[] { state[1].getX(), 0.5, 0 }, new double[] { 0, 0.15, 0 });
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
-            moveThreePronged(0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0,
-                    0.15 * Math.signum(state[1].getX()), 0.5, 0, 0.0, 0.15, 0);
+            moveThreePronged(new double[] { 0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0 },
+                    new double[] {0.15 * Math.signum(state[1].getX()), 0.5, 0 },
+                    new double[] { 0.0, 0.15, 0 });
         } else if (stage == 0) {
             moveToAngle(new double[] { 90, -180 }, 0);
         }
