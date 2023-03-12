@@ -24,9 +24,9 @@ public class AutoRunner {
             new EmptySequence(),
             new SafetySequence(),
             new SingleConeClimbSequence(),
-            new TwoConeClimbSequence(),
             new ConeCubeClimbSequence(),
-            new ConeCubeSequence()
+            new ConeCubeSequence(),
+            new LinkSequence()
     };
 
     public AutoRunner() {

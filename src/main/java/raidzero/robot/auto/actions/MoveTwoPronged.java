@@ -14,17 +14,20 @@ public class MoveTwoPronged implements Action {
     private double[] yWaypointPositions = { 0, 0, 0 };
     private double[] wristWaypointPositions = { 0, 0, 0 };
 
-    public MoveTwoPronged(double inter_x, double inter_y, double inter_wrist,
-            double target_x, double target_y, double target_wrist) {
+    public MoveTwoPronged(double[] inter, double[] target, boolean front) {
+        if (front) {
+            inter[0] *= -1;
+            target[0] *= -1;
+        }
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = inter_x;
-        xWaypointPositions[1] = target_x;
-        yWaypointPositions[0] = inter_y;
-        yWaypointPositions[1] = target_y;
-        wristWaypointPositions[0] = inter_wrist;
-        wristWaypointPositions[1] = target_wrist;
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = target[0];
+        yWaypointPositions[0] = inter[1];
+        yWaypointPositions[1] = target[1];
+        wristWaypointPositions[0] = inter[2];
+        wristWaypointPositions[1] = target[2];
     }
 
     @Override
@@ -36,8 +39,8 @@ public class MoveTwoPronged implements Action {
 
     @Override
     public void start() {
-        arm.moveTwoPronged(xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0],
-                xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1]);
+        arm.moveTwoPronged(new double[] {xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0]},
+                new double[] {xWaypointPositions[1], yWaypointPositions[1], wristWaypointPositions[1]});
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' started!");
     }
 

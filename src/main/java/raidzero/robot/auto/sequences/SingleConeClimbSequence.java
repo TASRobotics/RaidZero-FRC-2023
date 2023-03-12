@@ -36,9 +36,8 @@ public class SingleConeClimbSequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.2, 0.5),
-                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1],
-                                ArmConstants.INTER_GRID_HIGH[2], -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1],
-                                ArmConstants.GRID_HIGH[2]),
+                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
+                                ArmConstants.GRID_HIGH, true),
                         new RunIntakeAction(1, -1),
                         new ArmHomeAction(),
                         new DrivePath(mOverRamp),

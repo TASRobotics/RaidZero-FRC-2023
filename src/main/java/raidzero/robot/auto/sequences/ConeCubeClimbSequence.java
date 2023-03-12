@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
+import raidzero.robot.auto.actions.AsyncArmHomeAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveThreePronged;
@@ -17,6 +18,7 @@ import raidzero.robot.auto.actions.MoveTwoPronged;
 import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
+import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.submodules.Swerve;
 
 public class ConeCubeClimbSequence extends AutoSequence {
@@ -43,42 +45,40 @@ public class ConeCubeClimbSequence extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1],
-                                ArmConstants.INTER_GRID_HIGH[2],
-                                -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], ArmConstants.GRID_HIGH[2]),
+                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
+                                ArmConstants.GRID_HIGH, true),
+                        new RunIntakeAction(0.5, -1),
 
-                        // Go To Cube
+                        // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
-                                new DrivePath(mOut))),
+                                new AsyncArmHomeAction(),
+                                new DrivePath(mOut),
+                                new SeriesAction(Arrays.asList(
+                                        new WaitAction(1.3),
+                                        new MoveTwoPronged(
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
+                                new RunIntakeAction(2.5, -0.7))),
 
-                        // Scoop Cube
+                        // Return to community
                         new ParallelAction(Arrays.asList(
-                                new MoveThreePronged(
-                                        ArmConstants.INTER_FLOOR_INTAKE[0],
-                                        ArmConstants.INTER_FLOOR_INTAKE[1],
-                                        ArmConstants.INTER_FLOOR_INTAKE[2],
-                                        ArmConstants.INTER2_FLOOR_INTAKE[0],
-                                        ArmConstants.INTER2_FLOOR_INTAKE[1],
-                                        ArmConstants.INTER2_FLOOR_INTAKE[2],
-                                        ArmConstants.FLOOR_INTAKE[0],
-                                        ArmConstants.FLOOR_INTAKE[1],
-                                        ArmConstants.FLOOR_INTAKE[2]),
-                                new RunIntakeAction(3, -0.7))),
-                        new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
-                                new RunIntakeAction(3, -0.7))),
-                        new DrivePath(mReturn),
+                                new AsyncArmHomeAction(),
+                                new DrivePath(mReturn),
+                                new SeriesAction(Arrays.asList(
+                                        new WaitAction(1.2),
+                                        new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
+                                                ArmConstants.CUBE_GRID_HIGH, true))),
+                                new RunIntakeAction(2, -0.2))),
 
                         // Score Cube
-                        new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], ArmConstants.INTER_GRID_HIGH[2],
-                                -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], ArmConstants.GRID_HIGH[2]),
-                        new RunIntakeAction(0.5, 1),
+                        new RunIntakeAction(0.3, 0.5),
 
-                        // Balance
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
-                                new DrivePath(mBalance))))));
+                                new DrivePath(mBalance))),
+                        new LambdaAction(() -> mSwerve.rotorBrake(true))
+
+                )));
     }
 
     @Override

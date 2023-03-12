@@ -84,6 +84,7 @@ public class Swerve extends Submodule {
     private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
     private Alliance alliance;
+    private double beans;
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController;
@@ -199,6 +200,8 @@ public class Swerve extends Submodule {
         // if(vision.getRobotPose() != null) {
         // setPose(vision.getRobotPose());
         // }
+        beans = deadband(pigeon.getPitch()) * getPose().getX();
+        SmartDashboard.putNumber("beans", beans);
     }
 
     /**
@@ -255,6 +258,13 @@ public class Swerve extends Submodule {
                 bottomLeftModule.getModulePosition(),
                 bottomRightModule.getModulePosition()
         };
+    }
+
+    public static double deadband(double input) {
+        if (Math.abs(input) < 0.7) {
+            return 0.0;
+        }
+        return input;
     }
 
     /**
