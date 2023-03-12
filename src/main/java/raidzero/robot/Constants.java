@@ -427,7 +427,7 @@ public class Constants {
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;
-        public static final double KP = 0.00005;
+        public static final double KP = 0.1; // 0.00005
         public static final double KI = 0.0;
         public static final double KD = 0.0;
 
@@ -437,8 +437,6 @@ public class Constants {
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;
-        public static final double PID_WRAPPING_MIN = 0.0;
-        public static final double PID_WRAPPING_MAX = 360.0;
     }
 
     public static final class TOFSensorConstants {
