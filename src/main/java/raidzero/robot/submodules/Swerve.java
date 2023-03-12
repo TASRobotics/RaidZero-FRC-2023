@@ -14,6 +14,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -217,7 +218,7 @@ public class Swerve extends Submodule {
             zeroHeading(180);
         else if (alliance == Alliance.Red)
             zeroHeading(0);
-        setPose(new Pose2d());
+        setPose(new Pose2d(new Translation2d(),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
