@@ -177,7 +177,7 @@ public class Arm extends Submodule {
         // state[0].getRotation().getDegrees());
         // SmartDashboard.putNumber("Resets", dResets);
 
-        SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
+        SmartDashboard.putNumber("Wrist Relative Angle", calculateWristRelativeAngle(wrist.getAngle().getDegrees()));
 
         SmartDashboard.putNumber("Proximal Current Draw", mLowerLeader.getOutputCurrent());
         SmartDashboard.putNumber("Distal Current Draw", mUpperLeader.getOutputCurrent());
@@ -485,10 +485,10 @@ public class Arm extends Submodule {
 
     public void moveToPoint(double[] target, boolean front) {
         mControlState = ControlState.CLOSED_LOOP;
+        double reverse = 1;
         if (front)
-            target[0] *= -1;
-        moveToAngle(invKin(target[0], target[1]), target[2]);
-
+            reverse = -1;
+        moveToAngle(invKin(reverse*target[0], target[1]), target[2]);
     }
 
     // TODO: Add Kalman Filter to sanity check here:
@@ -541,15 +541,14 @@ public class Arm extends Submodule {
     public void moveTwoPronged(double[] inter, double[] target, boolean front) {
         stage = 1;
         onPath = true;
-        if (front) {
-            inter[0] *= -1;
-            target[0] *= -1;
-        }
+        double reverse = 1;
+        if (front)
+            reverse = -1;
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = inter[0];
-        xWaypointPositions[1] = target[0];
+        xWaypointPositions[0] = reverse*inter[0];
+        xWaypointPositions[1] = reverse*target[0];
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = target[1];
         wristWaypointPositions[0] = inter[2];
@@ -588,17 +587,15 @@ public class Arm extends Submodule {
     public void moveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
         stage = 1;
         onPath = true;
-        if (front) {
-            inter[0] *= -1;
-            inter2[0] *= -1;
-            target[0] *= -1;
-        }
+        double reverse = 1;
+        if (front)
+            reverse = -1;
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = inter[0];
-        xWaypointPositions[1] = inter2[0];
-        xWaypointPositions[2] = target[0];
+        xWaypointPositions[0] = reverse*inter[0];
+        xWaypointPositions[1] = reverse*inter2[0];
+        xWaypointPositions[2] = reverse*target[0];
 
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = inter2[1];

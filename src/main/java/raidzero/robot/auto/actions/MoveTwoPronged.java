@@ -15,15 +15,14 @@ public class MoveTwoPronged implements Action {
     private double[] wristWaypointPositions = { 0, 0, 0 };
 
     public MoveTwoPronged(double[] inter, double[] target, boolean front) {
-        if (front) {
-            inter[0] *= -1;
-            target[0] *= -1;
-        }
+        double reverse = 1;
+        if (front)
+            reverse = -1;
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = inter[0];
-        xWaypointPositions[1] = target[0];
+        xWaypointPositions[0] = reverse*inter[0];
+        xWaypointPositions[1] = reverse*target[0];
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = target[1];
         wristWaypointPositions[0] = inter[2];

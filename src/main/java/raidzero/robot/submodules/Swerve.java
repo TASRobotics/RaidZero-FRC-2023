@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,7 +35,7 @@ import raidzero.robot.dashboard.Tab;
 public class Swerve extends Submodule {
 
     private enum ControlState {
-        OPEN_LOOP, PATHING, AUTO_AIM
+        OPEN_LOOP, PATHING, AUTO_AIM, AUTO_BALANCE
     };
 
     // Auto-aim target Locations
@@ -88,10 +90,11 @@ public class Swerve extends Submodule {
     private Timer timer = new Timer();
     private Alliance alliance;
     private double beans;
+    private double prevX;
 
     private Pose2d desiredAutoAimPose;
-    private PIDController autoAimXController, autoAimYController, autoAimThetaController;
-
+    private PIDController autoAimXController, autoAimYController, autoAimThetaController;;
+    
     private ControlState controlState = ControlState.OPEN_LOOP;
 
     public void onStart(double timestamp) {
@@ -154,6 +157,7 @@ public class Swerve extends Submodule {
         zero();
 
         prevPose = new Pose2d();
+        prevX = 0;
 
         PathPlannerServer.startServer(5811);
     }
@@ -187,7 +191,11 @@ public class Swerve extends Submodule {
         // if(vision.getRobotPose() != null) {
         // setPose(vision.getRobotPose());
         // }
-        beans = deadband(pigeon.getPitch()) * getPose().getX();
+        double disp = odometry.getEstimatedPosition().getX() - prevX;
+        SmartDashboard.putNumber("disp", disp);
+        prevX = odometry.getEstimatedPosition().getX();
+        SmartDashboard.putNumber("prevX", prevX);
+        beans += deadband(pigeon.getPitch()) * disp;
         SmartDashboard.putNumber("beans", beans);
     }
 
@@ -248,6 +256,18 @@ public class Swerve extends Submodule {
             return 0.0;
         }
         return input;
+    }
+
+    public double getBeans() {
+        return beans;
+    }
+
+    public void emptyBucket() {
+        beans = 0;
+    }
+
+    public double getPitch() {
+        return pigeon.getPitch();
     }
 
     /**
@@ -329,8 +349,9 @@ public class Swerve extends Submodule {
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
-        // if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
-        //     ignoreAngle = true;
+        // if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 &&
+        // Math.abs(angularSpeed) < 0.1) {
+        // ignoreAngle = true;
         // }
         var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
