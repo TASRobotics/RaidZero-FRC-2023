@@ -104,22 +104,20 @@ public class Teleop {
                         true);
         }
 
-        if (p.getLeftBumper()) {
+        if (p.getLeftBumperPressed() && !p.getRightBumper()) {
             fIntake = true;
             arm.moveToPoint(
                     ArmConstants.CUBE_DUMP, true);
         }
-        if (p.getRightBumper()) {
+        if (p.getRightBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
             fIntake = true;
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                     ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-
-            // Intake
-        } else if (arm.isSafe())
+            intake.setPercentSpeed(-0.7);
+        } else if (arm.isSafe()) {
             fIntake = false;
-        else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()){
-            fIntake = false;
+        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper() && !p.getLeftBumperPressed()) {
             arm.goHome();
         }
 
@@ -251,7 +249,7 @@ public class Teleop {
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Safe Human Pickup
             // arm.configSmartMotionConstraints(
@@ -260,10 +258,10 @@ public class Teleop {
             // ArmConstants.UPPER_MAX_VEL * 0.75,
             // ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-            arm.moveThreePronged(
-                    ArmConstants.INTER_HUMAN_PICKUP_STATION,
-                    ArmConstants.INTER2_HUMAN_PICKUP_STATION,
-                    ArmConstants.HUMAN_PICKUP_STATION, true);
+            // arm.moveThreePronged(
+            // ArmConstants.INTER_HUMAN_PICKUP_STATION,
+            // ArmConstants.INTER2_HUMAN_PICKUP_STATION,
+            // ArmConstants.HUMAN_PICKUP_STATION, true);
 
             // Extended Human Pickup
             arm.moveTwoPronged(
@@ -273,13 +271,13 @@ public class Teleop {
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cone
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_HIGH,
                     ArmConstants.GRID_HIGH,
-                    false);
+                    true);
 
             // Cube
             // arm.moveTwoPronged(
@@ -289,7 +287,7 @@ public class Teleop {
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_MEDIUM,
@@ -297,7 +295,7 @@ public class Teleop {
         }
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cube Scoop
             // arm.moveThreePronged(
@@ -320,7 +318,7 @@ public class Teleop {
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.reverseStage();
         }
@@ -334,7 +332,7 @@ public class Teleop {
             intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
             intake.setPercentSpeed(-0.7);
-        } else {
+        } else if (!p1.getLeftBumper() && !p1.getRightBumper() && !p.getRawButton(12) && !p.getRawButton(11)) {
             intake.holdPosition();
         }
 
