@@ -172,8 +172,8 @@ public class Constants {
 
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
-        public static final double DISTANCEERRORFACTOR = 0.5;
-        public static final double ANGLEERRORFACTOR = 10;
+        public static final double DISTANCEERRORFACTOR = 0.1;
+        public static final double ANGLEERRORFACTOR = 1;
         // public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new
         // Rotation2d(.5))};
         // public final Pose2d[] APRILTAG_POSE2DS =
