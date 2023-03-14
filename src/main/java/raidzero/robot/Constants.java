@@ -250,6 +250,9 @@ public class Constants {
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
         public static final double[] GRID_HIGH = { 1.28, 1.28, 155 };
 
+        public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
+        public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
+
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
 
@@ -264,7 +267,7 @@ public class Constants {
         public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.06, -125 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.07, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
         public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };

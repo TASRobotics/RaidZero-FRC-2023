@@ -9,10 +9,10 @@ public class AutoBalanceAction implements Action {
     private static final Swerve mSwerve = Swerve.getInstance();
     private Timer timer = new Timer();
 
-    private double mDuration, mSpeed;
+    private double mDuration, mSpeed, reverse;
 
-    public AutoBalanceAction() {
-
+    public AutoBalanceAction(boolean opp) {
+        reverse = opp ? -1: 1;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class AutoBalanceAction implements Action {
     @Override
     public void start() {
         mSwerve.emptyBucket();
-        mSwerve.drive(0.2, 0, 0, true);
+        mSwerve.drive(reverse*0.2, 0, 0, true);
         System.out.println("[Auto] Action '" + getClass().getSimpleName() + "' started!");
     }
 

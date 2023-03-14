@@ -276,8 +276,13 @@ public class Teleop {
             // Cone
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_HIGH,
-                    ArmConstants.GRID_HIGH,
-                    true);
+                    ArmConstants.GRID_HIGH, true);
+
+            // Rev Cone
+            // arm.moveTwoPronged(
+            // ArmConstants.INTER_REV_GRID_HIGH,
+            // ArmConstants.REV_GRID_HIGH,
+            // false);
 
             // Cube
             // arm.moveTwoPronged(
