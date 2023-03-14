@@ -188,7 +188,7 @@ public class Vision extends Submodule {
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
         // System.out.println(cameraNum);
         if (aprilTagIDs.length != 0)
-            updatePose(VisionConstants.CAMERALOCATIONS[cameraNum],
+            updatePose((new Pose2d()).plus(VisionConstants.CAMERATRANSFORMS[cameraNum]),
                 VisionConstants.CAMERAANGLES[cameraNum],
                 cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
     }
@@ -290,7 +290,8 @@ public class Vision extends Submodule {
             // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
 
                 SmartDashboard.putNumber("Transform Angle", globalToAprilTag.getRotation().getDegrees());
-                Transform2d aprilToRobot = new Transform2d(cameraPose.plus(aprilTagTransform).getTranslation(),cameraPose.plus(aprilTagTransform).getRotation());
+                Transform2d aprilToRobot = new Transform2d(new Pose2d(), cameraPose.plus(aprilTagTransform));
+                // Transform2d aprilToRobot = new Transform2d(cameraPose.plus(aprilTagTransform).getTranslation(),cameraPose.plus(aprilTagTransform).getRotation());
                 newRobotPose = globalToAprilTag.plus(aprilToRobot);
                 Rotation2d measuredYaw = aprilTagGlobalPoses[aTagID].getRotation().plus(new Rotation2d(Math.toRadians(yawRotationNT[aTagID])).minus(cameraAngle));
 
