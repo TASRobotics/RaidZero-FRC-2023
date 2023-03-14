@@ -14,8 +14,7 @@ import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
 
 public class Intake extends Submodule {
-    private Intake() {
-    }
+    private Intake() {}
 
     private static Intake instance = null;
 
@@ -48,8 +47,7 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {
-    }
+    public void onStart(double timestamp) {}
 
     @Override
     public void update(double timestamp) {
@@ -67,7 +65,7 @@ public class Intake extends Submodule {
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
                     mDesiredPosition,
-                    ControlType.kSmartMotion,
+                    ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
     }

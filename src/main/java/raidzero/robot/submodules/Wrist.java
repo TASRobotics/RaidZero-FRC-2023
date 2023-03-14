@@ -205,4 +205,9 @@ public class Wrist extends Submodule {
         return table.getDoubleArrayTopic(key);
     }
 
+    public void configSmartMotionConstraints(double wristMaxVel, double wristMaxAccel) {
+        mPIDController.setSmartMotionMaxVelocity(wristMaxVel, WristConstants.SMART_MOTION_SLOT);
+        mPIDController.setSmartMotionMaxAccel(wristMaxAccel, WristConstants.SMART_MOTION_SLOT);
+    }
+
 }

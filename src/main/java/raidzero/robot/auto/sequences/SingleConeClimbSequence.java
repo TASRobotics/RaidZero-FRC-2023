@@ -22,7 +22,8 @@ public class SingleConeClimbSequence extends AutoSequence {
 
     private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("SCC Balance", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("SCC Balance",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
     public SingleConeClimbSequence() {
@@ -33,18 +34,20 @@ public class SingleConeClimbSequence extends AutoSequence {
     @Override
     public void sequence() {
         addAction(
-            new SeriesAction(Arrays.asList(
-                new RunIntakeAction(0.2, 0.5),
-                new MoveTwoPronged(-ArmConstants.INTER_GRID_HIGH[0], ArmConstants.INTER_GRID_HIGH[1], 70, -ArmConstants.GRID_HIGH[0], ArmConstants.GRID_HIGH[1], 155),
-                new RunIntakeAction(1, -1),
-                new ArmHomeAction(),
-                new DrivePath(mOverRamp),
-                new DrivePath(mBalance), 
-                new LambdaAction(() -> mSwerve.rotorBrake(true)))));
+                new SeriesAction(Arrays.asList(
+                        new RunIntakeAction(0.2, 0.5),
+                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
+                                ArmConstants.GRID_HIGH, true),
+                        new RunIntakeAction(1, -1),
+                        new ArmHomeAction(),
+                        new DrivePath(mOverRamp),
+                        new DrivePath(mBalance),
+                        new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }
 
     @Override
-    public void onEnded() {}
+    public void onEnded() {
+    }
 
     @Override
     public String getName() {

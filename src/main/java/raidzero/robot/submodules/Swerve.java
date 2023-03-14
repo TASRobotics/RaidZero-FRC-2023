@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,27 +22,23 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.SwerveConstants;
-import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.dashboard.Tab;
+import raidzero.robot.utils.AutoAimController;
+import raidzero.robot.utils.AutoAimController.AutoAimLocation;
 
 public class Swerve extends Submodule {
 
     private enum ControlState {
         OPEN_LOOP, PATHING, AUTO_AIM
-    };
-
-    // Auto-aim target Locations
-    public enum AutoAimLocation {
-        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
-        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
-        BR_LOAD, BL_LOAD, RR_LOAD, RL_LOAD
     };
 
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
@@ -88,9 +85,13 @@ public class Swerve extends Submodule {
     private PIDController xController, yController, thetaController;
     private Timer timer = new Timer();
     private Alliance alliance;
+    private double beans;
 
     private Pose2d desiredAutoAimPose;
-    private PIDController autoAimXController, autoAimYController, autoAimThetaController;
+    private PIDController autoAimXController, autoAimYController;
+    private ProfiledPIDController autoAimThetaController;
+    private TrajectoryConfig autoAimTrajectoryConfig;
+    private AutoAimController autoAimController;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
@@ -99,6 +100,9 @@ public class Swerve extends Submodule {
         alliance = DriverStation.getAlliance();
         zero();
         firstPath = true;
+
+        // TEMPORARY
+        setPose(new Pose2d(4,1.2,Rotation2d.fromDegrees(180)));
     }
 
     public void onInit() {
@@ -144,13 +148,16 @@ public class Swerve extends Submodule {
 
         autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0, 0);
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
-        autoAimThetaController = new PIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0,
-                SwerveConstants.THETACONTROLLER_KD);
-        autoAimXController.setTolerance(SwerveConstants.AA_XCONTROLLER_TOLERANCE);
-        autoAimYController.setTolerance(SwerveConstants.AA_YCONTROLLER_TOLERANCE);
-        autoAimThetaController.setTolerance(SwerveConstants.AA_THETACONTROLLER_TOLERANCE);
-        autoAimThetaController.enableContinuousInput(-Math.PI, Math.PI);
-
+        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0, 0, 
+            new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
+        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS * 1, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1);
+        autoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, autoAimTrajectoryConfig);
+        autoAimController.setTolerance(new Pose2d(
+            SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
+            SwerveConstants.AA_YCONTROLLER_TOLERANCE, 
+            Rotation2d.fromRadians(SwerveConstants.AA_THETACONTROLLER_TOLERANCE))
+        );
+        
         zero();
 
         prevPose = new Pose2d();
@@ -158,22 +165,30 @@ public class Swerve extends Submodule {
         PathPlannerServer.startServer(5811);
     }
 
+    String control_state = "nada";
     @Override
     public void update(double timestamp) {
         if (controlState == ControlState.PATHING) {
+            control_state = "pathing";
             updatePathing();
         }
-        // else if (controlState == ControlState.AUTO_AIM) {
-        // updateAutoAim();
-        // }
+        else if (controlState == ControlState.AUTO_AIM) {
+            control_state = "auto aim";
+            autoAimController.update();
+        } 
+        else {
+            control_state = "open loop";
+        }
+        SmartDashboard.putString("control mode", control_state);
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
         bottomRightModule.update(timestamp);
 
         prevPose = currentPose;
-        currentPose = updateOdometry(timestamp);
-        fieldPose.setRobotPose(currentPose);
+
+        currentPose = updateOdometry();
+        // fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -187,6 +202,8 @@ public class Swerve extends Submodule {
         // if(vision.getRobotPose() != null) {
         // setPose(vision.getRobotPose());
         // }
+        beans = deadband(pigeon.getPitch()) * getPose().getX();
+        SmartDashboard.putNumber("beans", beans);
     }
 
     /**
@@ -232,6 +249,10 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
+    public Field2d getField() {
+        return fieldPose;
+    }
+
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
                 topLeftModule.getModulePosition(),
@@ -241,13 +262,20 @@ public class Swerve extends Submodule {
         };
     }
 
+    public static double deadband(double input) {
+        if (Math.abs(input) < 0.7) {
+            return 0.0;
+        }
+        return input;
+    }
+
     /**
      * Checks the Speed of the throttle and updates the overlimit boolean
      */
     public void checkThrottleSpeed() {
-        if (topLeftModule.getThrottlePercentSpeed() > 0.3 || topRightModule.getThrottlePercentSpeed() > 0.3
-                || bottomLeftModule.getThrottlePercentSpeed() > 0.3
-                || bottomRightModule.getThrottlePercentSpeed() > 0.3)
+        if (topLeftModule.getThrottlePercentSpeed() > 0.5 || topRightModule.getThrottlePercentSpeed() > 0.3
+                || bottomLeftModule.getThrottlePercentSpeed() > 0.5
+                || bottomRightModule.getThrottlePercentSpeed() > 0.5)
             overLimit = true;
         else
             overLimit = false;
@@ -280,8 +308,8 @@ public class Swerve extends Submodule {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-            visionMeasurementStdDevs);
+            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
+            // visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             // pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
@@ -319,11 +347,11 @@ public class Swerve extends Submodule {
      * @param fieldOriented
      */
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
+        if(controlState == ControlState.AUTO_AIM) {
+            return;
+        }
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
-        if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
-            ignoreAngle = true;
-        }
         var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -410,158 +438,36 @@ public class Swerve extends Submodule {
         return false;
     }
 
-    private AutoAimLocation prevAutoAimLocation;
-
-    /**
-     * Auto aim robot to desired location
-     * 
-     * @param location auto aim location
-     */
-    public void autoAim(AutoAimLocation location) {
-        // if(vision.getRobotPose() == null) {
-        // return;
-        // }
-        controlState = ControlState.AUTO_AIM;
-        if (prevAutoAimLocation != location) {
-            if (vision.getRobotPose() != null) {
-                setPose(new Pose2d(vision.getRobotPose().getX(), vision.getRobotPose().getY(),
-                        Rotation2d.fromDegrees(pigeon.getAngle())));
-                prevAutoAimLocation = location;
-            } else {
-                return;
-            }
-        }
-        switch (location) {
-            /**
-             * Blue Alliance
-             */
-            case BLL:
-                desiredAutoAimPose = VisionConstants.BLL;
-                System.out.println("bll");
-                break;
-            case BLM:
-                desiredAutoAimPose = VisionConstants.BLM;
-                System.out.println("blm");
-                break;
-            case BLR:
-                desiredAutoAimPose = VisionConstants.BLR;
-                System.out.println("blr");
-                break;
-
-            case BML:
-                desiredAutoAimPose = VisionConstants.BML;
-                System.out.println("bml");
-                break;
-            case BMM:
-                desiredAutoAimPose = VisionConstants.BMM;
-                System.out.println("bmm");
-                break;
-            case BMR:
-                desiredAutoAimPose = VisionConstants.BMR;
-                System.out.println("bmr");
-                break;
-
-            case BRL:
-                desiredAutoAimPose = VisionConstants.BRL;
-                System.out.println("brl");
-                break;
-            case BRM:
-                desiredAutoAimPose = VisionConstants.BRM;
-                System.out.println("brm");
-                break;
-            case BRR:
-                desiredAutoAimPose = VisionConstants.BRR;
-                System.out.println("brr");
-                break;
-
-            /**
-             * Red Alliance
-             */
-            case RLL:
-                desiredAutoAimPose = VisionConstants.RLL;
-                System.out.println("rll");
-                break;
-            case RLM:
-                desiredAutoAimPose = VisionConstants.RLM;
-                System.out.println("rlm");
-                break;
-            case RLR:
-                desiredAutoAimPose = VisionConstants.RLR;
-                System.out.println("rlr");
-                break;
-
-            case RML:
-                desiredAutoAimPose = VisionConstants.RML;
-                System.out.println("rml");
-                break;
-            case RMM:
-                desiredAutoAimPose = VisionConstants.RMM;
-                System.out.println("rmm");
-                break;
-            case RMR:
-                desiredAutoAimPose = VisionConstants.RMR;
-                System.out.println("rmr");
-                break;
-
-            case RRL:
-                desiredAutoAimPose = VisionConstants.RRL;
-                System.out.println("rrl");
-                break;
-            case RRM:
-                desiredAutoAimPose = VisionConstants.RRM;
-                System.out.println("rrm");
-                break;
-            case RRR:
-                desiredAutoAimPose = VisionConstants.RRR;
-                System.out.println("rrr");
-                break;
-
-            case BR_LOAD:
-                desiredAutoAimPose = VisionConstants.BR_LOAD;
-                System.out.println("brload");
-                break;
-            case BL_LOAD:
-                desiredAutoAimPose = VisionConstants.BL_LOAD;
-                System.out.println("blload");
-                break;
-            case RR_LOAD:
-                desiredAutoAimPose = VisionConstants.RR_LOAD;
-                System.out.println("rrload");
-                break;
-            case RL_LOAD:
-                desiredAutoAimPose = VisionConstants.RL_LOAD;
-                System.out.println("rlload");
-                break;
-            default:
-                break;
-        }
-
-        if (desiredAutoAimPose != null) {
-            desiredAutoAimPose.transformBy(vision.getConeTransform());
-        }
-
-        updateAutoAim();
-    }
-
-    /**
-     * Update Auto Aim
-     */
-    public void updateAutoAim() {
-        double xSpeed = autoAimXController.calculate(getPose().getX(), desiredAutoAimPose.getX());
-        double ySpeed = autoAimYController.calculate(getPose().getY(), desiredAutoAimPose.getY());
-        double thetaSpeed = autoAimThetaController.calculate(getPose().getRotation().getRadians(),
-                desiredAutoAimPose.getRotation().getRadians());
-        ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                xSpeed,
-                ySpeed,
-                thetaSpeed,
-                getPose().getRotation());
-        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(desiredSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 0.65);
+    public void setOpenLoopSpeeds(ChassisSpeeds speeds) {
+        SwerveModuleState[] desiredState = SwerveConstants.KINEMATICS.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredState, 1);
         topLeftModule.setTargetState(desiredState[0], false, true, true);
         topRightModule.setTargetState(desiredState[1], false, true, true);
         bottomLeftModule.setTargetState(desiredState[2], false, true, true);
         bottomRightModule.setTargetState(desiredState[3], false, true, true);
+    }
+
+    public ChassisSpeeds getOpenLoopSpeeds() {
+        return SwerveConstants.KINEMATICS.toChassisSpeeds(
+            new SwerveModuleState(topLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topLeftModule.getRotorAngle())), 
+            new SwerveModuleState(topRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topRightModule.getRotorAngle())),
+            new SwerveModuleState(bottomLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomLeftModule.getRotorAngle())),
+            new SwerveModuleState(bottomRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomRightModule.getRotorAngle()))
+        );
+    }
+
+    public void setAutoAimLocation(AutoAimLocation location) {
+        // controlState = ControlState.AUTO_AIM;
+        autoAimController.setTarget(getPose(), location);
+    }
+
+    public void enableAutoAimController(boolean isEnabled) {
+        if(isEnabled) {
+            controlState = ControlState.AUTO_AIM;
+            autoAimController.enable(isEnabled);
+        } else {
+            controlState = ControlState.OPEN_LOOP;
+        }
     }
 
     /**
@@ -595,6 +501,11 @@ public class Swerve extends Submodule {
         bottomLeftModule.setRotorRampRate(val);
     }
 
+    /**
+     * Set rotors in "brake" position
+     * 
+     * @param enable enable
+     */
     public void rotorBrake(boolean enable) {
         if (enable) {
             topRightModule.setRotorAngle(-45);
