@@ -164,15 +164,16 @@ public class Constants {
         // private static final double CAMERAZDISPLACEMENT = 0.56198;
         public static final Rotation2d[] CAMERAANGLES = { new Rotation2d(0), new Rotation2d(Math.PI) };
 
-        private static final Pose2d[] CAMERALOCATIONS = {
-                new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, new Rotation2d()),
-                new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, new Rotation2d()) };
+        public static final Pose2d[] CAMERALOCATIONS = {
+                new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
+                new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1]) };
         public static final Transform2d[] CAMERATRANSFORMS = { new Transform2d(CAMERALOCATIONS[0], new Pose2d()),
                 new Transform2d(CAMERALOCATIONS[1], new Pose2d()) };
 
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
-        public static final double DISTANCEERRORFACTOR = 0.1;
+        public static final double DISTANCEERRORFACTOR = 0.5;
+        public static final double ANGLEERRORFACTOR = 10;
         // public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new
         // Rotation2d(.5))};
         // public final Pose2d[] APRILTAG_POSE2DS =

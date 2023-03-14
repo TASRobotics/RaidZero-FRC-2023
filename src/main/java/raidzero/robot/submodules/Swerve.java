@@ -172,7 +172,7 @@ public class Swerve extends Submodule {
         bottomRightModule.update(timestamp);
 
         prevPose = currentPose;
-        currentPose = updateOdometry();
+        currentPose = updateOdometry(timestamp);
         fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
@@ -218,7 +218,7 @@ public class Swerve extends Submodule {
             zeroHeading(180);
         else if (alliance == Alliance.Red)
             zeroHeading(0);
-        setPose(new Pose2d(new Translation2d(),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+        setPose(new Pose2d(new Translation2d(1.76,1.477),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
@@ -295,13 +295,14 @@ public class Swerve extends Submodule {
 
     /**
      * Updates odometry
+     * @param timestamp
      * 
      * @return current position
      */
-    private Pose2d updateOdometry() {
+    private Pose2d updateOdometry(double timestamp) {
         try {
-            return odometry.update(
-                    Rotation2d.fromDegrees(pigeon.getAngle()),
+            return odometry.updateWithTime(timestamp,
+                    Rotation2d.fromDegrees( pigeon.getAngle()),
                     getModulePositions());
         } catch (Exception e) {
             System.out.println(e);
