@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -185,6 +186,7 @@ public class Swerve extends Submodule {
         bottomRightModule.update(timestamp);
 
         prevPose = currentPose;
+
         currentPose = updateOdometry();
         // fieldPose.setRobotPose(currentPose);
 
@@ -233,7 +235,7 @@ public class Swerve extends Submodule {
             zeroHeading(180);
         else if (alliance == Alliance.Red)
             zeroHeading(0);
-        setPose(new Pose2d());
+        setPose(new Pose2d(new Translation2d(1.76,1.477),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
@@ -321,13 +323,14 @@ public class Swerve extends Submodule {
 
     /**
      * Updates odometry
+     * @param timestamp
      * 
      * @return current position
      */
-    private Pose2d updateOdometry() {
+    private Pose2d updateOdometry(double timestamp) {
         try {
-            return odometry.update(
-                    Rotation2d.fromDegrees(pigeon.getAngle()),
+            return odometry.updateWithTime(timestamp,
+                    Rotation2d.fromDegrees( pigeon.getAngle()),
                     getModulePositions());
         } catch (Exception e) {
             System.out.println(e);
