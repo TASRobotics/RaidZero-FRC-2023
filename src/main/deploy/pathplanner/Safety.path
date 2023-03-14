@@ -3,14 +3,14 @@
     {
       "anchorPoint": {
         "x": 2.0,
-        "y": 2.0
+        "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.000000000000001,
-        "y": 2.0
+        "x": 2.574383148081703,
+        "y": 0.7
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -24,15 +24,15 @@
     },
     {
       "anchorPoint": {
-        "x": 8.0,
-        "y": 2.0
+        "x": 7.0,
+        "y": 0.7
       },
       "prevControl": {
-        "x": 7.44386194071786,
-        "y": 2.0
+        "x": 5.6019017793454315,
+        "y": 0.7
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -45,22 +45,5 @@
       }
     }
   ],
-  "maxVelocity": 2.5,
-  "maxAcceleration": 3.70375,
-  "isReversed": null,
-  "markers": [
-    {
-      "position": 0.5000000000000001,
-      "names": [
-        "proceed to target"
-      ]
-    },
-    {
-      "position": 0.24545454545454548,
-      "names": [
-        "climbing ramp",
-        "start "
-      ]
-    }
-  ]
+  "markers": []
 }

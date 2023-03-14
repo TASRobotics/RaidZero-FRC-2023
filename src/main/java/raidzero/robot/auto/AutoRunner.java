@@ -5,9 +5,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import raidzero.robot.auto.sequences.*;
 import raidzero.robot.dashboard.Tab;
-import raidzero.robot.submodules.Swerve;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Class that manages autonomous sequences.
@@ -15,7 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 public class AutoRunner {
 
     private SendableChooser<AutoSequence> chooser;
-    private static final Swerve swerve = Swerve.getInstance();
 
     private AutoSequence selectedSequence;
 
@@ -24,8 +20,9 @@ public class AutoRunner {
             new EmptySequence(),
             new SafetySequence(),
             new SingleConeClimbSequence(),
-            new TwoConeClimbSequence(),
-            new ConeCubeSequence()
+            new ConeCubeClimbSequence(),
+            new ConeCubeSequence(),
+            new LinkSequence()
     };
 
     public AutoRunner() {
@@ -34,7 +31,7 @@ public class AutoRunner {
         for (AutoSequence sequence : availableSequences) {
             chooser.addOption(sequence.getName(), sequence);
         }
-        Shuffleboard.getTab(Tab.MAIN).add("Auton", chooser).withSize(2, 1).withPosition(2, 3);
+        Shuffleboard.getTab(Tab.MAIN).add("Auton", chooser).withSize(2, 1).withPosition(2, 2);
         // SmartDashboard.putData("Auton Selection", chooser);
     }
 
@@ -96,7 +93,6 @@ public class AutoRunner {
             System.out.println(
                     "[Auto] Stopping auto sequence '" + selectedSequence.getName() + "'...");
             selectedSequence.stop();
-            Alliance alliance = DriverStation.getAlliance();
         }
     }
 

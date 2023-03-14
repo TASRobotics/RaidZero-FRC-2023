@@ -458,7 +458,8 @@ public class Vision extends Submodule {
      * @return whether aprilTagIds = 0
      */
     public boolean noApples() {
-        return aprilTagIDs.length == 0;
+        // return aprilTagIDs.length == 0;
+        return false;
     }
 
     public double getConeTranslation() {
