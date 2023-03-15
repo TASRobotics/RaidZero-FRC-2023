@@ -42,11 +42,11 @@ public class Swerve extends Submodule {
     };
 
     // Auto-aim target Locations
-    public enum AutoAimLocation {
-        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
-        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
-        BR_LOAD, BL_LOAD, RR_LOAD, RL_LOAD
-    };
+    // public enum AutoAimLocation {
+    //     BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
+    //     RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
+    //     BR_LOAD, BL_LOAD, RR_LOAD, RL_LOAD
+    // };
 
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
         public WPI_Pigeon2_Helper(int deviceNumber, String canbus) {
@@ -96,8 +96,11 @@ public class Swerve extends Submodule {
     private double prevX;
 
     private Pose2d desiredAutoAimPose;
-    private PIDController autoAimXController, autoAimYController, autoAimThetaController;;
-    
+    private PIDController autoAimXController, autoAimYController;
+    private ProfiledPIDController autoAimThetaController;
+    private TrajectoryConfig autoAimTrajectoryConfig;
+    private AutoAimController autoAimController;
+
     private ControlState controlState = ControlState.OPEN_LOOP;
 
     public void onStart(double timestamp) {
@@ -193,7 +196,7 @@ public class Swerve extends Submodule {
 
         prevPose = currentPose;
 
-        currentPose = updateOdometry();
+        currentPose = updateOdometry(timestamp);
         // fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
@@ -208,11 +211,7 @@ public class Swerve extends Submodule {
         // if(vision.getRobotPose() != null) {
         // setPose(vision.getRobotPose());
         // }
-        double disp = odometry.getEstimatedPosition().getX() - prevX;
-        SmartDashboard.putNumber("disp", disp);
-        prevX = odometry.getEstimatedPosition().getX();
-        SmartDashboard.putNumber("prevX", prevX);
-        beans += deadband(pigeon.getPitch()) * disp;
+        beans = deadband(pigeon.getPitch()) * getPose().getX();
         SmartDashboard.putNumber("beans", beans);
     }
 

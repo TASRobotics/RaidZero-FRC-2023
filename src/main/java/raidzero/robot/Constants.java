@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -252,9 +251,6 @@ public class Constants {
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
         public static final double[] GRID_HIGH = { 1.28, 1.28, 155 };
 
-        public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
-        public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
-
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
 
@@ -270,9 +266,6 @@ public class Constants {
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
         public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.07, -125 };
-
-        public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
-        public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };
 
         /**
          * Constants for a DC brushed motor.
@@ -406,8 +399,8 @@ public class Constants {
         public static final double KD = 0.0;
 
         public static final double MIN_VEL = 0.0;
-        public static final double MAX_VEL = 6100.0;
-        public static final double MAX_ACCEL = 5200.0;
+        public static final double MAX_VEL = 5200.0;
+        public static final double MAX_ACCEL = 4300.0;
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;

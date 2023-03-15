@@ -177,7 +177,7 @@ public class Arm extends Submodule {
         // state[0].getRotation().getDegrees());
         // SmartDashboard.putNumber("Resets", dResets);
 
-        SmartDashboard.putNumber("Wrist Relative Angle", calculateWristRelativeAngle(wrist.getAngle().getDegrees()));
+        SmartDashboard.putNumber("Wrist Degrees", wrist.getAngle().getDegrees());
 
         SmartDashboard.putNumber("Proximal Current Draw", mLowerLeader.getOutputCurrent());
         SmartDashboard.putNumber("Distal Current Draw", mUpperLeader.getOutputCurrent());
@@ -190,9 +190,8 @@ public class Arm extends Submodule {
         // && Math.abs(state[1].getY() - yWaypointPositions[stage - 1]) < 0.25) {
         // // Stage Check: Within Range, Proceed to Following Stage
         // if (stage < xWaypointPositions.length) {
-        // moveToPoint(new double[] {xWaypointPositions[stage],
-        // yWaypointPositions[stage],
-        // wristWaypointPositions[stage]});
+        // moveToPoint(xWaypointPositions[stage], yWaypointPositions[stage],
+        // wristWaypointPositions[stage]);
         // System.out.println("Moving to point");
         // stage++;
         // stage %= xWaypointPositions.length;
@@ -205,8 +204,7 @@ public class Arm extends Submodule {
             double yDistance = Math.abs(state[1].getY() - yWaypointPositions[stage - 1]);
             if (xDistance < 0.25 && yDistance < 0.25) {
                 // Move to the next waypoint
-                moveToPoint(new double[] { xWaypointPositions[stage],
-                        yWaypointPositions[stage], wristWaypointPositions[stage] });
+                moveToPoint(new double[] {xWaypointPositions[stage], yWaypointPositions[stage], wristWaypointPositions[stage]});
                 System.out.println("Moving to point");
                 stage++;
                 stage %= xWaypointPositions.length;
@@ -487,8 +485,10 @@ public class Arm extends Submodule {
 
     public void moveToPoint(double[] target, boolean front) {
         mControlState = ControlState.CLOSED_LOOP;
-        double reverse = front ? -1 : 1;
-        moveToAngle(invKin(reverse * target[0], target[1]), target[2]);
+        if (front)
+            target[0] *= -1;
+        moveToAngle(invKin(target[0], target[1]), target[2]);
+
     }
 
     // TODO: Add Kalman Filter to sanity check here:
@@ -541,17 +541,20 @@ public class Arm extends Submodule {
     public void moveTwoPronged(double[] inter, double[] target, boolean front) {
         stage = 1;
         onPath = true;
-        double reverse = front ? -1 : 1;
+        if (front) {
+            inter[0] *= -1;
+            target[0] *= -1;
+        }
         xWaypointPositions = new double[2];
         yWaypointPositions = new double[2];
         wristWaypointPositions = new double[2];
-        xWaypointPositions[0] = reverse * inter[0];
-        xWaypointPositions[1] = reverse * target[0];
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = target[0];
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = target[1];
         wristWaypointPositions[0] = inter[2];
         wristWaypointPositions[1] = target[2];
-        moveToPoint(new double[] { xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0] });
+        moveToPoint(inter);
     }
 
     public void moveTwoPronged(double[] inter, double[] target) {
@@ -585,13 +588,17 @@ public class Arm extends Submodule {
     public void moveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
         stage = 1;
         onPath = true;
-        double reverse = front ? -1 : 1;
+        if (front) {
+            inter[0] *= -1;
+            inter2[0] *= -1;
+            target[0] *= -1;
+        }
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = reverse * inter[0];
-        xWaypointPositions[1] = reverse * inter2[0];
-        xWaypointPositions[2] = reverse * target[0];
+        xWaypointPositions[0] = inter[0];
+        xWaypointPositions[1] = inter2[0];
+        xWaypointPositions[2] = target[0];
 
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = inter2[1];
@@ -600,7 +607,7 @@ public class Arm extends Submodule {
         wristWaypointPositions[0] = inter[2];
         wristWaypointPositions[1] = inter2[2];
         wristWaypointPositions[2] = target[2];
-        moveToPoint(new double[] { xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0] });
+        moveToPoint(inter);
     }
 
     public void moveThreePronged(double[] inter, double[] inter2, double[] target) {
@@ -632,11 +639,6 @@ public class Arm extends Submodule {
             moveToPoint(new double[] { xWaypointPositions[stage - 1], yWaypointPositions[stage - 1],
                     wristWaypointPositions[stage - 1] });
         }
-    }
-
-    public boolean atPosition(double[] target, boolean front) {
-        double reverse = front ? -1 : 1;
-        return (Math.abs(state[1].getX() - target[0] * reverse) < 0.1 && Math.abs(state[1].getY() - target[1]) < 0.1);
     }
 
     /**
@@ -694,7 +696,7 @@ public class Arm extends Submodule {
         } else if (state[1].getY() > 0.5 && Math.abs(state[1].getX()) > 0.3) {
             System.out.println("Safety one " + 0.05 * Math.signum(state[1].getX()));
             moveThreePronged(new double[] { 0.05 * Math.signum(state[1].getX()), state[1].getY() + .1, 0 },
-                    new double[] { 0.15 * Math.signum(state[1].getX()), 0.5, 0 },
+                    new double[] {0.15 * Math.signum(state[1].getX()), 0.5, 0 },
                     new double[] { 0.0, 0.15, 0 });
         } else if (stage == 0) {
             moveToAngle(new double[] { 90, -180 }, 0);

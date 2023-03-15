@@ -148,7 +148,7 @@ public class Vision extends Submodule {
     @Override
     public void update(double timestamp) {
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
-        // updateRobotPose();
+        updateRobotPose();
         // timePublisher.set(timestamp);
         SmartDashboard.putNumber("RobotTime", timestamp);
         
@@ -415,7 +415,7 @@ public class Vision extends Submodule {
     }
 
     public void updateRobotPose() {
-        NetworkTable subTable = table.getSubTable("Camera 1");
+        NetworkTable subTable = table.getSubTable("Camera 0");
         aprilDetect(subTable);
         if (aprilTagIDs.length > 0) {
             double pigeonAngle = pigeon.getAngle();
