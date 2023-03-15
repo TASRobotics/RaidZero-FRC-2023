@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.submodules.Swerve;
 
 public class AutoAimController {
@@ -62,6 +63,8 @@ public class AutoAimController {
         mThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         field = mSwerve.getField();
+
+        mEndHeading = new Rotation2d();
     }
 
     // public Field2d getField() {
@@ -119,7 +122,7 @@ public class AutoAimController {
         double blueLeftThreshold = 3;
         double blueScoringX = 1.85;
         Translation2d blueLeftLongInterPoint = new Translation2d(2.6, 4.5);
-        Translation2d blueRightLongInterPoint = new Translation2d(2.65, 1.35);
+        Translation2d blueRightLongInterPoint = new Translation2d(2.6, 1.35);
         Translation2d blueLeftUltraInterPoint = new Translation2d(4.5, 4.7);
         Translation2d blueRightUltraInterPoint = new Translation2d(4.5, 1.15);
 
@@ -198,6 +201,22 @@ public class AutoAimController {
     }
 
     /**
+     * Set target location
+     * 
+     * @param startPose start pose
+     * @param location desired end location
+     * @param accountForStartVel account for starting velocity
+     */
+    public void setTarget(Pose2d startPose, AutoAimLocation location, boolean accountForStartVel) {
+        if(accountForStartVel) {
+            ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(mSwerve.getModuleStates());
+            double speedMPS = Math.abs(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+            mTrajectoryConfig.setStartVelocity(speedMPS);
+        }
+        setTarget(startPose, location);
+    }
+
+    /**
      * Set enabled state of controller
      * 
      * @param enabled enabled
@@ -210,7 +229,7 @@ public class AutoAimController {
     public void update() {
         if(!mEnabled) return;
         Trajectory.State currState = mTrajectory.sample(mTimer.get());
-        field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(), mEndHeading);
+        // field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(), mEndHeading);
         // SmartDashboard.putData(field);
 
         ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
@@ -262,6 +281,8 @@ public class AutoAimController {
         double thetaFF =
             mThetaController.calculate(
                 currPose.getRotation().getRadians(), desiredHeading.getRadians());
+        SmartDashboard.putNumber("desired theta setpoint", mThetaController.getSetpoint().position);
+        SmartDashboard.putNumber("desired heading", desiredHeading.getRadians());
     
         mPoseError = trajState.poseMeters.relativeTo(currPose);
         mRotationError = desiredHeading.minus(currPose.getRotation());
@@ -269,14 +290,7 @@ public class AutoAimController {
         double xFeedback = mXController.calculate(currPose.getX(), trajState.poseMeters.getX());
         double yFeedback = mYController.calculate(currPose.getY(), trajState.poseMeters.getY());
 
-        SmartDashboard.putNumber("x ff", xFF );
-        SmartDashboard.putNumber("y ff", yFF );
-        SmartDashboard.putNumber("theta speeds", thetaFF);
-
-        SmartDashboard.putNumber("x feedback", xFeedback);
-        SmartDashboard.putNumber("y feedback", yFeedback);
-    
-        // Return next output.
+        // Return next output.%
         return ChassisSpeeds.fromFieldRelativeSpeeds(
             xFF + xFeedback, 
             yFF + yFeedback, 

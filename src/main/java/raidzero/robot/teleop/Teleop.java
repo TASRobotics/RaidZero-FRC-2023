@@ -84,6 +84,7 @@ public class Teleop {
 
         if (p.getXButtonPressed()) {
             swerve.zeroHeading(blue ? 0 : 180);
+            // swerve.zero();
         }
 
         // if (!aiming)
