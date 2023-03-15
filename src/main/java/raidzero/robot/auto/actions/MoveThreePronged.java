@@ -15,17 +15,13 @@ public class MoveThreePronged implements Action {
     private double[] wristWaypointPositions = { 0, 0, 0 };
 
     public MoveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
-        if (front) {
-            inter[0] *= -1;
-            inter2[0] *= -1;
-            target[0] *= -1;
-        }
+        double reverse = front ? -1:1;
         xWaypointPositions = new double[3];
         yWaypointPositions = new double[3];
         wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = inter[0];
-        xWaypointPositions[1] = inter2[0];
-        xWaypointPositions[2] = target[0];
+        xWaypointPositions[0] = reverse*inter[0];
+        xWaypointPositions[1] = reverse*inter2[0];
+        xWaypointPositions[2] = reverse*target[0];
 
         yWaypointPositions[0] = inter[1];
         yWaypointPositions[1] = inter2[1];

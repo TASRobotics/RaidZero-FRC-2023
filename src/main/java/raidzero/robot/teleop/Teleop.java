@@ -65,6 +65,7 @@ public class Teleop {
     private double[] target = { 0, 0.15 };
 
     private boolean aiming = false;
+    private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
     private void p1Loop(XboxController p) {
@@ -76,38 +77,62 @@ public class Teleop {
         }
         if (p.getBButtonPressed()) {
             aiming = false;
+            swerve.emptyBucket();
         }
 
-        if (p.getAButtonPressed()) {
-            noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
-        }
+        // if (p.getAButtonPressed()) {
+        // noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
+        // }
 
         if (p.getXButtonPressed()) {
             swerve.zeroHeading(blue ? 0 : 180);
         }
 
-        // if (!aiming)
-        // swerve.drive(
-        // JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
-        // arm.slurping() * reverse),
-        // JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
-        // arm.slurping() * reverse),
-        // JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-        // arm.slurping() * 2.0),
-        // true);
-        // else
-        // swerve.drive(
-        // JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
-        // JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-        // JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
-        // true);
+        if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
+            swerve.drive(0.2, 0, 0, true);
+        } else {
+            if (!aiming)
+                swerve.drive(
+                        JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
+                                arm.slurping() * reverse),
+                        JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
+                                arm.slurping() * reverse),
+                        JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
+                                arm.slurping() * 2.0),
+                        true);
+            else
+                swerve.drive(
+                        JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
+                        JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
+                        JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
+                        true);
+        }
 
-        double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() * arm.slurping() : 0.25);
-        double ySpeed = -p.getLeftX() * reverse * (aiming ? arm.tooFasttooFurious() * arm.slurping() : 0.25);
-        double angularSpeed = -p.getRightX() * (aiming ? arm.tooFasttooFurious() * arm.slurping() * 2.0 : 0.5);
+        if (p.getLeftBumperPressed() && !p.getRightBumper()) {
+            fIntake = true;
+            arm.moveToPoint(
+                    ArmConstants.CUBE_DUMP, true);
+        }
+        if (p.getRightBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+            fIntake = true;
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                    ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
+            intake.setPercentSpeed(-0.7);
+        } else if (arm.isSafe()) {
+            fIntake = false;
+        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper() && !p.getLeftBumperPressed()) {
+            arm.goHome();
+        }
 
-        swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
-                JoystickUtils.deadband(angularSpeed), true);
+        // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
+        // arm.slurping() : 0.25);
+        // double ySpeed = -p.getLeftX() * reverse * (aiming ? arm.tooFasttooFurious() *
+        // arm.slurping() : 0.25);
+        // double angularSpeed = -p.getRightX() * (aiming ? arm.tooFasttooFurious() *
+        // arm.slurping() * 2.0 : 0.5);
+        // swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
+        // JoystickUtils.deadband(angularSpeed), true);
 
         // // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
@@ -230,7 +255,7 @@ public class Teleop {
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Safe Human Pickup
             // arm.configSmartMotionConstraints(
@@ -239,10 +264,10 @@ public class Teleop {
             // ArmConstants.UPPER_MAX_VEL * 0.75,
             // ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-            arm.moveThreePronged(
-                    ArmConstants.INTER_HUMAN_PICKUP_STATION,
-                    ArmConstants.INTER2_HUMAN_PICKUP_STATION,
-                    ArmConstants.HUMAN_PICKUP_STATION, true);
+            // arm.moveThreePronged(
+            // ArmConstants.INTER_HUMAN_PICKUP_STATION,
+            // ArmConstants.INTER2_HUMAN_PICKUP_STATION,
+            // ArmConstants.HUMAN_PICKUP_STATION, true);
 
             // Extended Human Pickup
             arm.moveTwoPronged(
@@ -252,13 +277,18 @@ public class Teleop {
         }
         // High Grid
         else if (p.getRawButtonPressed(14) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cone
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_HIGH,
-                    ArmConstants.GRID_HIGH,
-                    false);
+                    ArmConstants.GRID_HIGH, true);
+
+            // Rev Cone
+            // arm.moveTwoPronged(
+            // ArmConstants.INTER_REV_GRID_HIGH,
+            // ArmConstants.REV_GRID_HIGH,
+            // false);
 
             // Cube
             // arm.moveTwoPronged(
@@ -268,7 +298,7 @@ public class Teleop {
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_MEDIUM,
@@ -276,7 +306,7 @@ public class Teleop {
         }
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cube Scoop
             // arm.moveThreePronged(
@@ -284,8 +314,8 @@ public class Teleop {
             // ArmConstants.INTER2_FLOOR_INTAKE,
             // ArmConstants.FLOOR_INTAKE, false);
 
-            // Cube
-            // arm.moveTwoPronged(
+            //
+            // ed(
             // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
             // ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
 
@@ -299,7 +329,7 @@ public class Teleop {
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.reverseStage();
         }
@@ -313,7 +343,7 @@ public class Teleop {
             intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
             intake.setPercentSpeed(-0.7);
-        } else {
+        } else if (!p1.getLeftBumper() && !p1.getRightBumper() && !p.getRawButton(12) && !p.getRawButton(11)) {
             intake.holdPosition();
         }
 
