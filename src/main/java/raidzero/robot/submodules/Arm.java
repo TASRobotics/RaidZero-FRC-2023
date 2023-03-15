@@ -179,6 +179,7 @@ public class Arm extends Submodule {
 
         // Link Angles
         SmartDashboard.putNumber("Proximal Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
+        SmartDashboard.putNumber("Distal Absolute Angle", Math.toDegrees(mUpperAbsoluteEncoder.getPosition())-180);
         SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
         SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
 
