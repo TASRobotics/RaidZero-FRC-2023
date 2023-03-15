@@ -5,6 +5,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import raidzero.robot.auto.sequences.*;
 import raidzero.robot.dashboard.Tab;
+import raidzero.robot.submodules.Swerve;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * Class that manages autonomous sequences.
@@ -12,15 +15,18 @@ import raidzero.robot.dashboard.Tab;
 public class AutoRunner {
 
     private SendableChooser<AutoSequence> chooser;
+    private static final Swerve swerve = Swerve.getInstance();
 
     private AutoSequence selectedSequence;
 
     private AutoSequence[] availableSequences = {
             new TestSequence(),
             new EmptySequence(),
-            new TwoConeAuton(), 
-            new ClimbSequence(), 
-            new SingleConeClimbSequence()
+            new SafetySequence(),
+            new SingleConeClimbSequence(),
+            new ConeCubeClimbSequence(),
+            new ConeCubeSequence(),
+            new LinkSequence()
     };
 
     public AutoRunner() {
@@ -91,6 +97,7 @@ public class AutoRunner {
             System.out.println(
                     "[Auto] Stopping auto sequence '" + selectedSequence.getName() + "'...");
             selectedSequence.stop();
+            Alliance alliance = DriverStation.getAlliance();
         }
     }
 

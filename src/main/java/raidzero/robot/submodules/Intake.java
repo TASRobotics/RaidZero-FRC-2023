@@ -2,20 +2,20 @@ package raidzero.robot.submodules;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxPIDController.AccelStrategy;
-import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
-import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Intake extends Submodule {
-    private Intake() {}
+    private Intake() {
+    }
 
     private static Intake instance = null;
 
@@ -36,9 +36,8 @@ public class Intake extends Submodule {
     private double mDesiredPosition = 0.0;
     private double mPrevOpenLoopPosition = 0.0;
 
-    private final LazyCANSparkMax mMotor = new LazyCANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
+    private final CANSparkMax mMotor = new CANSparkMax(IntakeConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
-
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
     @Override
@@ -49,7 +48,8 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
     public void update(double timestamp) {
@@ -58,18 +58,17 @@ public class Intake extends Submodule {
 
     @Override
     public void run() {
+        if (Math.abs(mPercentOut) < 0.05) {
+            holdPosition();
+        }
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredPosition,
-                ControlType.kSmartMotion,
-                IntakeConstants.PID_SLOT,
-                0,
-                ArbFFUnits.kPercentOut
-            );
-            System.out.println("Keeping position at " + mDesiredPosition);
+                    mDesiredPosition,
+                    ControlType.kSmartMotion,
+                    IntakeConstants.PID_SLOT);
         }
     }
 
@@ -83,16 +82,26 @@ public class Intake extends Submodule {
         mEncoder.setPosition(0);
     }
 
+    /**
+     * Set intake percent speed [-1, 1]
+     * 
+     * @param speed percent speed
+     */
     public void setPercentSpeed(double speed) {
         mControlState = ControlState.OPEN_LOOP;
         mPercentOut = speed;
     }
 
+    /** Hold position of intake */
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
-        mDesiredPosition = mPrevOpenLoopPosition + 1;
+        if (Math.signum(mPercentOut) < 0)
+            mDesiredPosition = mPrevOpenLoopPosition - 7;
+        else
+            mDesiredPosition = mPrevOpenLoopPosition + 3;
     }
 
+    /** Configure intake motor & integrated encoder/PID controller */
     private void configIntakeSparkMax() {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
@@ -109,8 +118,8 @@ public class Intake extends Submodule {
         mPIDController.setSmartMotionMinOutputVelocity(IntakeConstants.MIN_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxVelocity(IntakeConstants.MAX_VEL, IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionMaxAccel(IntakeConstants.MAX_ACCEL, IntakeConstants.SMART_MOTION_SLOT);
-        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR, IntakeConstants.SMART_MOTION_SLOT);
+        mPIDController.setSmartMotionAllowedClosedLoopError(IntakeConstants.MIN_ERROR,
+                IntakeConstants.SMART_MOTION_SLOT);
         mPIDController.setSmartMotionAccelStrategy(AccelStrategy.kTrapezoidal, IntakeConstants.SMART_MOTION_SLOT);
     }
-
 }

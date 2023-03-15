@@ -3,10 +3,10 @@ package raidzero.robot.auto.actions;
 import edu.wpi.first.math.geometry.Pose2d;
 import raidzero.robot.submodules.Arm;
 
-public class ArmHomeAction implements Action {
+public class AsyncArmHomeAction implements Action {
     private static final Arm mArm = Arm.getInstance();
 
-    public ArmHomeAction() {
+    public AsyncArmHomeAction() {
     }
 
     @Override
@@ -26,7 +26,6 @@ public class ArmHomeAction implements Action {
 
     @Override
     public boolean isFinished() {
-        Pose2d endPose = mArm.getState()[1];
-        return Math.abs(endPose.getX()) < 0.15 && Math.abs(endPose.getY() - 0.15) < 0.15;
+        return true;
     }
 }

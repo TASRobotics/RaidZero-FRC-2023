@@ -15,15 +15,15 @@ public class WaitForEventMarkerAction implements Action {
     /**
      * Action that blocks until event marker has been reached
      * 
-     * @param trajectory the path the robot is following
-     * @param name marker name
-     * @param currentTime current time in the trajectory 
+     * @param trajectory  the path the robot is following
+     * @param name        marker name
+     * @param currentTime current time in the trajectory
      */
     public WaitForEventMarkerAction(PathPlannerTrajectory trajectory, String name, double currentTime) {
         mMarkers = trajectory.getMarkers();
         double wait = 0.0;
-        for(EventMarker marker : mMarkers) {
-            if(marker.names.get(0).equals(name)) {
+        for (EventMarker marker : mMarkers) {
+            if (marker.names.get(0).equals(name)) {
                 wait = marker.timeSeconds - currentTime;
             }
         }
@@ -38,7 +38,8 @@ public class WaitForEventMarkerAction implements Action {
     }
 
     @Override
-    public void update() {}
+    public void update() {
+    }
 
     @Override
     public void done() {

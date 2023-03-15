@@ -7,10 +7,10 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1435321694018508,
+        "x": 2.574383148081703,
         "y": 2.0
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -24,15 +24,15 @@
     },
     {
       "anchorPoint": {
-        "x": 4.0,
-        "y": 3.0
+        "x": 7.0,
+        "y": 2.0
       },
       "prevControl": {
-        "x": 2.9176604055383977,
-        "y": 3.0
+        "x": 5.6019017793454315,
+        "y": 2.0
       },
       "nextControl": null,
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -45,15 +45,8 @@
       }
     }
   ],
-  "maxVelocity": 5.0,
-  "maxAcceleration": 3.75,
+  "maxVelocity": 2.5,
+  "maxAcceleration": 4.34,
   "isReversed": null,
-  "markers": [
-    {
-      "position": 0.7151515151515349,
-      "names": [
-        "deez nuts"
-      ]
-    }
-  ]
+  "markers": []
 }

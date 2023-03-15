@@ -17,18 +17,14 @@ import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.submodules.Swerve;
 
-public class SingleConeClimbSequence extends AutoSequence {
+public class SafetySequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("SCC Balance",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("Safety", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
-    public SingleConeClimbSequence() {
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
+    public SafetySequence() {
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
     }
 
     @Override
@@ -36,13 +32,10 @@ public class SingleConeClimbSequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.2, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH, ArmConstants.GRID_HIGH, true),
                         new RunIntakeAction(1, -1),
                         new ArmHomeAction(),
-                        new DrivePath(mOverRamp),
-                        new DrivePath(mBalance),
-                        new LambdaAction(() -> mSwerve.rotorBrake(true)))));
+                        new DrivePath(mOut))));
     }
 
     @Override
@@ -51,6 +44,6 @@ public class SingleConeClimbSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Single Cone Climb Sequence";
+        return "Safety Sequence";
     }
 }

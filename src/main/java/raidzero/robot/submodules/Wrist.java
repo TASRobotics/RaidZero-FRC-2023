@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.PubSubOption;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
@@ -21,10 +22,10 @@ import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 import edu.wpi.first.math.geometry.Rotation2d;
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.WristConstants;
-import raidzero.robot.wrappers.LazyCANSparkMax;
 
 public class Wrist extends Submodule {
-    private Wrist() {}
+    private Wrist() {
+    }
 
     private static Wrist instance = null;
 
@@ -52,10 +53,7 @@ public class Wrist extends Submodule {
     private double lastFallingEdge = WristConstants.LIMITSWITCHPOSITIONS[0];
     private Rotation2d wristAngle;
 
-    private final LazyCANSparkMax mMotor = new LazyCANSparkMax(WristConstants.ID, MotorType.kBrushless);
-
-    
-
+    private final CANSparkMax mMotor = new CANSparkMax(WristConstants.ID, MotorType.kBrushless);
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
 
     private final SparkMaxLimitSwitch inZoneLimitSwitch = mMotor
@@ -82,7 +80,6 @@ public class Wrist extends Submodule {
         limitEncoderDataPub.set(limitSwitchEncoderData);
 
         align();
-
     }
 
     private void align() {
@@ -103,12 +100,11 @@ public class Wrist extends Submodule {
             mMotor.set(mPercentOut);
         } else if (mControlState == ControlState.CLOSED_LOOP) {
             mPIDController.setReference(
-                mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
-                ControlType.kSmartMotion,
-                WristConstants.SMART_MOTION_SLOT,
-                0,
-                ArbFFUnits.kPercentOut
-            );
+                    mDesiredAngle / WristConstants.POSITION_CONVERSION_FACTOR,
+                    ControlType.kSmartMotion,
+                    WristConstants.SMART_MOTION_SLOT,
+                    0,
+                    ArbFFUnits.kPercentOut);
         }
         
         // System.out.println(mMotor.getEncoder().getPosition());
@@ -211,6 +207,11 @@ public class Wrist extends Submodule {
             table = NetworkTableInstance.getDefault().getTable(Constants.NETWORKTABLESNAME).getSubTable(WristConstants.NETWORKTABLES_NAME);
         }
         return table.getDoubleArrayTopic(key);
+    }
+
+    public void configSmartMotionConstraints(double wristMaxVel, double wristMaxAccel) {
+        mPIDController.setSmartMotionMaxVelocity(wristMaxVel, WristConstants.SMART_MOTION_SLOT);
+        mPIDController.setSmartMotionMaxAccel(wristMaxAccel, WristConstants.SMART_MOTION_SLOT);
     }
 
 }
