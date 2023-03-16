@@ -1,8 +1,6 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -461,8 +459,5 @@ public class Teleop {
                 swerve.enableAutoAimController(false);
             }
         }
-
-        SmartDashboard.putBoolean("button pressed", buttonPressed);
-        SmartDashboard.putBoolean("was previously pressed", wasPreviouslyPressed);
     }
 }

@@ -26,9 +26,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.DriveConstants;
@@ -336,12 +333,13 @@ public class Swerve extends Submodule {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-            visionMeasurementStdDevs);
+            odometry.addVisionMeasurement(
+                visionRobotPoseMeters, 
+                timestampSeconds,
+                visionMeasurementStdDevs
+            );
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
-            // pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
-            // setPose(visionRobotPoseMeters);
         }
     }
 
@@ -380,9 +378,6 @@ public class Swerve extends Submodule {
         }
         controlState = ControlState.OPEN_LOOP;
         boolean ignoreAngle = false;
-        // if (Math.abs(xSpeed) < 0.1 && Math.abs(ySpeed) < 0.1 && Math.abs(angularSpeed) < 0.1) {
-        //     ignoreAngle = true;
-        // }
         var targetState = SwerveConstants.KINEMATICS.toSwerveModuleStates(
                 fieldOriented
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -488,8 +483,6 @@ public class Swerve extends Submodule {
     }
 
     public void setAutoAimLocation(AutoAimLocation location) {
-        // controlState = ControlState.AUTO_AIM;
-        // autoAimController.setTarget(getPose(), location);
         autoAimController.setTarget(getPose(), location, true);
     }
 
