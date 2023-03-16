@@ -98,13 +98,13 @@ public class Teleop {
                         JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
                                 arm.slurping() * reverse),
                         JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-                                arm.slurping() * 2.0),
+                                arm.slurping()),
                         true);
             else
                 swerve.drive(
                         JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                         JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                        JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
+                        JoystickUtils.aimingDeadband(-p.getRightX()),
                         true);
         //}
 
