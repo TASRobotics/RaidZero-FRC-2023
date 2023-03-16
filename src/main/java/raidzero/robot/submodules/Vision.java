@@ -188,7 +188,7 @@ public class Vision extends Submodule {
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
         // System.out.println(cameraNum);
         if (aprilTagIDs.length != 0)
-            updatePose((new Pose2d()).plus(VisionConstants.CAMERATRANSFORMS[cameraNum]),
+            updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
                 VisionConstants.CAMERAANGLES[cameraNum],
                 cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
     }
@@ -274,7 +274,7 @@ public class Vision extends Submodule {
                 // Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
     
                 Pose2d aprilTagPose = aprilTagGlobalPoses[aTagID];
-                Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(), angleInterpolate.getSample(timestamp).get());
+                Pose2d globalToAprilTag = new Pose2d(aprilTagPose.getTranslation(), angleInterpolate.getSample(timestamp).get().plus(cameraAngle));
     
                 // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
                 Transform2d aprilTagTransform = new Transform2d(
@@ -289,7 +289,7 @@ public class Vision extends Submodule {
 
             // Pose2d rotationPose = new Pose2d(0, 0, robotRotation);
 
-                SmartDashboard.putNumber("Transform Angle", globalToAprilTag.getRotation().getDegrees());
+                // SmartDashboard.putNumber("Transform Angle", globalToAprilTag.getRotation().getDegrees());
                 Transform2d aprilToRobot = new Transform2d(new Pose2d(), cameraPose.plus(aprilTagTransform));
                 // Transform2d aprilToRobot = new Transform2d(cameraPose.plus(aprilTagTransform).getTranslation(),cameraPose.plus(aprilTagTransform).getRotation());
                 newRobotPose = globalToAprilTag.plus(aprilToRobot);
@@ -314,9 +314,12 @@ public class Vision extends Submodule {
                 }
                 
                 
-                SmartDashboard.putNumber("Add Robot Pose x", newRobotPose.getTranslation().getX());
-                SmartDashboard.putNumber("Add Robot Pose y", newRobotPose.getTranslation().getY());
-                SmartDashboard.putNumber("Add Robot Pose theta", newRobotPose.getRotation().getDegrees());
+                SmartDashboard.putNumber("Camera Pose x", cameraPose.getTranslation().getX());
+                SmartDashboard.putNumber("Camera Pose y", cameraPose.getTranslation().getY());
+                SmartDashboard.putNumber("Camera Pose theta", cameraPose.getRotation().getDegrees());
+                SmartDashboard.putNumber("Robot Relative Pose x", aprilToRobot.getTranslation().getX());
+                SmartDashboard.putNumber("Robot Relative Pose y", aprilToRobot.getTranslation().getY());
+                SmartDashboard.putNumber("Robot Relative Pose theta", aprilToRobot.getRotation().getDegrees());
                 SmartDashboard.putNumber("Timestamp addition", timestamp);
                 SmartDashboard.putNumber("Distance error", positionError);
 
