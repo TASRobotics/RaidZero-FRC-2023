@@ -84,9 +84,13 @@ public class Teleop {
             swerve.zeroHeading(blue ? 0 : 180);
         }
 
-        if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
-            swerve.drive(0.2, 0, 0, true);
-        } else {
+        if (p.getAButton()) {
+            intake.setPercentSpeed(1.0);
+        }
+
+        // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
+        //     swerve.drive(0.2, 0, 0, true);
+        // } else {
             if (!aiming)
                 swerve.drive(
                         JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
@@ -102,14 +106,14 @@ public class Teleop {
                         JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
                         JoystickUtils.aimingDeadband(-p.getRightX() * 0.5),
                         true);
-        }
+        //}
 
-        if (p.getLeftBumperPressed() && !p.getRightBumper()) {
+        if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false) && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
             fIntake = true;
             arm.moveToPoint(
                     ArmConstants.CUBE_DUMP, true);
         }
-        if (p.getRightBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+        if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
             fIntake = true;
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
@@ -117,8 +121,9 @@ public class Teleop {
             intake.setPercentSpeed(-0.7);
         } else if (arm.isSafe()) {
             fIntake = false;
-        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper() && !p.getLeftBumperPressed()) {
+        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
             arm.goHome();
+            intake.setPercentSpeed(-0.7);
         }
 
         // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
@@ -337,7 +342,7 @@ public class Teleop {
             intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
             intake.setPercentSpeed(-0.7);
-        } else if (!p1.getLeftBumper() && !p1.getRightBumper() && !p.getRawButton(12) && !p.getRawButton(11)) {
+        } else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getRightBumper() && !p.getRawButton(12) && !p.getRawButton(11)) {
             intake.holdPosition();
         }
 

@@ -50,11 +50,11 @@
     {
       "anchorPoint": {
         "x": 6.9,
-        "y": 4.88
+        "y": 4.9
       },
       "prevControl": {
         "x": 6.486634425208742,
-        "y": 4.88
+        "y": 4.9
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -72,7 +72,7 @@
   ],
   "markers": [
     {
-      "position": 1.2202020202020025,
+      "position": 0.45,
       "names": [
         "fIntake"
       ]
