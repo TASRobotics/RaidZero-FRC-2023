@@ -248,7 +248,7 @@ public class Constants {
         public static final double[] GRID_MEDIUM = { 0.93, 1.00, 155 };
 
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
-        public static final double[] GRID_HIGH = { 1.28, 1.33, 155 };
+        public static final double[] GRID_HIGH = { 1.20, 1.40, 155 };
 
         public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
         public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
