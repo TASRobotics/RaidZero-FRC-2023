@@ -3,6 +3,7 @@ package raidzero.robot.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -117,7 +119,7 @@ public class AutoAimController {
         Alliance alliance = DriverStation.getAlliance();
 
         double fieldLengthMeters = 16.5; 
-        double blueLongThreshold = 2.85;
+        double blueLongThreshold = 3;
         double blueUltraThreshold = 5.5;
         double blueLeftThreshold = 3;
         double blueScoringX = 1.85;
@@ -278,9 +280,8 @@ public class AutoAimController {
         // double yFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getSin();
         double xFF = 0.0;
         double yFF = 0.0;
-        double thetaFF =
-            mThetaController.calculate(
-                currPose.getRotation().getRadians(), desiredHeading.getRadians());
+        double thetaFF = mThetaController.calculate(currPose.getRotation().getRadians());
+
         SmartDashboard.putNumber("desired theta setpoint", mThetaController.getSetpoint().position);
         SmartDashboard.putNumber("desired heading", desiredHeading.getRadians());
     
@@ -310,6 +311,13 @@ public class AutoAimController {
         mTimer.start();
         mTrajectory = trajectory;
         mEndHeading = endHeading;
+        mThetaController.setGoal(new TrapezoidProfile.State(mEndHeading.getRadians(), 0));
+        System.out.println(endHeading.getRadians());
+        System.out.println(mThetaController.getGoal().position);
+        System.out.println(mThetaController.calculate(mSwerve.getPose().getRotation().getRadians()));
+        System.out.println(mThetaController.getPositionError());
+        System.out.println(mSwerve.getPose().getRotation().getRadians());
+        System.out.println();
     }
 
     private double getYOfAutoAimLocation(AutoAimLocation location) {
