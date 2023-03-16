@@ -428,8 +428,8 @@ public class Constants {
 
         public static final boolean INVERSION = false;
 
-        public static final int STALL_CURRENT_LIMIT = 5;
-        public static final int FREE_CURRENT_LIMIT = 15;
+        public static final int STALL_CURRENT_LIMIT = 1;
+        public static final int FREE_CURRENT_LIMIT = 5;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;
