@@ -11,6 +11,7 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveThreePronged;
@@ -28,8 +29,10 @@ public class ConeCubeSequence extends AutoSequence {
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance",
+    // private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance",
+    //         SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
+    //         SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Auto Balance",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
@@ -76,6 +79,7 @@ public class ConeCubeSequence extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance))),
+                        new AutoBalanceAction(false),
                         new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
