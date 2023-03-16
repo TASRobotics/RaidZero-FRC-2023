@@ -464,16 +464,5 @@ public class Teleop {
 
         SmartDashboard.putBoolean("button pressed", buttonPressed);
         SmartDashboard.putBoolean("was previously pressed", wasPreviouslyPressed);
-
-        // if(buttonPressed && !wasPreviouslyPressed) {
-        //     wasPreviouslyPressed = true;
-        //     swerve.enableAutoAimController(true);
-        //     SmartDashboard.putBoolean("auto aiming", true);
-        // }
-        // if(!buttonPressed) {
-        //     wasPreviouslyPressed = false;
-        //     swerve.enableAutoAimController(false);
-        //     SmartDashboard.putBoolean("auto aiming", false);
-        // }
     }
 }

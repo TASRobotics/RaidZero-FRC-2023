@@ -24,6 +24,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -36,16 +38,8 @@ import raidzero.robot.utils.AutoAimController;
 import raidzero.robot.utils.AutoAimController.AutoAimLocation;
 
 public class Swerve extends Submodule {
-
     private enum ControlState {
         OPEN_LOOP, PATHING, AUTO_AIM
-    };
-
-    // Auto-aim target Locations
-    public enum AutoAimLocation {
-        BLL, BLM, BLR, BML, BMM, BMR, BRL, BRM, BRR,
-        RLL, RLM, RLR, RML, RMM, RMR, RRL, RRM, RRR,
-        BR_LOAD, BL_LOAD, RR_LOAD, RL_LOAD
     };
 
     private class WPI_Pigeon2_Helper extends WPI_Pigeon2 {
@@ -96,7 +90,10 @@ public class Swerve extends Submodule {
     private double prevX;
 
     private Pose2d desiredAutoAimPose;
-    private PIDController autoAimXController, autoAimYController, autoAimThetaController;
+    private PIDController autoAimXController, autoAimYController;
+    private ProfiledPIDController autoAimThetaController;
+    private TrajectoryConfig autoAimTrajectoryConfig;
+    private AutoAimController autoAimController;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
