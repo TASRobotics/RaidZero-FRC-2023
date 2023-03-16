@@ -159,6 +159,7 @@ public class Swerve extends Submodule {
         
         zero();
 
+        // Auto Balance Constants
         prevPose = new Pose2d();
         prevX = 0;
 

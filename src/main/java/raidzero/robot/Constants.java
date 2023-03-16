@@ -239,16 +239,16 @@ public class Constants {
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
 
         public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.98, -106 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 1.11, -106 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
 
         public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15, 70 };
-        public static final double[] GRID_MEDIUM = { 0.93, 1.00, 155 };
+        public static final double[] GRID_MEDIUM = { 0.93, 1.01, 155 };
 
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
-        public static final double[] GRID_HIGH = { 1.20, 1.40, 155 };
+        public static final double[] GRID_HIGH = { 1.20, 1.30, 155 };
 
         public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
         public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
