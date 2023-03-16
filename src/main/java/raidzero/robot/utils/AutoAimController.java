@@ -3,7 +3,6 @@ package raidzero.robot.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
