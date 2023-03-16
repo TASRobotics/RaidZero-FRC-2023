@@ -323,7 +323,7 @@ public class AutoAimController {
         Alliance alliance = DriverStation.getAlliance();
         switch(location) {
             case LL:
-                return alliance == Alliance.Blue ? 0 : 1;
+                return alliance == Alliance.Blue ? 4.75 : 1;
             case LM:
                 return alliance == Alliance.Blue ? 4.5 : 1.5;
             case LR:
@@ -339,7 +339,7 @@ public class AutoAimController {
             case RM:
                 return alliance == Alliance.Blue ? 1.5 : 4.5;
             case RR:
-                return alliance == Alliance.Blue ? 1 : 0;
+                return alliance == Alliance.Blue ? 1 : 4.75;
             default:
                 return 0;
         }
