@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -93,7 +94,7 @@ public class Swerve extends Submodule {
         firstPath = true;
 
         // TEMPORARY
-        setPose(new Pose2d(4,1.2,Rotation2d.fromDegrees(180)));
+        // setPose(new Pose2d(4,1.2,Rotation2d.fromDegrees(180)));
     }
 
     public void onInit() {
@@ -137,11 +138,11 @@ public class Swerve extends Submodule {
         thetaController.setTolerance(SwerveConstants.THETACONTROLLER_TOLERANCE);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0, 0);
+        autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0.0, 0.0);
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
-        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0, 0, 
+        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0.0, 0.0, 
             new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
-        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS * 1, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1);
+        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
         autoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, autoAimTrajectoryConfig);
         autoAimController.setTolerance(new Pose2d(
             SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
@@ -178,8 +179,9 @@ public class Swerve extends Submodule {
         bottomRightModule.update(timestamp);
 
         prevPose = currentPose;
-        currentPose = updateOdometry();
-        // fieldPose.setRobotPose(currentPose);
+
+        currentPose = updateOdometry(timestamp);
+        fieldPose.setRobotPose(currentPose);
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -230,7 +232,7 @@ public class Swerve extends Submodule {
             zeroHeading(180);
         else if (alliance == Alliance.Red)
             zeroHeading(0);
-        setPose(new Pose2d());
+        setPose(new Pose2d(new Translation2d(1.76,1.477),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
@@ -254,6 +256,15 @@ public class Swerve extends Submodule {
                 topRightModule.getModulePosition(),
                 bottomLeftModule.getModulePosition(),
                 bottomRightModule.getModulePosition()
+        };
+    }
+
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            topLeftModule.getModuleState(), 
+            topRightModule.getModuleState(), 
+            bottomLeftModule.getModuleState(), 
+            bottomRightModule.getModuleState()
         };
     }
 
@@ -315,8 +326,8 @@ public class Swerve extends Submodule {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
-            // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-            // visionMeasurementStdDevs);
+            odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
+            visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
             // pigeon.setYaw(visionRobotPoseMeters.getRotation().getDegrees());
@@ -330,13 +341,14 @@ public class Swerve extends Submodule {
 
     /**
      * Updates odometry
+     * @param timestamp
      * 
      * @return current position
      */
-    private Pose2d updateOdometry() {
+    private Pose2d updateOdometry(double timestamp) {
         try {
-            return odometry.update(
-                    Rotation2d.fromDegrees(pigeon.getAngle()),
+            return odometry.updateWithTime(timestamp,
+                    Rotation2d.fromDegrees( pigeon.getAngle()),
                     getModulePositions());
         } catch (Exception e) {
             System.out.println(e);
@@ -464,7 +476,8 @@ public class Swerve extends Submodule {
 
     public void setAutoAimLocation(AutoAimLocation location) {
         // controlState = ControlState.AUTO_AIM;
-        autoAimController.setTarget(getPose(), location);
+        // autoAimController.setTarget(getPose(), location);
+        autoAimController.setTarget(getPose(), location, true);
     }
 
     public void enableAutoAimController(boolean isEnabled) {
