@@ -69,12 +69,10 @@ public class Constants {
                 // Back right
                 new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0));
         /** 254 Pathing Constants (smooth): */
-        public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.5;
-        public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.5;
+        public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.6;
+        public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.25;
         public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
-        public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(
-                MAX_ANGULAR_VEL_RPS,
-                2);
+        public static final double MAX_ANGULAR_ACCEL_RPSPS = MAX_ANGULAR_VEL_RPS * 2;
         /** 254 Pathing Constants (fast): */
         // public static final double MAX_DRIVE_VEL = MAX_VEL_MPS;
         // public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL / 0.2;
@@ -102,9 +100,9 @@ public class Constants {
         public static final double THETACONTROLLER_TOLERANCE = Math.toRadians(5);
 
         /** AutoAim Constants */
-        public static final double AA_XCONTROLLER_KP = 1.78;
-        public static final double AA_YCONTROLLER_KP = 1.78;
-        public static final double AA_THETACONTROLLER_KP = 1.2;
+        public static final double AA_XCONTROLLER_KP = 1.6;
+        public static final double AA_YCONTROLLER_KP = 1.6;
+        public static final double AA_THETACONTROLLER_KP = 1.0;
         public static final double AA_THETACONTROLLER_KD = 0.1;
         public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
@@ -163,9 +161,9 @@ public class Constants {
         private static final double CAMERAXDISPLACEMENT = 0.0772;
         private static final double CAMERAYDISPLACEMENT = 0.3429;
         // private static final double CAMERAZDISPLACEMENT = 0.56198;
-        private static final Rotation2d[] CAMERAANGLES = { new Rotation2d(0), new Rotation2d(Math.PI) };
+        public static final Rotation2d[] CAMERAANGLES = { new Rotation2d(0), new Rotation2d(Math.PI) };
 
-        private static final Pose2d[] CAMERALOCATIONS = {
+        public static final Pose2d[] CAMERALOCATIONS = {
                 new Pose2d(CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[0]),
                 new Pose2d(-CAMERAXDISPLACEMENT, -CAMERAYDISPLACEMENT, CAMERAANGLES[1]) };
         public static final Transform2d[] CAMERATRANSFORMS = { new Transform2d(CAMERALOCATIONS[0], new Pose2d()),
@@ -173,6 +171,8 @@ public class Constants {
 
         public static final double ANGLEHISTSECS = 2.0;
         public static final double DISTANCETOLERANCE = 3.0;
+        public static final double DISTANCEERRORFACTOR = 0.01;
+        public static final double ANGLEERRORFACTOR = 1;
         // public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new
         // Rotation2d(.5))};
         // public final Pose2d[] APRILTAG_POSE2DS =
@@ -433,7 +433,7 @@ public class Constants {
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;
-        public static final double KP = 0.00005;
+        public static final double KP = 0.1; // 0.00005
         public static final double KI = 0.0;
         public static final double KD = 0.0;
 
@@ -443,8 +443,6 @@ public class Constants {
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;
-        public static final double PID_WRAPPING_MIN = 0.0;
-        public static final double PID_WRAPPING_MAX = 360.0;
     }
 
     public static final class TOFSensorConstants {
