@@ -53,7 +53,8 @@ public class Constants {
 
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
-        public static final double WHEEL_DIAMETER_METERS = 0.1016;
+        // public static final double WHEEL_DIAMETER_METERS = 0.1016;
+        public static final double WHEEL_DIAMETER_METERS = 0.095;
         public static final double MAX_VEL_MPS = 4.959668;
         // 20.75 OR 22.75 inches
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75);
@@ -71,9 +72,7 @@ public class Constants {
         public static final double MAX_DRIVE_VEL_MPS = MAX_VEL_MPS * 0.6;
         public static final double MAX_DRIVE_ACCEL_MPSPS = MAX_DRIVE_VEL_MPS * 1.25;
         public static final double MAX_ANGULAR_VEL_RPS = 1.2 * Math.PI;
-        public static final double MAX_ANGULAR_ACCEL_RPSPS = Math.pow(
-                MAX_ANGULAR_VEL_RPS,
-                2);
+        public static final double MAX_ANGULAR_ACCEL_RPSPS = MAX_ANGULAR_VEL_RPS * 2;
         /** 254 Pathing Constants (fast): */
         // public static final double MAX_DRIVE_VEL = MAX_VEL_MPS;
         // public static final double MAX_DRIVE_ACCEL = MAX_DRIVE_VEL / 0.2;
@@ -103,7 +102,7 @@ public class Constants {
         /** AutoAim Constants */
         public static final double AA_XCONTROLLER_KP = 1.6;
         public static final double AA_YCONTROLLER_KP = 1.6;
-        public static final double AA_THETACONTROLLER_KP = 0.0;
+        public static final double AA_THETACONTROLLER_KP = 1.0;
         public static final double AA_THETACONTROLLER_KD = 0.1;
         public static final double AA_XCONTROLLER_TOLERANCE = 0.01;
         public static final double AA_YCONTROLLER_TOLERANCE = 0.01;
@@ -170,9 +169,9 @@ public class Constants {
         public static final Transform2d[] CAMERATRANSFORMS = { new Transform2d(CAMERALOCATIONS[0], new Pose2d()),
                 new Transform2d(CAMERALOCATIONS[1], new Pose2d()) };
 
-        public static final double ANGLEHISTSECS = 2.0;
+        public static final double ANGLEHISTSECS = 1.0;
         public static final double DISTANCETOLERANCE = 3.0;
-        public static final double DISTANCEERRORFACTOR = 0.1;
+        public static final double DISTANCEERRORFACTOR = 0.01;
         public static final double ANGLEERRORFACTOR = 1;
         // public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new
         // Rotation2d(.5))};
@@ -240,16 +239,16 @@ public class Constants {
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
 
         public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.93, -83 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.99, -106 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
 
         public static final double[] INTER_GRID_MEDIUM = { 0.50, 1.15, 70 };
-        public static final double[] GRID_MEDIUM = { 0.93, 1.00, 155 };
+        public static final double[] GRID_MEDIUM = { 0.93, 1.01, 155 };
 
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
-        public static final double[] GRID_HIGH = { 1.28, 1.28, 155 };
+        public static final double[] GRID_HIGH = { 1.20, 1.30, 155 };
 
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
@@ -265,7 +264,7 @@ public class Constants {
         public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.07, -125 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.06, -125 };
 
         /**
          * Constants for a DC brushed motor.
@@ -423,8 +422,8 @@ public class Constants {
 
         public static final boolean INVERSION = false;
 
-        public static final int STALL_CURRENT_LIMIT = 5;
-        public static final int FREE_CURRENT_LIMIT = 15;
+        public static final int STALL_CURRENT_LIMIT = 1;
+        public static final int FREE_CURRENT_LIMIT = 5;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;
