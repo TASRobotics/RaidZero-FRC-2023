@@ -128,8 +128,6 @@ public class Vision extends Submodule {
 
     @Override
     public void onInit() {
-        System.out.println("Getting Cameras");
-        cameraSubTables = getCameraNames();
         angleInterpolate = TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
         
         // aprilYawFilter.reset();
@@ -143,6 +141,8 @@ public class Vision extends Submodule {
 
     @Override
     public void onStart(double timestamp) {
+        System.out.println("Getting Cameras");
+        cameraSubTables = getCameraNames();
         firsttimestamp = timestamp;
     }
 
@@ -188,7 +188,9 @@ public class Vision extends Submodule {
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
         // System.out.println(cameraNum);
+        // SmartDashboard.putNumber("Number of Seen Tags", aprilTagIDs.length);
         if (aprilTagIDs.length != 0)
+            
             updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
                 VisionConstants.CAMERAANGLES[cameraNum],
                 cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
@@ -212,7 +214,7 @@ public class Vision extends Submodule {
 
 
     private String[] getCameraNames() {
-        return getValue("CameraNames").getStringArray(new String[0]);
+        return getValue("CameraNames").getStringArray(new String[] {"Camera 0", "Camera 1"});
     }
 
     // private void updatePose(double[] cameraTranslationZ, double[]
@@ -270,6 +272,7 @@ public class Vision extends Submodule {
 
             // Create transformation of robot with respect to the apriltag, angle is the
             // corrected angle based on apriltag relative pose
+            // SmartDashboard.putBoolean("Available Sample?", angleInterpolate.getSample(timestamp).isPresent());
             if (angleInterpolate.getSample(timestamp).isPresent() && confidenceNT[aTagID]>0) {
                 // double pigeonAngle = pigeon.getAngle();
                 // Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);

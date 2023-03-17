@@ -707,7 +707,7 @@ public class Arm extends Submodule {
 
     public double calculateWristRelativeAngle(double targetAngle) {
         double relativeAngle = targetAngle - (mUpperDesiredPosition * ArmConstants.TICKS_TO_DEGREES);
-        System.out.println(relativeAngle);
+        // System.out.println(relativeAngle);
         return relativeAngle;
     }
 
