@@ -103,7 +103,7 @@ public class Vision extends Submodule {
         pigeon = new WPI_Pigeon2_Helper(SwerveConstants.IMU_ID, Constants.CANBUS_STRING);
         aprilTagGlobalPoses = GenerateAprilTagPoses(VisionConstants.APRILTAGPATH);
         int numAprilTags = aprilTagGlobalPoses.length;
-        angleInterpolate = TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
+        // angleInterpolate = TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
         // angleHistory = new Rotation2d[VisionConstants.ANGLEHISTNUM];
         // timestampHistory = new double[VisionConstants.ANGLEHISTNUM];
         xTranslationNT = new double[numAprilTags];
@@ -128,8 +128,7 @@ public class Vision extends Submodule {
 
     @Override
     public void onInit() {
-        System.out.println("Getting Cameras");
-        cameraSubTables = getCameraNames();
+        angleInterpolate = TimeInterpolatableBuffer.createBuffer(VisionConstants.ANGLEHISTSECS);
         
         // aprilYawFilter.reset();
         // for (String cameraSubTable : cameraSubTables) {
@@ -142,6 +141,8 @@ public class Vision extends Submodule {
 
     @Override
     public void onStart(double timestamp) {
+        System.out.println("Getting Cameras");
+        cameraSubTables = getCameraNames();
         firsttimestamp = timestamp;
     }
 
@@ -174,7 +175,7 @@ public class Vision extends Submodule {
 
     }
 
-    private synchronized void aprilDetect(NetworkTable cameraSubTable) {
+    private void aprilDetect(NetworkTable cameraSubTable) {
         // System.out.println("Detecting Apriltags");
         // System.out.println("Camera Subtable " +
         // cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[1])[0]);
@@ -187,7 +188,9 @@ public class Vision extends Submodule {
         confidenceNT = cameraSubTable.getEntry("Confidence").getDoubleArray(new double[aprilTagIDs.length]);
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
         // System.out.println(cameraNum);
+        // SmartDashboard.putNumber("Number of Seen Tags", aprilTagIDs.length);
         if (aprilTagIDs.length != 0)
+            
             updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
                 VisionConstants.CAMERAANGLES[cameraNum],
                 cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
@@ -211,7 +214,7 @@ public class Vision extends Submodule {
 
 
     private String[] getCameraNames() {
-        return getValue("CameraNames").getStringArray(new String[0]);
+        return getValue("CameraNames").getStringArray(new String[] {"Camera 0", "Camera 1"});
     }
 
     // private void updatePose(double[] cameraTranslationZ, double[]
@@ -239,7 +242,7 @@ public class Vision extends Submodule {
     // robotRelativePose = new Pose2d(-cameraTranslationZ[aTagID],
     // -cameraTranslationX[aTagID],new Rotation2d(aTagRotation[aTagID]));
 
-    private synchronized void updatePose(Pose2d cameraPose, Rotation2d cameraAngle, double timestamp) {
+    private void updatePose(Pose2d cameraPose, Rotation2d cameraAngle, double timestamp) {
         // Setup different poses of apriltags and robots relative to each other
 
         Pose2d newRobotPose;
@@ -269,6 +272,7 @@ public class Vision extends Submodule {
 
             // Create transformation of robot with respect to the apriltag, angle is the
             // corrected angle based on apriltag relative pose
+            // SmartDashboard.putBoolean("Available Sample?", angleInterpolate.getSample(timestamp).isPresent());
             if (angleInterpolate.getSample(timestamp).isPresent() && confidenceNT[aTagID]>0) {
                 // double pigeonAngle = pigeon.getAngle();
                 // Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
@@ -306,8 +310,8 @@ public class Vision extends Submodule {
                     angleError = 10;
                 }
             
-                // System.out.println("Aligning with Apriltag " + aTagID);
-                if (newRobotPose.getTranslation().getDistance(new Translation2d()) >0) {
+                // System.out.println("Aligning with Apriltag " + aTagID);,
+                if (newRobotPose.getTranslation().getDistance(new Translation2d()) >0 && newRobotPose.getTranslation().getDistance(new Translation2d())<30 ) {
                     robotDrive.addVisionMeasurement(newRobotPose, timestamp,
                         new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
                                 angleError));
