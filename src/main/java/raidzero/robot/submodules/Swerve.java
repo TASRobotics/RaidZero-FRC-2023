@@ -313,7 +313,8 @@ public class Swerve extends Submodule {
      * @return is over limit?
      */
     public boolean isOverLimit() {
-        return overLimit;
+        //return overLimit;
+        return false;
     }
 
     public void setPose(Pose2d pose) {
