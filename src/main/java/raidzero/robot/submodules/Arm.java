@@ -480,7 +480,7 @@ public class Arm extends Submodule {
     public void moveToPoint(double[] target) {
         mControlState = ControlState.CLOSED_LOOP;
         moveToAngle(invKin(target[0], target[1]), target[2]);
-
+        
     }
 
     public void moveToPoint(double[] target, boolean front) {
