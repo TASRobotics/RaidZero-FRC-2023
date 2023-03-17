@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import raidzero.robot.Constants.SwerveConstants;
+import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.submodules.Swerve;
 
 public class AutoAimController {
@@ -317,6 +318,32 @@ public class AutoAimController {
         System.out.println(mThetaController.getPositionError());
         System.out.println(mSwerve.getPose().getRotation().getRadians());
         System.out.println();
+    }
+
+    private double getXOfAutoAimLocation(AutoAimLocation location) {
+        Alliance alliance = DriverStation.getAlliance();
+        switch(location) {
+            case LL:
+                return alliance == Alliance.Blue ? VisionConstants.BLL : VisionConstants.RLL;
+            case LM:
+                return alliance == Alliance.Blue ? VisionConstants.BLM : VisionConstants.RLM;
+            case LR:
+                return alliance == Alliance.Blue ? VisionConstants.BLR : VisionConstants.RLR;
+            case ML:
+                return alliance == Alliance.Blue ? VisionConstants.BML : VisionConstants.RML;
+            case MM:
+                return alliance == Alliance.Blue ? VisionConstants.BMM : VisionConstants.RMM;
+            case MR:
+                return alliance == Alliance.Blue ? VisionConstants.BMR : VisionConstants.RMR;
+            case RL:
+                return alliance == Alliance.Blue ? VisionConstants.BRL : VisionConstants.RRL;
+            case RM:
+                return alliance == Alliance.Blue ? VisionConstants.BRM : VisionConstants.RRM;
+            case RR:
+                return alliance == Alliance.Blue ? VisionConstants.BRR : VisionConstants.RRR;
+            default:
+                return 0;
+        }
     }
 
     private double getYOfAutoAimLocation(AutoAimLocation location) {
