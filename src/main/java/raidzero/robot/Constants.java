@@ -54,8 +54,8 @@ public class Constants {
 
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
-        // public static final double WHEEL_DIAMETER_METERS = 0.1016;
-        public static final double WHEEL_DIAMETER_METERS = 0.095;
+        public static final double WHEEL_DIAMETER_METERS = 0.1016;
+        // public static final double WHEEL_DIAMETER_METERS = 0.095;
         public static final double MAX_VEL_MPS = 4.959668;
         // 20.75 OR 22.75 inches
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75);
