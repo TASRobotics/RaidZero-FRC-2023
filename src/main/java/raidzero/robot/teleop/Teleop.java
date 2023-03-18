@@ -84,7 +84,7 @@ public class Teleop {
         // }
 
         if (p.getXButtonPressed()) {
-            swerve.zeroHeading(blue ? 0 : 180);
+            swerve.zeroTele(blue ? 180 : 0);
             // swerve.zero();
         }
 

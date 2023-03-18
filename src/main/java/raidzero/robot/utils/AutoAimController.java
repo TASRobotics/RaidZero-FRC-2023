@@ -47,16 +47,15 @@ public class AutoAimController {
     /**
      * Create new Auto Aim Controller
      * 
-     * @param xController x PID controller (meters)
-     * @param yController y PID controller (meters)
+     * @param xController     x PID controller (meters)
+     * @param yController     y PID controller (meters)
      * @param thetaController theta PID controller (radians)
      */
     public AutoAimController(
-        PIDController xController, 
-        PIDController yController, 
-        ProfiledPIDController thetaController, 
-        TrajectoryConfig trajectoryConfig
-    ) {
+            PIDController xController,
+            PIDController yController,
+            ProfiledPIDController thetaController,
+            TrajectoryConfig trajectoryConfig) {
         mXController = xController;
         mYController = yController;
         mThetaController = thetaController;
@@ -70,20 +69,19 @@ public class AutoAimController {
     }
 
     // public Field2d getField() {
-    //     return field;
+    // return field;
     // }
 
     /**
      * Set target points (quintic hermite spline)
      * 
-     * @param points points along the path
+     * @param points     points along the path
      * @param endHeading end heading of chassis
      */
     public void setTarget(List<Pose2d> points, Rotation2d endHeading) {
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
-            points, 
-            mTrajectoryConfig
-        );
+                points,
+                mTrajectoryConfig);
 
         field.getObject("traj").setTrajectory(traj);
 
@@ -93,18 +91,17 @@ public class AutoAimController {
     /**
      * Set target points (cubic hermite spline)
      * 
-     * @param startPose starting position
+     * @param startPose   starting position
      * @param interPoints intermediate position
-     * @param endPose end position
-     * @param endHeading end heading
+     * @param endPose     end position
+     * @param endHeading  end heading
      */
     public void setTarget(Pose2d startPose, List<Translation2d> interPoints, Pose2d endPose, Rotation2d endHeading) {
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
-            startPose, 
-            interPoints, 
-            endPose, 
-            mTrajectoryConfig
-        );
+                startPose,
+                interPoints,
+                endPose,
+                mTrajectoryConfig);
         field.getObject("traj").setTrajectory(traj);
         followPath(traj, endHeading);
     }
@@ -113,23 +110,25 @@ public class AutoAimController {
      * Set target location
      * 
      * @param startPose starting position
-     * @param location desired auto aim location
+     * @param location  desired auto aim location
      */
     public void setTarget(Pose2d startPose, AutoAimLocation location) {
         Alliance alliance = DriverStation.getAlliance();
 
-        double fieldLengthMeters = 16.5; 
+        double fieldLengthMeters = 16.5;
         double blueLongThreshold = 3;
         double blueUltraThreshold = 5.5;
         double blueLeftThreshold = 3;
         double blueScoringX = 1.85;
+        double redScoringXOffset = -0.03;
         Translation2d blueLeftLongInterPoint = new Translation2d(2.6, 4.5);
         Translation2d blueRightLongInterPoint = new Translation2d(2.6, 1.35);
         Translation2d blueLeftUltraInterPoint = new Translation2d(4.5, 4.7);
         Translation2d blueRightUltraInterPoint = new Translation2d(4.5, 1.15);
 
-        Rotation2d defaultRotation = alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
-        
+        Rotation2d defaultRotation = alliance == Alliance.Blue ? Rotation2d.fromDegrees(180)
+                : Rotation2d.fromDegrees(0);
+
         boolean longPath = startPose.getX() > blueLongThreshold;
         boolean ultraLongPath = startPose.getX() > blueUltraThreshold;
         boolean left = startPose.getY() > blueLeftThreshold;
@@ -139,17 +138,21 @@ public class AutoAimController {
         Translation2d rightLongInterPoint = blueRightLongInterPoint;
         Translation2d leftUltraInterPoint = blueLeftUltraInterPoint;
         Translation2d rightUltraInterPoint = blueRightUltraInterPoint;
-        if(alliance == Alliance.Red) {
+        if (alliance == Alliance.Red) {
             longPath = startPose.getX() < fieldLengthMeters - blueLongThreshold;
             ultraLongPath = startPose.getX() < fieldLengthMeters - blueUltraThreshold;
             left = startPose.getY() < blueLeftThreshold;
 
-            leftLongInterPoint = new Translation2d(fieldLengthMeters - blueLeftLongInterPoint.getX(), blueRightLongInterPoint.getY());
-            rightLongInterPoint = new Translation2d(fieldLengthMeters - blueLeftLongInterPoint.getX(), blueLeftLongInterPoint.getY());
-            leftUltraInterPoint = new Translation2d(fieldLengthMeters - blueLeftUltraInterPoint.getX(), blueRightUltraInterPoint.getY());
-            rightUltraInterPoint = new Translation2d(fieldLengthMeters - blueLeftUltraInterPoint.getX(), blueLeftUltraInterPoint.getY());
+            leftLongInterPoint = new Translation2d(fieldLengthMeters - blueLeftLongInterPoint.getX(),
+                    blueRightLongInterPoint.getY());
+            rightLongInterPoint = new Translation2d(fieldLengthMeters - blueLeftLongInterPoint.getX(),
+                    blueLeftLongInterPoint.getY());
+            leftUltraInterPoint = new Translation2d(fieldLengthMeters - blueLeftUltraInterPoint.getX(),
+                    blueRightUltraInterPoint.getY());
+            rightUltraInterPoint = new Translation2d(fieldLengthMeters - blueLeftUltraInterPoint.getX(),
+                    blueLeftUltraInterPoint.getY());
 
-            scoringX = fieldLengthMeters - blueScoringX;
+            scoringX = fieldLengthMeters - blueScoringX + redScoringXOffset;
         }
 
         Pose2d start, end;
@@ -159,58 +162,64 @@ public class AutoAimController {
         end = new Pose2d(scoringX, getYOfAutoAimLocation(location), defaultRotation);
 
         // maybe check
-        if(!longPath) {
-            start = new Pose2d(start.getX(), start.getY(), new Rotation2d(end.getX() - start.getX(), end.getY() - start.getY()));
+        if (!longPath) {
+            start = new Pose2d(start.getX(), start.getY(),
+                    new Rotation2d(end.getX() - start.getX(), end.getY() - start.getY()));
         }
 
-        if(ultraLongPath) {
-            if(left) {
+        if (ultraLongPath) {
+            if (left) {
                 interPoints.add(leftUltraInterPoint);
-                start = new Pose2d(start.getX(), start.getY(), new Rotation2d(leftUltraInterPoint.getX() - start.getX(), leftUltraInterPoint.getY() - start.getY()));
+                start = new Pose2d(start.getX(), start.getY(), new Rotation2d(leftUltraInterPoint.getX() - start.getX(),
+                        leftUltraInterPoint.getY() - start.getY()));
             } else {
                 interPoints.add(rightUltraInterPoint);
-                start = new Pose2d(start.getX(), start.getY(), new Rotation2d(rightUltraInterPoint.getX() - start.getX(), rightUltraInterPoint.getY() - start.getY()));
+                start = new Pose2d(start.getX(), start.getY(), new Rotation2d(
+                        rightUltraInterPoint.getX() - start.getX(), rightUltraInterPoint.getY() - start.getY()));
             }
-        } 
+        }
 
-        if(longPath) {
-            if(left) {
+        if (longPath) {
+            if (left) {
                 interPoints.add(leftLongInterPoint);
             } else {
                 interPoints.add(rightLongInterPoint);
             }
-        } 
+        }
 
         Translation2d secondToLastPoint;
-        if(interPoints.size() > 0) {
+        if (interPoints.size() > 0) {
             secondToLastPoint = interPoints.get(0);
         } else {
             secondToLastPoint = new Translation2d(start.getX(), start.getY());
         }
 
-        end = new Pose2d(end.getX(), end.getY(), new Rotation2d(end.getX() - secondToLastPoint.getX(), end.getY() - secondToLastPoint.getY()));
+        end = new Pose2d(end.getX(), end.getY(),
+                new Rotation2d(end.getX() - secondToLastPoint.getX(), end.getY() - secondToLastPoint.getY()));
 
         int rotationMult = alliance == Alliance.Blue ? 1 : -1;
-        if(secondToLastPoint.getY() > end.getY()) {
-            end = new Pose2d(end.getX(), end.getY(), Rotation2d.fromDegrees(end.getRotation().getDegrees() - (30 * rotationMult)));
-        } else if(secondToLastPoint.getY() < end.getY()) {
-            end = new Pose2d(end.getX(), end.getY(), Rotation2d.fromDegrees(end.getRotation().getDegrees() + (30 * rotationMult)));
+        if (secondToLastPoint.getY() > end.getY()) {
+            end = new Pose2d(end.getX(), end.getY(),
+                    Rotation2d.fromDegrees(end.getRotation().getDegrees() - (30 * rotationMult)));
+        } else if (secondToLastPoint.getY() < end.getY()) {
+            end = new Pose2d(end.getX(), end.getY(),
+                    Rotation2d.fromDegrees(end.getRotation().getDegrees() + (30 * rotationMult)));
         }
 
-        Rotation2d endHeading = alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
+        //Rotation2d endHeading = alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
 
-        setTarget(start, interPoints, end, endHeading);
+        setTarget(start, interPoints, end, getAutoAimHeading(location));
     }
 
     /**
      * Set target location
      * 
-     * @param startPose start pose
-     * @param location desired end location
+     * @param startPose          start pose
+     * @param location           desired end location
      * @param accountForStartVel account for starting velocity
      */
     public void setTarget(Pose2d startPose, AutoAimLocation location, boolean accountForStartVel) {
-        if(accountForStartVel) {
+        if (accountForStartVel) {
             ChassisSpeeds speeds = SwerveConstants.KINEMATICS.toChassisSpeeds(mSwerve.getModuleStates());
             double speedMPS = Math.abs(Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
             mTrajectoryConfig.setStartVelocity(speedMPS);
@@ -229,9 +238,11 @@ public class AutoAimController {
 
     /** Update Controller */
     public void update() {
-        if(!mEnabled) return;
+        if (!mEnabled)
+            return;
         Trajectory.State currState = mTrajectory.sample(mTimer.get());
-        // field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(), mEndHeading);
+        // field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(),
+        // mEndHeading);
         // SmartDashboard.putData(field);
 
         ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
@@ -270,21 +281,23 @@ public class AutoAimController {
     /**
      * Calculate output speeds
      * 
-     * @param currPose current robot pose (meters)
-     * @param trajState desired trajectory state (meters)
+     * @param currPose       current robot pose (meters)
+     * @param trajState      desired trajectory state (meters)
      * @param desiredHeading desired final heading
      * @return output chassis speeds
      */
     private ChassisSpeeds calculate(Pose2d currPose, Trajectory.State trajState, Rotation2d desiredHeading) {
-        // double xFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getCos();
-        // double yFF = trajState.velocityMetersPerSecond * trajState.poseMeters.getRotation().getSin();
+        // double xFF = trajState.velocityMetersPerSecond *
+        // trajState.poseMeters.getRotation().getCos();
+        // double yFF = trajState.velocityMetersPerSecond *
+        // trajState.poseMeters.getRotation().getSin();
         double xFF = 0.0;
         double yFF = 0.0;
         double thetaFF = mThetaController.calculate(currPose.getRotation().getRadians());
 
         SmartDashboard.putNumber("desired theta setpoint", mThetaController.getSetpoint().position);
         SmartDashboard.putNumber("desired heading", desiredHeading.getRadians());
-    
+
         mPoseError = trajState.poseMeters.relativeTo(currPose);
         mRotationError = desiredHeading.minus(currPose.getRotation());
 
@@ -293,11 +306,10 @@ public class AutoAimController {
 
         // Return next output.%
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-            xFF + xFeedback, 
-            yFF + yFeedback, 
-            thetaFF, 
-            currPose.getRotation()
-        );
+                xFF + xFeedback,
+                yFF + yFeedback,
+                thetaFF,
+                currPose.getRotation());
     }
 
     /**
@@ -320,9 +332,9 @@ public class AutoAimController {
         System.out.println();
     }
 
-    private double getXOfAutoAimLocation(AutoAimLocation location) {
+    private double getYOfAutoAimLocation(AutoAimLocation location) {
         Alliance alliance = DriverStation.getAlliance();
-        switch(location) {
+        switch (location) {
             case LL:
                 return alliance == Alliance.Blue ? VisionConstants.BLL : VisionConstants.RLL;
             case LM:
@@ -346,29 +358,15 @@ public class AutoAimController {
         }
     }
 
-    private double getYOfAutoAimLocation(AutoAimLocation location) {
+    private Rotation2d getAutoAimHeading (AutoAimLocation location) {
         Alliance alliance = DriverStation.getAlliance();
-        switch(location) {
+        switch (location) {
             case LL:
-                return alliance == Alliance.Blue ? 4.75 : 1;
-            case LM:
-                return alliance == Alliance.Blue ? 4.5 : 1.5;
-            case LR:
-                return alliance == Alliance.Blue ? 4 : 2;
-            case ML:
-                return alliance == Alliance.Blue ? 3.5 : 2.5;
-            case MM:
-                return 3;
-            case MR:
-                return alliance == Alliance.Blue ? 2.5 : 3.5;
-            case RL:
-                return alliance == Alliance.Blue ? 2 : 4;
-            case RM:
-                return alliance == Alliance.Blue ? 1.5 : 4.5;
+                return alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(-22);
             case RR:
-                return alliance == Alliance.Blue ? 1 : 4.75;
+                return alliance == Alliance.Blue ? Rotation2d.fromDegrees(155) : Rotation2d.fromDegrees(0);
             default:
-                return 0;
+                return alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
         }
     }
 }

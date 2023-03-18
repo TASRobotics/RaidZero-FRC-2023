@@ -27,7 +27,7 @@ public class Constants {
      * Swerve Constants
      */
     public static final class SwerveConstants {
-        public static final double kOpenLoopRampRate = 0.0;
+        public static final double kOpenLoopRampRate = 0.25;
         public static final double kClosedLoopRampRate = 0.0;
         /** Device IDs */
         public static final int FRONT_LEFT_THROTTLE_ID = 1;
@@ -212,6 +212,7 @@ public class Constants {
         // public static final Pose2d RL_LOAD = new Pose2d(0.79, 5.99, Rotation2d.fromDegrees(180));
         // public static final Pose2d RR_LOAD = new Pose2d(0.79, 7.67, Rotation2d.fromDegrees(180));
 
+        //Blue Alliance
         public static final double BLL = 5.20;
         public static final double BLM = 4.66;
         public static final double BLR = 4.08;
@@ -221,16 +222,17 @@ public class Constants {
         public static final double BRL = 1.90;
         public static final double BRM = 1.36;
         public static final double BRR = 0.52;
-
-        public static final double RLL = 0.42;
-        public static final double RLM = 0.94;
-        public static final double RLR = 1.53;
-        public static final double RML = 2.12;
+        
+        //Red Alliance
+        public static final double RLL = 1.03;
+        public static final double RLM = 0.99;
+        public static final double RLR = 1.46;
+        public static final double RML = 2.17;
         public static final double RMM = 2.64;
-        public static final double RMR = 3.25;
-        public static final double RRL = 3.82;
+        public static final double RMR = 3.23;
+        public static final double RRL = 3.79;
         public static final double RRM = 4.26;
-        public static final double RRR = 4.72;
+        public static final double RRR = 4.77;
     }
 
     public static final class ArmConstants {

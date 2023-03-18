@@ -322,9 +322,4 @@ public class SwerveModule extends Submodule implements Sendable {
         rotor.enableVoltageCompensation(true);
         rotor.configSupplyCurrentLimit(SwerveConstants.ROTOR_CURRENT_LIMIT);
     }
-
-    public void setRotorRampRate(double val) {
-        throttle.configClosedloopRamp(val);
-    }
-
 }
