@@ -10,11 +10,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
+import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
+import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
+import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
 public class SingleConeClimbSequence extends AutoSequence {
@@ -35,13 +39,30 @@ public class SingleConeClimbSequence extends AutoSequence {
     public void sequence() {
         addAction(
                 new SeriesAction(Arrays.asList(
-                        new RunIntakeAction(0.2, 0.5),
+                        new RunIntakeAction(0.1, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
                                 ArmConstants.GRID_HIGH, true),
-                        new RunIntakeAction(1, -1),
-                        new ArmHomeAction(),
-                        new DrivePath(mOverRamp),
-                        new DrivePath(mBalance),
+                        new RunIntakeAction(0.5, -1),
+
+                        // Get Cube
+                        new ParallelAction(Arrays.asList(
+                                new AsyncArmHomeAction(),
+                                new DrivePath(mOverRamp),
+                                new SeriesAction(Arrays.asList(
+                                        new WaitForEventMarkerAction(mOverRamp, "fIntake",
+                                                mSwerve.getPathingTime()),
+                                        new MoveTwoPronged(
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
+                                new RunIntakeAction(3.0, -0.7))),
+
+                        // Balance
+                        new ParallelAction(Arrays.asList(
+                                new AsyncArmHomeAction(),
+                                new SeriesAction(Arrays.asList(
+                                        new DrivePath(mBalance),
+                                        new AutoBalanceAction(false))),
+                                new RunIntakeAction(3.0, -0.5))),
                         new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }
 

@@ -20,6 +20,7 @@ import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.auto.actions.WaitAction;
+import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
 public class ConeCubeSequence extends AutoSequence {
@@ -30,8 +31,8 @@ public class ConeCubeSequence extends AutoSequence {
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
     // private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance",
-    //         SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
-    //         SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
+    // SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
+    // SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
     private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Auto Balance",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
@@ -57,7 +58,8 @@ public class ConeCubeSequence extends AutoSequence {
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mOut),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitAction(1.3),
+                                        new WaitForEventMarkerAction(mOut, "fIntake",
+                                                mSwerve.getPathingTime()),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
@@ -78,9 +80,9 @@ public class ConeCubeSequence extends AutoSequence {
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
-                                new DrivePath(mBalance))),
-                        new AutoBalanceAction(false),
-                        new LambdaAction(() -> mSwerve.rotorBrake(true))
+                                new DrivePath(mBalance)))
+                        // new AutoBalanceAction(true),
+                        // new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
     }
