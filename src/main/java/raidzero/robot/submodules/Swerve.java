@@ -254,6 +254,11 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
+    public void zeroTele(double q) {
+        pigeon.setYaw(q, Constants.TIMEOUT_MS);
+        setPose(new Pose2d(new Translation2d(1.76,1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+    }
+
     public Field2d getField() {
         return fieldPose;
     }
@@ -514,18 +519,6 @@ public class Swerve extends Submodule {
         } else {
             topRightModule.testThrottleAndRotor(throttleOutput, rotorOutput);
         }
-    }
-
-    /**
-     * Set drive throttle ramp rate
-     * 
-     * @param val ramp rate (seconds to full speed)
-     */
-    public void setThrottleRampRate(double val) {
-        topRightModule.setRotorRampRate(val);
-        topLeftModule.setRotorRampRate(val);
-        bottomRightModule.setRotorRampRate(val);
-        bottomLeftModule.setRotorRampRate(val);
     }
 
     /**

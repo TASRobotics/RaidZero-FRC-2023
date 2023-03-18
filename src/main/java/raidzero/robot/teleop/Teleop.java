@@ -84,7 +84,7 @@ public class Teleop {
         // }
 
         if (p.getXButtonPressed()) {
-            swerve.zeroHeading(blue ? 0 : 180);
+            swerve.zeroTele(blue ? 180 : 0);
             // swerve.zero();
         }
 
@@ -258,14 +258,12 @@ public class Teleop {
 
     boolean buttonPressed = false;
     boolean wasPreviouslyPressed = false;
-    boolean hPickup = false;
 
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
-            hPickup = true;
             // Safe Human Pickup
             // arm.configSmartMotionConstraints(
             // ArmConstants.LOWER_MAX_VEL * 1.5,
