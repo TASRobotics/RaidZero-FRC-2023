@@ -118,7 +118,7 @@ public class LinkSequence extends AutoSequence {
                                 new ArmHomeAction(),
                                 new SeriesAction(Arrays.asList(
                                     new DrivePath(mBalance),
-                                    new AutoBalanceAction(true))
+                                    new AutoBalanceAction(false))
                                 ))),
                         new LambdaAction(() -> mSwerve.rotorBrake(true))
 
