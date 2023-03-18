@@ -62,7 +62,7 @@ public class SingleConeClimbSequence extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mBalance),
                                         new AutoBalanceAction(false))),
-                                new RunIntakeAction(3.0, -0.5))),
+                                new RunIntakeAction(3.0, -0.7))),
                         new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }
 

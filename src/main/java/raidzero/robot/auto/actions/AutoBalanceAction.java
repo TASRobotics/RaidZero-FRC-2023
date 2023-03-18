@@ -1,18 +1,21 @@
 package raidzero.robot.auto.actions;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
 
 public class AutoBalanceAction implements Action {
     private static final Swerve mSwerve = Swerve.getInstance();
     private Timer timer = new Timer();
-
+    private Alliance alliance;
+    private boolean blue = false;
     private double mDuration, mSpeed, reverse;
 
     public AutoBalanceAction(boolean opp) {
-        reverse = opp ? -1: 1;
+        blue = DriverStation.getAlliance() == Alliance.Blue;
+        reverse = opp ? (blue ? 1 : -1) : (blue ? -1 : 1);
     }
 
     @Override
