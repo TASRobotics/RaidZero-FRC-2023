@@ -64,9 +64,11 @@ public class Intake extends Submodule {
         }
         if (mControlState == ControlState.OPEN_LOOP) {
             if(mPercentOut > 0.05) {
+                mLights.setColor(255, 255, 0);
+            } else if(mPercentOut < -0.05) {
                 mLights.setColor(255, 0, 255);
             } else {
-                mLights.setColor(255, 255, 0);
+                mLights.setColor(0, 0, 0);
             }
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
