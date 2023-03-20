@@ -182,6 +182,9 @@ public class Constants {
 
         public static final double CONE_PIXELS_TO_METERS = 0.001;
 
+        public static final double POSE_MAX_DISTANCE = 30;
+        public static final double POSE_MAX_COUNT = 50;
+
         /**
          * Auto Alignment Constants
          */

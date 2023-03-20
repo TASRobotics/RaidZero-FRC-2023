@@ -52,10 +52,6 @@ public class Multithreading implements Runnable{
 
     @Override
     public void run(){
-        updatePose();
-    }
-
-    private void updatePose() {
-        swerve.addVisionMeasurement(newRobotPose, timestamp,errors);
+        swerve.addVisionMeasurement(newRobotPose, timestamp, errors);
     }
 }
