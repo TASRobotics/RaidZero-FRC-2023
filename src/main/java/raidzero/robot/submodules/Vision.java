@@ -333,9 +333,9 @@ public class Vision extends Submodule{
             
                 // System.out.println("Aligning with Apriltag " + aTagID);,
                 if (newRobotPose.getTranslation().getDistance(new Translation2d()) >0 && newRobotPose.getTranslation().getDistance(new Translation2d())<30 ) {
-                    robotDrive.addVisionMeasurement(newRobotPose, timestamp,
-                        new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
-                                angleError));
+                    // robotDrive.addVisionMeasurement(newRobotPose, timestamp,
+                    //     new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
+                    //             angleError));
                 }
                 
                 
