@@ -22,7 +22,7 @@ public class AutoRunner {
             new SingleConeClimbSequence(),
             new ConeCubeClimbSequence(),
             new ConeCubeSequence(),
-            new ConeCubeClimbSequenceRed(),
+            // new ConeCubeClimbSequenceRed(),
             new LinkSequence()
     };
 

@@ -51,6 +51,7 @@ import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.utils.MathTools;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -153,8 +154,8 @@ public class Vision extends Submodule{
 
     @Override
     public void update(double timestamp) {
-        angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
-        updateRobotPose();
+        // angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
+        // updateRobotPose();
         // timePublisher.set(timestamp);
         SmartDashboard.putNumber("RobotTime", timestamp);
         
@@ -195,25 +196,14 @@ public class Vision extends Submodule{
         // System.out.println(cameraNum);
         // SmartDashboard.putNumber("Number of Seen Tags", aprilTagIDs.length);
         if (aprilTagIDs.length != 0){
-            Pose2d cameraPose = (new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d()));
-            Rotation2d cameraRotation2d = VisionConstants.CAMERAANGLES[cameraNum];
-            double timestamp = cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp);
-            Multithreading multithreadingRunnable = new Multithreading(cameraSubTable, cameraPose, cameraRotation2d, timestamp);
-            
-            Thread addThread = new Thread(multithreadingRunnable);
-            addThread.start();
+            // Pose2d cameraPose = (new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d()));
+            // Rotation2d cameraRotation2d = VisionConstants.CAMERAANGLES[cameraNum];
+            // double timestamp = cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp);
 
-            if (!blockingQueue.offer(addThread)){
-                Thread removeThread = blockingQueue.poll();
-                if (removeThread != null){
-                    removeThread.interrupt();
-                }
-                blockingQueue.offer(addThread);
-            }
 
-            // updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
-            //     VisionConstants.CAMERAANGLES[cameraNum],
-            //     cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
+            updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
+                VisionConstants.CAMERAANGLES[cameraNum],
+                cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
         }
     }
 
@@ -265,7 +255,8 @@ public class Vision extends Submodule{
 
     private void updatePose(Pose2d cameraPose, Rotation2d cameraAngle, double timestamp) {
         // Setup different poses of apriltags and robots relative to each other
-
+        Timer calcTime = new Timer();
+        calcTime.start();
         Pose2d newRobotPose;
 
 
@@ -333,6 +324,20 @@ public class Vision extends Submodule{
             
                 // System.out.println("Aligning with Apriltag " + aTagID);,
                 if (newRobotPose.getTranslation().getDistance(new Translation2d()) >0 && newRobotPose.getTranslation().getDistance(new Translation2d())<30 ) {
+                    SmartDashboard.putNumber("TimetoCalc", calcTime.get());
+                    Multithreading multithreadingRunnable = new Multithreading(newRobotPose, timestamp, new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
+                                angleError));
+            
+                    Thread addThread = new Thread(multithreadingRunnable);
+                    addThread.run();
+        
+                    if (!blockingQueue.offer(addThread)){
+                        Thread removeThread = blockingQueue.poll();
+                        if (removeThread != null){
+                            removeThread.interrupt();
+                        }
+                        blockingQueue.offer(addThread);
+                    }
                     // robotDrive.addVisionMeasurement(newRobotPose, timestamp,
                     //     new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
                     //             angleError));

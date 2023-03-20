@@ -54,73 +54,73 @@ public class LinkSequence extends AutoSequence {
 
     @Override
     public void sequence() {
-        addAction(
-                new SeriesAction(Arrays.asList(
-                        // Score Cone
-                        new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_REV_GRID_HIGH,
-                                ArmConstants.REV_GRID_HIGH, false),
-                        new RunIntakeAction(0.2, -1),
+        // addAction(
+        //         new SeriesAction(Arrays.asList(
+        //                 // Score Cone
+        //                 new RunIntakeAction(0.1, 0.5),
+        //                 new MoveTwoPronged(ArmConstants.INTER_REV_GRID_HIGH,
+        //                         ArmConstants.REV_GRID_HIGH, false),
+        //                 new RunIntakeAction(0.2, -1),
 
-                        // Go To Cube + Scoop
-                        new ParallelAction(Arrays.asList(
-                                new AsyncArmHomeAction(),
-                                new DrivePath(mFirstPickup),
-                                new SeriesAction(Arrays.asList(
-                                        new WaitAction(1.3),
-                                        new MoveTwoPronged(
-                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, -0.7))),
+        //                 // Go To Cube + Scoop
+        //                 new ParallelAction(Arrays.asList(
+        //                         new AsyncArmHomeAction(),
+        //                         new DrivePath(mFirstPickup),
+        //                         new SeriesAction(Arrays.asList(
+        //                                 new WaitAction(1.3),
+        //                                 new MoveTwoPronged(
+        //                                         ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+        //                                         ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
+        //                         new RunIntakeAction(2.5, -0.7))),
 
-                        // Return to community 
-                        new ParallelAction(Arrays.asList(
-                                new AsyncArmHomeAction(),
-                                new DrivePath(mFirstScore),
-                                new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mFirstScore, "cScore", mSwerve.getPathingTime()),
-                                        new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
-                                                ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(2.0, -0.1))),
+        //                 // Return to community 
+        //                 new ParallelAction(Arrays.asList(
+        //                         new AsyncArmHomeAction(),
+        //                         new DrivePath(mFirstScore),
+        //                         new SeriesAction(Arrays.asList(
+        //                                 new WaitForEventMarkerAction(mFirstScore, "cScore", mSwerve.getPathingTime()),
+        //                                 new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
+        //                                         ArmConstants.CUBE_GRID_HIGH, true))),
+        //                         new RunIntakeAction(2.0, -0.1))),
 
-                        // Score Cube
-                        new RunIntakeAction(0.2, 0.5),
+        //                 // Score Cube
+        //                 new RunIntakeAction(0.2, 0.5),
 
-                        // Go To Second Cone + Scoop
-                        new ParallelAction(Arrays.asList(
-                                new AsyncArmHomeAction(),
-                                new DrivePath(mSecondPickup),
-                                new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mSecondPickup, "fIntake",
-                                                mSwerve.getPathingTime()),
-                                        new MoveTwoPronged(
-                                                ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE,
-                                                ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, 1.0))),
+        //                 // Go To Second Cone + Scoop
+        //                 new ParallelAction(Arrays.asList(
+        //                         new AsyncArmHomeAction(),
+        //                         new DrivePath(mSecondPickup),
+        //                         new SeriesAction(Arrays.asList(
+        //                                 new WaitForEventMarkerAction(mSecondPickup, "fIntake",
+        //                                         mSwerve.getPathingTime()),
+        //                                 new MoveTwoPronged(
+        //                                         ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE,
+        //                                         ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE, false))),
+        //                         new RunIntakeAction(2.5, 1.0))),
 
-                        // Return to community
-                        new ParallelAction(Arrays.asList(
-                                new AsyncArmHomeAction(),
-                                new DrivePath(mSecondScore),
-                                new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mSecondScore, "cScore",
-                                                mSwerve.getPathingTime()),
-                                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                                ArmConstants.GRID_HIGH, true))),
-                                new RunIntakeAction(1.5, 0.35))),
+        //                 // Return to community
+        //                 new ParallelAction(Arrays.asList(
+        //                         new AsyncArmHomeAction(),
+        //                         new DrivePath(mSecondScore),
+        //                         new SeriesAction(Arrays.asList(
+        //                                 new WaitForEventMarkerAction(mSecondScore, "cScore",
+        //                                         mSwerve.getPathingTime()),
+        //                                 new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
+        //                                         ArmConstants.GRID_HIGH, true))),
+        //                         new RunIntakeAction(1.5, 0.35))),
 
-                        // Score Cone
-                        new RunIntakeAction(0.2, -1),
+        //                 // Score Cone
+        //                 new RunIntakeAction(0.2, -1),
 
-                        new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
-                                new SeriesAction(Arrays.asList(
-                                    new DrivePath(mBalance),
-                                    new AutoBalanceAction(false))
-                                ))),
-                        new LambdaAction(() -> mSwerve.rotorBrake(true))
+        //                 new ParallelAction(Arrays.asList(
+        //                         new ArmHomeAction(),
+        //                         new SeriesAction(Arrays.asList(
+        //                             new DrivePath(mBalance),
+        //                             new AutoBalanceAction(false))
+        //                         ))),
+        //                 new LambdaAction(() -> mSwerve.rotorBrake(true))
 
-                )));
+        //         )));
     }
 
     @Override

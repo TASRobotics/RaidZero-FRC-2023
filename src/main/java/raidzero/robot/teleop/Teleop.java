@@ -111,27 +111,27 @@ public class Teleop {
                     true);
         // }
 
-        if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
-                && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
-            fIntake = true;
-            arm.moveToPoint(
-                    ArmConstants.CUBE_DUMP, true);
-        }
-        if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
-            fIntake = true;
-            arm.moveTwoPronged(
-                    ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-                    ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-            intake.setPercentSpeed(-0.7);
-        } else if (arm.isSafe()) {
-            fIntake = false;
-        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
-            arm.goHome();
-            intake.setPercentSpeed(-0.7);
-        }
+        // if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
+        //         && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
+        //     fIntake = true;
+        //     arm.moveToPoint(
+        //             ArmConstants.CUBE_DUMP, true);
+        // }
+        // if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+        //     fIntake = true;
+        //     arm.moveTwoPronged(
+        //             ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+        //             ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
+        //     intake.setPercentSpeed(-0.7);
+        // } else if (arm.isSafe()) {
+        //     fIntake = false;
+        // } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
+        //     arm.goHome();
+        //     intake.setPercentSpeed(-0.7);
+        // }
 
-        swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
-                JoystickUtils.deadband(angularSpeed), true);
+        // swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
+        //         JoystickUtils.deadband(angularSpeed), true);
 
         // // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
@@ -275,24 +275,24 @@ public class Teleop {
                     new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
                             ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
                     false);
-        } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-                ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
-            d -= 0.01;
-            // Extended Human Pickup
-            arm.moveTwoPronged(
-                    ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-                    new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-                            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-                    false);
-        } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
-            d += 0.01;
-            // Extended Human Pickup
-            arm.moveTwoPronged(
-                    ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-                    new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-                            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-                    false);
+        // } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+        //         ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
+        //     d -= 0.01;
+        //     // Extended Human Pickup
+        //     arm.moveTwoPronged(
+        //             ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
+        //             new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+        //                     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
+        //             false);
+        // } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+        //     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
+        //     d += 0.01;
+        //     // Extended Human Pickup
+        //     arm.moveTwoPronged(
+        //             ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
+        //             new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+        //                     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
+        //             false);
         }
 
         // High Grid
