@@ -2,6 +2,10 @@ package raidzero.robot.submodules;
 
 import java.nio.file.Path;
 import java.util.EnumSet;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 
@@ -42,6 +46,7 @@ import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.CircularBuffer;
 import raidzero.robot.Constants;
+import raidzero.robot.Multithreading;
 import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.SwerveConstants;
@@ -49,7 +54,7 @@ import raidzero.robot.utils.MathTools;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Vision extends Submodule {
+public class Vision extends Submodule{
 
     private static final Swerve robotDrive = Swerve.getInstance();
     // private String tablename;
@@ -74,7 +79,7 @@ public class Vision extends Submodule {
     // private final DoublePublisher timePublisher;
     // private final DoubleSubscriber timeSubscriber;
 
-
+    private BlockingQueue<Thread> blockingQueue = new LinkedBlockingQueue<>(8);
 
     private WPI_Pigeon2_Helper pigeon;
 
@@ -189,11 +194,27 @@ public class Vision extends Submodule {
         int cameraNum = cameraSubTable.getPath().charAt(cameraSubTable.getPath().length() - 1) - '0';
         // System.out.println(cameraNum);
         // SmartDashboard.putNumber("Number of Seen Tags", aprilTagIDs.length);
-        if (aprilTagIDs.length != 0)
+        if (aprilTagIDs.length != 0){
+            Pose2d cameraPose = (new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d()));
+            Rotation2d cameraRotation2d = VisionConstants.CAMERAANGLES[cameraNum];
+            double timestamp = cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp);
+            Multithreading multithreadingRunnable = new Multithreading(cameraSubTable, cameraPose, cameraRotation2d, timestamp);
             
-            updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
-                VisionConstants.CAMERAANGLES[cameraNum],
-                cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
+            Thread addThread = new Thread(multithreadingRunnable);
+            addThread.start();
+
+            if (!blockingQueue.offer(addThread)){
+                Thread removeThread = blockingQueue.poll();
+                if (removeThread != null){
+                    removeThread.interrupt();
+                }
+                blockingQueue.offer(addThread);
+            }
+
+            // updatePose((new Pose2d()).plus(new Transform2d(VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),
+            //     VisionConstants.CAMERAANGLES[cameraNum],
+            //     cameraSubTable.getEntry("Timestamp").getDouble(firsttimestamp));
+        }
     }
 
     // /**
@@ -379,6 +400,11 @@ public class Vision extends Submodule {
     // return feedForward.times(x);
     // }
     // }
+
+    public Pose2d[] getAprilTagGlobalPoses(){
+        return aprilTagGlobalPoses;
+    }
+
     private static class AprilTagPoses extends Pose2d {
         private int ID;
 
