@@ -41,6 +41,7 @@ public class AutoAimController {
     private Field2d field;
 
     private boolean mEnabled = false;
+    private Rotation2d allianceOffset;
 
     private static final Swerve mSwerve = Swerve.getInstance();
 
@@ -291,9 +292,11 @@ public class AutoAimController {
         // trajState.poseMeters.getRotation().getCos();
         // double yFF = trajState.velocityMetersPerSecond *
         // trajState.poseMeters.getRotation().getSin();
+        
         double xFF = 0.0;
         double yFF = 0.0;
-        double thetaFF = mThetaController.calculate(currPose.getRotation().getRadians());
+        
+        double thetaFF = mThetaController.calculate(currPose.getRotation().minus(allianceOffset).getRadians());
 
         SmartDashboard.putNumber("desired theta setpoint", mThetaController.getSetpoint().position);
         SmartDashboard.putNumber("desired heading", desiredHeading.getRadians());
@@ -323,7 +326,10 @@ public class AutoAimController {
         mTimer.start();
         mTrajectory = trajectory;
         mEndHeading = endHeading;
-        mThetaController.setGoal(new TrapezoidProfile.State(mEndHeading.getRadians(), 0));
+        SmartDashboard.putNumber("End heading", mEndHeading.getRadians());
+        
+        mThetaController.setGoal(0);
+        // mThetaController.setGoal(new TrapezoidProfile.State(mEndHeading.getRadians(), 0));
         System.out.println(endHeading.getRadians());
         System.out.println(mThetaController.getGoal().position);
         System.out.println(mThetaController.calculate(mSwerve.getPose().getRotation().getRadians()));
@@ -360,6 +366,7 @@ public class AutoAimController {
 
     private Rotation2d getAutoAimHeading (AutoAimLocation location) {
         Alliance alliance = DriverStation.getAlliance();
+        allianceOffset = alliance == Alliance.Blue ? new Rotation2d(Math.toRadians(180)) : new Rotation2d();
         switch (location) {
             case LL:
                 return alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(-22);
@@ -368,5 +375,6 @@ public class AutoAimController {
             default:
                 return alliance == Alliance.Blue ? Rotation2d.fromDegrees(180) : Rotation2d.fromDegrees(0);
         }
+        
     }
 }
