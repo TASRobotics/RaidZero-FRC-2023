@@ -134,7 +134,8 @@ public class Constants {
                 0.5,
                 3.0,
                 STARTING_ROTATION);
-        private static final double MAX_ACCEL_DISTANCE = 6.0 * Math.pow(TIMEOUT_S, 2);
+        // private static final double MAX_ACCEL_DISTANCE = 6.0 * Math.pow(TIMEOUT_S, 2);
+        private static final double MAX_ACCEL_DISTANCE = 0.02;
         private static final double GYRO_ERROR_DEGREES_TIMEOUT = (0.4 / SECONDS_IN_MINUTE) * TIMEOUT_S;
         public static final double CONFIDENCE_TO_ERROR = 1.0;
         public static final Matrix<N3, N1> STATE_STDEVS_MATRIX = new MatBuilder<N3, N1>(
@@ -182,8 +183,13 @@ public class Constants {
 
         public static final double CONE_PIXELS_TO_METERS = 0.001;
 
-        public static final double POSE_MAX_DISTANCE = 30;
-        public static final double POSE_MAX_COUNT = 50;
+        public static final double MID_FIELD_X_POS = 8.3;
+        public static final double MID_FIELD_Y_POS = 4.2;
+        
+        public static final double ADD_VISION_TOLERANCE = 1.0;
+        public static final double RESET_TOLERANCE = 3.0;
+        
+        public static final int NUM_THREADS = 10;
 
         /**
          * Auto Alignment Constants
