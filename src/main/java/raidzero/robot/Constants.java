@@ -2,6 +2,8 @@ package raidzero.robot;
 
 import java.nio.file.Path;
 
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.math.MatBuilder;
@@ -280,8 +282,17 @@ public class Constants {
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
         public static final double[] GRID_HIGH = { 1.20, 1.30, 155 };
 
+        public static final double[] INTER_AUTON_GRID_HIGH = { 0.52, 1.25, 70 };
+        public static final double[] AUTON_GRID_HIGH = { 1.30, 1.30, 155 };
+
+        public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
+        public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
+
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
+
+        public static final double[] INTER_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
+        public static final double[] CUBE_GRID_MEDIUM = { 0.93, 0.85, 97 };
 
         public static final double[] INTER_FLOOR_INTAKE = { 0.84, 0.39, 45 };
         public static final double[] INTER2_FLOOR_INTAKE = { 1.12, 0.27, 90 };
@@ -293,7 +304,7 @@ public class Constants {
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
         public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
 
-        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
+        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
         public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.06, -125 };
 
         /**
@@ -358,21 +369,21 @@ public class Constants {
         public static final double Y_EXTENSION_LIMIT = 1.4;
 
         public static final double LOWER_KF = 0.000166;
-        public static final double LOWER_KP = 0.000088;
+        public static final double LOWER_KP = 0.0000727;
         public static final double LOWER_KI = 0.0;
         public static final double LOWER_KD = 0.00000;
         public static final double LOWER_MIN_VEL = 0.0;
-        public static final double LOWER_MAX_VEL = 3670;
-        public static final double LOWER_MAX_ACCEL = 2500;
+        public static final double LOWER_MAX_VEL = 5020;
+        public static final double LOWER_MAX_ACCEL = 3580;
         public static final double LOWER_MIN_ERROR = 0.0;
 
         public static final double UPPER_KF = 0.000166;
-        public static final double UPPER_KP = 0.000088;
+        public static final double UPPER_KP = 0.0000727;
         public static final double UPPER_KI = 0.0;
         public static final double UPPER_KD = 0.00000;
         public static final double UPPER_MIN_VEL = 0.0;
-        public static final double UPPER_MAX_VEL = 6900;
-        public static final double UPPER_MAX_ACCEL = 4570;
+        public static final double UPPER_MAX_VEL = 7900;
+        public static final double UPPER_MAX_ACCEL = 6100;
         public static final double UPPER_MIN_ERROR = 0.0;
 
         // Testing Speeds
@@ -423,13 +434,13 @@ public class Constants {
         public static final int SMART_MOTION_SLOT = 0;
 
         public static final double KF = 0.00009;
-        public static final double KP = 0.000106;
+        public static final double KP = 0.000097;
         public static final double KI = 0.0;
         public static final double KD = 0.0;
 
         public static final double MIN_VEL = 0.0;
-        public static final double MAX_VEL = 5200.0;
-        public static final double MAX_ACCEL = 4300.0;
+        public static final double MAX_VEL = 7270.0;
+        public static final double MAX_ACCEL = 6900.0;
         public static final double MIN_ERROR = 0.0;
 
         public static final double MAXWINDS = 0.6;
@@ -471,6 +482,15 @@ public class Constants {
 
     public static final class TOFSensorConstants {
         public static final int SENSOR_ID = 0;
+    }
+
+    public static final class LightsConstants {
+        public static final int CANDLE_ID = 0;
+        public static final boolean LOS_BEHAVIOR = true;
+        public static final LEDStripType LED_STRIP_TYPE = LEDStripType.GRB;
+        public static final double BRIGHTNESS_SCALAR = 1.0;
+        public static final boolean STATUS_LED_CONFIG = false;
+        public static final VBatOutputMode V_BAT_OUTPUT_MODE = VBatOutputMode.Off;
     }
 
     public static final String NETWORKTABLESNAME = "SmartDashboard";

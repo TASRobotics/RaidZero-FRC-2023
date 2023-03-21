@@ -12,15 +12,17 @@ public class AutoBalanceAction implements Action {
     private Alliance alliance;
     private boolean blue = false;
     private double mDuration, mSpeed, reverse;
+    private double threshold;
 
-    public AutoBalanceAction(boolean opp) {
+    public AutoBalanceAction(boolean opp, double t) {
         blue = DriverStation.getAlliance() == Alliance.Blue;
         reverse = opp ? (blue ? 1 : -1) : (blue ? -1 : 1);
+        threshold = t;
     }
 
     @Override
     public boolean isFinished() {
-        return Math.abs(mSwerve.getBeans()) > 20;
+        return Math.abs(mSwerve.getBeans()) > threshold;
     }
 
     @Override
