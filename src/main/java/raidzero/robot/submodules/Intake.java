@@ -39,6 +39,8 @@ public class Intake extends Submodule {
     private final RelativeEncoder mEncoder = mMotor.getEncoder();
     private final SparkMaxPIDController mPIDController = mMotor.getPIDController();
 
+    private Lights mLights = Lights.getInstance();
+
     @Override
     public void onInit() {
         mMotor.restoreFactoryDefaults();
@@ -58,8 +60,16 @@ public class Intake extends Submodule {
     public void run() {
         if (Math.abs(mPercentOut) < 0.05) {
             holdPosition();
+            mLights.setColor(0, 255, 0);
         }
         if (mControlState == ControlState.OPEN_LOOP) {
+            if(mPercentOut > 0.05) {
+                mLights.setColor(255, 255, 0);
+            } else if(mPercentOut < -0.05) {
+                mLights.setColor(255, 0, 255);
+            } else {
+                mLights.setColor(0, 0, 0);
+            }
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {

@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
@@ -46,11 +47,16 @@ public class Teleop {
 
     }
 
+    private Timer mTimer = new Timer();
+    private double p1Time = 0.0;
+    private double p3Time = 0.0;
     public void onLoop() {
         /**
          * p1 controls
          */
+        mTimer.restart();
         p1Loop(p1);
+        p1Time = mTimer.get();
         /**
          * p2 controls
          */
@@ -58,7 +64,16 @@ public class Teleop {
         /**
          * p3 controls
          */
+        mTimer.restart();
         p3Loop(p3);
+        p3Time = mTimer.get();
+
+        if(p1Time + p3Time > 0.02) {
+            System.out.println("(┬┬﹏┬┬)(╯°□°）╯︵ ┻━┻ಠ_ಠ(⊙_⊙;)( •_•)>⌐■-■");
+            System.out.println("P1 Time :: " + p1Time);
+            System.out.println("P3 Time :: " + p3Time);
+            System.out.println();
+        }
     }
 
     private double[] target = { 0, 0.15 };

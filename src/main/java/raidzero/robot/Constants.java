@@ -2,6 +2,8 @@ package raidzero.robot;
 
 import java.nio.file.Path;
 
+import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.CANdle.VBatOutputMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.revrobotics.SparkMaxLimitSwitch;
 import edu.wpi.first.math.MatBuilder;
@@ -475,6 +477,15 @@ public class Constants {
 
     public static final class TOFSensorConstants {
         public static final int SENSOR_ID = 0;
+    }
+
+    public static final class LightsConstants {
+        public static final int CANDLE_ID = 0;
+        public static final boolean LOS_BEHAVIOR = true;
+        public static final LEDStripType LED_STRIP_TYPE = LEDStripType.GRB;
+        public static final double BRIGHTNESS_SCALAR = 1.0;
+        public static final boolean STATUS_LED_CONFIG = false;
+        public static final VBatOutputMode V_BAT_OUTPUT_MODE = VBatOutputMode.Off;
     }
 
     public static final String NETWORKTABLESNAME = "SmartDashboard";

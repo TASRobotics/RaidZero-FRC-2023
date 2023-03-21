@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
     private static final Intake intake = Intake.getInstance();
     private static final Arm arm = Arm.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
+    private static final Lights lights = Lights.getInstance();
 
     private AutoRunner autoRunner;
 
@@ -42,7 +43,8 @@ public class Robot extends TimedRobot {
                 arm,
                 wrist,
                 intake,
-                vision
+                vision, 
+                lights
         );
         submoduleManager.onInit();
 
