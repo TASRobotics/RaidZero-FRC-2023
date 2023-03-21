@@ -81,7 +81,7 @@ public class ConeCubeClimbSequence extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance))),
-                        new AutoBalanceAction(true),
+                        new AutoBalanceAction(true, 20),
                         new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
