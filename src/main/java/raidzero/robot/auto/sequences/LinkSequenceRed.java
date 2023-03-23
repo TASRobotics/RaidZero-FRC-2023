@@ -26,7 +26,7 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class LinkSequenceBlue extends AutoSequence {
+public class LinkSequenceRed extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
     private PathPlannerTrajectory mFirstTurn = PathPlanner.loadPath("Link Turn Blue",
@@ -58,7 +58,10 @@ public class LinkSequenceBlue extends AutoSequence {
     // SwerveConstants.MAX_DRIVE_VEL_MPS * 3.0,
     // SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.5);
 
-    public LinkSequenceBlue() {
+    public LinkSequenceRed() {
+    }
+
+    public void transformTrajectories(){
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstTurn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstPickup, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstScore, DriverStation.getAlliance());
@@ -71,6 +74,7 @@ public class LinkSequenceBlue extends AutoSequence {
 
     @Override
     public void sequence() {
+        transformTrajectories();
         addAction(
                 new SeriesAction(Arrays.asList(
                         // Score Cone
@@ -135,38 +139,6 @@ public class LinkSequenceBlue extends AutoSequence {
                                         new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_MEDIUM,
                                                 ArmConstants.CUBE_GRID_MEDIUM, true)
                                 ))))
-
-                // new ParallelAction(Arrays.asList(
-                // new AsyncArmHomeAction(),
-                // new RunIntakeAction(0.7, -0.6),
-                // new SeriesAction(Arrays.asList(
-                // new DrivePath(mDriveThrough),
-                // // new AsyncArmHomeAction(),
-                // new AutoBalanceAction(true, 19.5),
-                // new LambdaAction(() -> mSwerve.rotorBrake(true)))),
-                // new SeriesAction(Arrays.asList(
-                // new WaitForEventMarkerAction(mDriveThrough, "cScore",
-                // mSwerve.getPathingTime()),
-                // new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_MEDIUM,
-                // ArmConstants.CUBE_GRID_MEDIUM, true),
-                // new WaitAction(1.0),
-                // new AsyncArmHomeAction()
-                // // new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_MEDIUM,
-                // // ArmConstants.CUBE_GRID_MEDIUM, true),
-                // )),
-                // new SeriesAction(Arrays.asList(
-                // new WaitForEventMarkerAction(mDriveThrough, "cPop",
-                // mSwerve.getPathingTime()),
-                // // Score Cube
-                // new AsyncRunIntakeAction(1.0)))))
-
-                // new ParallelAction(Arrays.asList(
-                // new ArmHomeAction(),
-                // new SeriesAction(Arrays.asList(
-                // new DrivePath(mBalance),
-                // new AutoBalanceAction(true))))),
-                // new LambdaAction(() -> mSwerve.rotorBrake(true))
-
                 )));
     }
 
@@ -176,6 +148,6 @@ public class LinkSequenceBlue extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Link Sequence Blue";
+        return "Link Sequence Red";
     }
 }
