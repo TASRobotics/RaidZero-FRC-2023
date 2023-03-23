@@ -1,10 +1,17 @@
 package raidzero.robot.submodules;
 
+import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.StrobeAnimation;
 
+import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.Constants.LightsConstants;
 
 public class Lights extends Submodule {
+    private enum ControlState {
+        PLAIN, ANIMATION
+    };
+
     private Lights() {}
 
     private static Lights instance = null;
@@ -16,18 +23,23 @@ public class Lights extends Submodule {
         return instance;
     }
 
-    private final CANdle candle = new CANdle(LightsConstants.CANDLE_ID);
+    private final CANdle mCANdle = new CANdle(LightsConstants.CANDLE_ID);
+    private final Timer mTimer = new Timer();
 
-    private int r, g, b;
+    private int mR, mG, mB;
+    private Animation mAnimation = new StrobeAnimation(0, 0, 0);
+    private double mBrightness = 1.0;
+    private boolean mFirstTimeNotDetected = false;
+    private ControlState mControlState = ControlState.PLAIN;
 
     @Override
     public void onInit() {
-        candle.configFactoryDefault();
-        candle.configLOSBehavior(LightsConstants.LOS_BEHAVIOR);
-        candle.configLEDType(LightsConstants.LED_STRIP_TYPE);
-        candle.configBrightnessScalar(LightsConstants.BRIGHTNESS_SCALAR);
-        candle.configStatusLedState(LightsConstants.STATUS_LED_CONFIG);
-        candle.configVBatOutput(LightsConstants.V_BAT_OUTPUT_MODE);
+        mCANdle.configFactoryDefault();
+        mCANdle.configLOSBehavior(LightsConstants.LOS_BEHAVIOR);
+        mCANdle.configLEDType(LightsConstants.LED_STRIP_TYPE);
+        mCANdle.configBrightnessScalar(LightsConstants.BRIGHTNESS_SCALAR);
+        mCANdle.configStatusLedState(LightsConstants.STATUS_LED_CONFIG);
+        mCANdle.configVBatOutput(LightsConstants.V_BAT_OUTPUT_MODE);
     }
 
     @Override
@@ -40,20 +52,55 @@ public class Lights extends Submodule {
 
     @Override
     public void run() {
-        candle.setLEDs(r, g, b);
+        mCANdle.configBrightnessScalar(mBrightness);
+        if(mControlState == ControlState.PLAIN) {
+            mCANdle.setLEDs(mR, mG, mB, 0, 8, 512);
+        } else if(mControlState == ControlState.ANIMATION) {
+            mCANdle.animate(mAnimation);
+        }
     }
 
     @Override
     public void stop() {
-        candle.setLEDs(0, 0, 0);
+        mCANdle.setLEDs(0, 0, 0);
     }
 
     @Override
     public void zero() {}
 
     public void setColor(int r, int g, int b) {
-        this.r = r;
-        this.g = g; 
-        this.b = b;
+        mControlState = ControlState.PLAIN;
+        mR = r;
+        mG = g; 
+        mB = b;
+    }
+
+    public void setAnimation(Animation animation) {
+        mAnimation = animation;
+    }
+
+    public void setBrightness(double num) {
+        mBrightness = num; 
+    }
+
+    public void apples(boolean isDetected) {
+        if(isDetected) {
+            setBrightness(1.0);
+            setColor(0, 255, 0);
+            mFirstTimeNotDetected = false;
+            return;
+        } 
+        if(!mFirstTimeNotDetected) {
+            mFirstTimeNotDetected = true;
+            mTimer.restart();
+        }
+        if(mTimer.get() > 1) {
+            setBrightness(1.0);
+            Animation animation = new StrobeAnimation(255, 0, 0, 0, 0.5, -1, 8);
+            setAnimation(animation);
+        } else {
+            setBrightness(mTimer.get());
+            setColor(0, 255, 0);
+        }
     }
 }
