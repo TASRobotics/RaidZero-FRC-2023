@@ -58,6 +58,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Vision extends Submodule{
 
     private static final Swerve robotDrive = Swerve.getInstance();
+    private static final Lights lights = Lights.getInstance();
     // private String tablename;
     private TimeInterpolatableBuffer<Rotation2d> angleInterpolate;
     // private UnscentedKalmanFilter<N2,N1,N1> aprilYawFilter;
@@ -170,7 +171,7 @@ public class Vision extends Submodule{
             SmartDashboard.putNumber("Cone Translation", getConeTranslation());
         }
 
-        // SmartDashboard.putBoolean("Apples?", !noApples());
+        SmartDashboard.putBoolean("Apples?", !noApples());
 
         // table.putValue("April Tag X Pose", robotPose.getX());
         // table.putValue("April Tag X Pose", robotPose.getX());
@@ -492,8 +493,9 @@ public class Vision extends Submodule{
      * @return whether aprilTagIds = 0
      */
     public boolean noApples() {
-        // return aprilTagIDs.length == 0;
-        return false;
+        boolean apples = aprilTagIDs.length > 0;
+        lights.apples(apples);
+        return !apples;
     }
 
     public double getConeTranslation() {
