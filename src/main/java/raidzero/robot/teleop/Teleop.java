@@ -50,6 +50,7 @@ public class Teleop {
     private Timer mTimer = new Timer();
     private double p1Time = 0.0;
     private double p3Time = 0.0;
+
     public void onLoop() {
         /**
          * p1 controls
@@ -68,8 +69,7 @@ public class Teleop {
         p3Loop(p3);
         p3Time = mTimer.get();
 
-        if(p1Time + p3Time > 0.02) {
-            System.out.println("(┬┬﹏┬┬)(╯°□°）╯︵ ┻━┻ಠ_ಠ(⊙_⊙;)( •_•)>⌐■-■");
+        if (p1Time + p3Time > 0.02) {
             System.out.println("P1 Time :: " + p1Time);
             System.out.println("P3 Time :: " + p3Time);
             System.out.println();
@@ -79,6 +79,7 @@ public class Teleop {
     private double[] target = { 0, 0.15 };
 
     private boolean aiming = false;
+    private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
     private void p1Loop(XboxController p) {
@@ -91,11 +92,12 @@ public class Teleop {
         }
         if (p.getBButtonPressed()) {
             aiming = false;
+            swerve.emptyBucket();
         }
 
-        if (p.getAButtonPressed()) {
-            noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
-        }
+        // if (p.getAButtonPressed()) {
+        // noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
+        // }
 
         if (p.getXButtonPressed()) {
             swerve.zeroTele(blue ? 180 : 0);
@@ -126,27 +128,24 @@ public class Teleop {
                     true);
         // }
 
-        // if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
-        //         && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
-        //     fIntake = true;
-        //     arm.moveToPoint(
-        //             ArmConstants.CUBE_DUMP, true);
-        // }
-        // if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
-        //     fIntake = true;
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-        //             ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-        //     intake.setPercentSpeed(-0.7);
-        // } else if (arm.isSafe()) {
-        //     fIntake = false;
-        // } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
-        //     arm.goHome();
-        //     intake.setPercentSpeed(-0.7);
-        // }
-
-        // swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
-        //         JoystickUtils.deadband(angularSpeed), true);
+        if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
+                && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
+            fIntake = true;
+            arm.moveToPoint(
+                    ArmConstants.CUBE_DUMP, true);
+        }
+        if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+            fIntake = true;
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                    ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
+            intake.setPercentSpeed(-0.7);
+        } else if (arm.isSafe()) {
+            fIntake = false;
+        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
+            arm.goHome();
+            intake.setPercentSpeed(-0.7);
+        }
 
         // // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
@@ -270,7 +269,7 @@ public class Teleop {
     private void p3Loop(GenericHID p) {
         // Human Pickup Station
         if (p.getRawButtonPressed(10) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Safe Human Pickup
             // arm.configSmartMotionConstraints(
@@ -279,10 +278,10 @@ public class Teleop {
             // ArmConstants.UPPER_MAX_VEL * 0.75,
             // ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-            arm.moveThreePronged(
-                    ArmConstants.INTER_HUMAN_PICKUP_STATION,
-                    ArmConstants.INTER2_HUMAN_PICKUP_STATION,
-                    ArmConstants.HUMAN_PICKUP_STATION, true);
+            // arm.moveThreePronged(
+            // ArmConstants.INTER_HUMAN_PICKUP_STATION,
+            // ArmConstants.INTER2_HUMAN_PICKUP_STATION,
+            // ArmConstants.HUMAN_PICKUP_STATION, true);
 
             // Extended Human Pickup
             arm.moveTwoPronged(
@@ -290,35 +289,40 @@ public class Teleop {
                     new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
                             ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
                     false);
-        // } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-        //         ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
-        //     d -= 0.01;
-        //     // Extended Human Pickup
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-        //             new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-        //                     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-        //             false);
-        // } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-        //     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
-        //     d += 0.01;
-        //     // Extended Human Pickup
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-        //             new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-        //                     ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-        //             false);
+        } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+                ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
+            d -= 0.01;
+            // Extended Human Pickup
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
+                    new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+                            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
+                    false);
+        } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+                ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] }, false)) {
+            d += 0.01;
+            // Extended Human Pickup
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
+                    new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
+                            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + d, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
+                    false);
         }
 
         // High Grid
         else if (p.getRawButtonPressed(14) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cone
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_HIGH,
-                    ArmConstants.GRID_HIGH,
-                    false);
+                    ArmConstants.GRID_HIGH, true);
+
+            // Rev Cone
+            // arm.moveTwoPronged(
+            // ArmConstants.INTER_REV_GRID_HIGH,
+            // ArmConstants.REV_GRID_HIGH,
+            // false);
 
             // Cube
             // arm.moveTwoPronged(
@@ -328,7 +332,7 @@ public class Teleop {
         }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_MEDIUM,
@@ -336,7 +340,7 @@ public class Teleop {
         }
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             // Cube Scoop
             // arm.moveThreePronged(
@@ -344,10 +348,6 @@ public class Teleop {
             // ArmConstants.INTER2_FLOOR_INTAKE,
             // ArmConstants.FLOOR_INTAKE, false);
 
-            // Cube
-            // arm.moveTwoPronged(
-            // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-            // ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
 
             // Flipped Cone
             arm.moveTwoPronged(
@@ -359,7 +359,7 @@ public class Teleop {
         }
         // Reverse Stage
         else if (p.getRawAxis(0) == 1 &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe())
+                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.reverseStage();
         }
