@@ -76,11 +76,24 @@ public class Lights extends Submodule {
     }
 
     public void setAnimation(Animation animation) {
+        mControlState = ControlState.ANIMATION;
         mAnimation = animation;
     }
 
     public void setBrightness(double num) {
         mBrightness = num; 
+    }
+
+    public void intake(double intake, double deadband) {
+        setBrightness(1.0);
+        if(intake > deadband) {
+            setColor(255, 255, 0);
+        } else if(intake < -deadband) {
+            setColor(255, 0, 255);
+        } else {
+            Animation animation = new StrobeAnimation(255, 165, 0, 0, 0.5, -1, 8);
+            setAnimation(animation);
+        }
     }
 
     public void apples(boolean isDetected) {

@@ -71,13 +71,7 @@ public class Intake extends Submodule {
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
-        if(mEncoder.getVelocity() > 100) {
-            mLights.setColor(255, 255, 0);
-        } else if(mEncoder.getVelocity() < -100) {
-            mLights.setColor(255, 0, 255);
-        } else {
-            mLights.setColor(0, 0, 0);
-        }
+        mLights.intake(mEncoder.getVelocity(), 50);
     }
 
     @Override
