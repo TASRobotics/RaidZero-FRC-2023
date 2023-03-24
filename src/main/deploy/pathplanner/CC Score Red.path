@@ -50,11 +50,11 @@
     {
       "anchorPoint": {
         "x": 14.75,
-        "y": 4.405784811569624
+        "y": 4.41
       },
       "prevControl": {
         "x": 13.834758169516338,
-        "y": 4.620393240786481
+        "y": 4.624608429216858
       },
       "nextControl": null,
       "holonomicAngle": 0.0,
@@ -72,7 +72,7 @@
   ],
   "markers": [
     {
-      "position": 0.824242424242427,
+      "position": 0.35,
       "names": [
         "cScore"
       ]

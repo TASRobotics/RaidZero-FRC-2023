@@ -63,13 +63,6 @@ public class Intake extends Submodule {
             mLights.setColor(0, 255, 0);
         }
         if (mControlState == ControlState.OPEN_LOOP) {
-            if(mPercentOut > 0.05) {
-                mLights.setColor(255, 255, 0);
-            } else if(mPercentOut < -0.05) {
-                mLights.setColor(255, 0, 255);
-            } else {
-                mLights.setColor(0, 0, 0);
-            }
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -77,6 +70,13 @@ public class Intake extends Submodule {
                     mDesiredPosition,
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
+        }
+        if(mEncoder.getVelocity() > 100) {
+            mLights.setColor(255, 255, 0);
+        } else if(mEncoder.getVelocity() < -100) {
+            mLights.setColor(255, 0, 255);
+        } else {
+            mLights.setColor(0, 0, 0);
         }
     }
 
