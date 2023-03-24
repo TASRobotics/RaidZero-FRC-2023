@@ -180,7 +180,7 @@ public class Swerve extends Submodule {
         else {
             control_state = "open loop";
         }
-        SmartDashboard.putString("control mode", control_state);
+       // SmartDashboard.putString("control mode", control_state);
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -204,9 +204,9 @@ public class Swerve extends Submodule {
         // setPose(vision.getRobotPose());
         // }
         double disp = odometry.getEstimatedPosition().getX() - prevX;
-        SmartDashboard.putNumber("disp", disp);
+        //SmartDashboard.putNumber("disp", disp);
         prevX = odometry.getEstimatedPosition().getX();
-        SmartDashboard.putNumber("prevX", prevX);
+        //SmartDashboard.putNumber("prevX", prevX);
         beans += deadband(pigeon.getPitch()) * disp;
         SmartDashboard.putNumber("beans", beans);
     }
@@ -439,7 +439,7 @@ public class Swerve extends Submodule {
         double thetaSpeed = thetaController.calculate(getPose().getRotation().getRadians(),
                 state.holonomicRotation.getRadians());
         // Math
-        SmartDashboard.putNumber("theta speed", thetaSpeed);
+        //SmartDashboard.putNumber("theta speed", thetaSpeed);
 
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,

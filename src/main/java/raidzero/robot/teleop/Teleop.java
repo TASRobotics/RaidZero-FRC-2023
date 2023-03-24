@@ -69,7 +69,6 @@ public class Teleop {
         //p3Time = mTimer.get();
 
         // if(p1Time + p3Time > 0.02) {
-        //     System.out.println("(┬┬﹏┬┬)(╯°□°）╯︵ ┻━┻ಠ_ಠ(⊙_⊙;)( •_•)>⌐■-■");
         //     System.out.println("P1 Time :: " + p1Time);
         //     System.out.println("P3 Time :: " + p3Time);
         //     System.out.println();

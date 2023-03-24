@@ -82,8 +82,6 @@ public class ConeCubeSequenceRed extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance)))
-                        // new AutoBalanceAction(true),
-                        // new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
     }

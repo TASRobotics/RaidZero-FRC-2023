@@ -53,7 +53,7 @@ public class Intake extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
     }
 
     @Override

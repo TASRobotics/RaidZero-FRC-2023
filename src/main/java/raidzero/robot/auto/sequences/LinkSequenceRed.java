@@ -32,7 +32,7 @@ public class LinkSequenceRed extends AutoSequence {
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.8,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link Score Red",
+    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link First Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
