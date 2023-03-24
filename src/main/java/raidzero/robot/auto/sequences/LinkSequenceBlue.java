@@ -110,7 +110,7 @@ public class LinkSequenceBlue extends AutoSequence {
                         // Go To Second Cube + Scoop
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new RunIntakeAction(0.5, 1.0),
+                                new RunIntakeAction(0.3, 1.0),
                                 new DrivePath(mSecondPickup),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
@@ -123,7 +123,7 @@ public class LinkSequenceBlue extends AutoSequence {
                         // Return to community
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new RunIntakeAction(0.7, -0.3),
+                                new RunIntakeAction(1.0, -0.3),
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mSecondScore),
                                         // Score Cube
