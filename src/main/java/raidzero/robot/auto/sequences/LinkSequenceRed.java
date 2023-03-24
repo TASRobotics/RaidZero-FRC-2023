@@ -57,8 +57,8 @@ public class LinkSequenceRed extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.2, -1),
 
                         // Go To Cube + Scoop

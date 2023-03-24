@@ -635,8 +635,8 @@ public class Arm extends Submodule {
     }
 
     public boolean atPosition(double[] target, boolean front) {
-        double reverse = front ? -1 : 1;
-        return (Math.abs(state[1].getX() - target[0] * reverse) < 0.1 && Math.abs(state[1].getY() - target[1]) < 0.1);
+        double r = front ? -1 : 1;
+        return (Math.abs(state[1].getX() - target[0] * r) < 0.1 && Math.abs(state[1].getY() - target[1]) < 0.1);
     }
 
     /**

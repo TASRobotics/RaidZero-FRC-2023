@@ -77,8 +77,8 @@ public class LinkSequenceBlue extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new RunIntakeAction(0.1, 0.5),
                                 new AsyncDrivePath(mFirstTurn),
-                                new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
-                                        ArmConstants.AUTON_GRID_HIGH, true))),
+                                new MoveTwoPronged(ArmConstants.INTER_AUTON_EXTENDED_GRID_HIGH,
+                                        ArmConstants.AUTON_EXTENDED_GRID_HIGH, true))),
 
                         new RunIntakeAction(0.2, -1),
 

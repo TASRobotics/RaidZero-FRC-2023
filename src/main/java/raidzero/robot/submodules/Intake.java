@@ -108,7 +108,7 @@ public class Intake extends Submodule {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(IntakeConstants.INVERSION);
-        mMotor.setSmartCurrentLimit(IntakeConstants.FREE_CURRENT_LIMIT);
+        mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT, IntakeConstants.STALL_RPM);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mPIDController.setFeedbackDevice(mEncoder);

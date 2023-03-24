@@ -40,8 +40,8 @@ public class SingleConeClimbSequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.5, -1),
 
                         // Get Cube
