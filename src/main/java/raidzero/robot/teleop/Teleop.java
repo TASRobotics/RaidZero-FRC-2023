@@ -348,39 +348,64 @@ public class Teleop {
             // ArmConstants.INTER_CUBE_GRID_HIGH,
             // ArmConstants.CUBE_GRID_HIGH,
             // true);
+        } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.GRID_HIGH[0],
+                ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
+                true)) {
+            dHighDelivery -= 0.01;
+
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_GRID_HIGH,
+                    new double[] { ArmConstants.GRID_HIGH[0],
+                            ArmConstants.GRID_HIGH[1] + dHighDelivery,
+                            ArmConstants.GRID_HIGH[2] },
+                    true);
+        } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.GRID_HIGH[0],
+                ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
+                true)) {
+            dHighDelivery += 0.01;
+
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_GRID_HIGH,
+                    new double[] { ArmConstants.GRID_HIGH[0],
+                            ArmConstants.GRID_HIGH[1] + dHighDelivery,
+                            ArmConstants.GRID_HIGH[2] },
+                    true);
         }
 
-        else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.GRID_HIGH[0],
-            ArmConstants.GRID_HIGH[1] + dHumanDelivery, ArmConstants.GRID_HIGH[2] },
-            false)) {
-        dHumanDelivery -= 0.01;
-        // Extended Human Pickup
-        arm.moveTwoPronged(
-                ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-                new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-                        ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + dHumanPickup,
-                        ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-                false);
-    } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-            ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + dHumanPickup, ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-            false)) {
-        dHumanPickup += 0.01;
-        // Extended Human Pickup
-        arm.moveTwoPronged(
-                ArmConstants.INTER_EXT_HUMAN_PICKUP_STATION,
-                new double[] { ArmConstants.EXT_HUMAN_PICKUP_STATION[0],
-                        ArmConstants.EXT_HUMAN_PICKUP_STATION[1] + dHumanPickup,
-                        ArmConstants.EXT_HUMAN_PICKUP_STATION[2] },
-                false);
-    }
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
             arm.moveTwoPronged(
                     ArmConstants.INTER_GRID_MEDIUM,
-                    ArmConstants.GRID_MEDIUM, true);
+                    new double[] { ArmConstants.GRID_MEDIUM[0],
+                            ArmConstants.GRID_MEDIUM[1] + dMediumDelivery,
+                            ArmConstants.GRID_MEDIUM[2] },
+                    true);
+        } else if (p1.getBackButtonPressed() && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
+                ArmConstants.GRID_MEDIUM[1] + dMediumDelivery, ArmConstants.GRID_MEDIUM[2] },
+                true)) {
+            dMediumDelivery -= 0.01;
+
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_GRID_MEDIUM,
+                    new double[] { ArmConstants.GRID_MEDIUM[0],
+                            ArmConstants.GRID_MEDIUM[1] + dMediumDelivery,
+                            ArmConstants.GRID_MEDIUM[2] },
+                    true);
+        } else if (p1.getStartButtonPressed() && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
+                ArmConstants.GRID_MEDIUM[1] + dMediumDelivery, ArmConstants.GRID_MEDIUM[2] },
+                true)) {
+            dMediumDelivery += 0.01;
+
+            arm.moveTwoPronged(
+                    ArmConstants.INTER_GRID_MEDIUM,
+                    new double[] { ArmConstants.GRID_MEDIUM[0],
+                            ArmConstants.GRID_MEDIUM[1] + dMediumDelivery,
+                            ArmConstants.GRID_MEDIUM[2] },
+                    true);
         }
+        
         // Floor Intake
         else if (p.getRawButtonPressed(16) &&
                 ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
