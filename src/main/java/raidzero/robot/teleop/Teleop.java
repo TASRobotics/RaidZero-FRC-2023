@@ -384,7 +384,7 @@ public class Teleop {
                             ArmConstants.GRID_MEDIUM[1] + dMediumDelivery,
                             ArmConstants.GRID_MEDIUM[2] },
                     true);
-        } else if (p.getRawButtonPressed(1) && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
+        } else if (p.getRawButtonPressed(2) && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
                 ArmConstants.GRID_MEDIUM[1] + dMediumDelivery, ArmConstants.GRID_MEDIUM[2] },
                 true)) {
             dMediumDelivery -= 0.05;
@@ -395,7 +395,7 @@ public class Teleop {
                             ArmConstants.GRID_MEDIUM[1] + dMediumDelivery,
                             ArmConstants.GRID_MEDIUM[2] },
                     true);
-        } else if (p.getRawButtonPressed(2) && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
+        } else if (p.getRawButtonPressed(1) && arm.atPosition(new double[] { ArmConstants.GRID_MEDIUM[0],
                 ArmConstants.GRID_MEDIUM[1] + dMediumDelivery, ArmConstants.GRID_MEDIUM[2] },
                 true)) {
             dMediumDelivery += 0.05;
