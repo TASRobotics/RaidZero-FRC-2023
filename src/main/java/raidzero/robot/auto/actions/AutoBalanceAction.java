@@ -22,7 +22,7 @@ public class AutoBalanceAction implements Action {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(mSwerve.getBeans()) > threshold;
+        return (Math.abs(mSwerve.getBeans()) > threshold);
     }
 
     @Override

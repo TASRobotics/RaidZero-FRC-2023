@@ -46,8 +46,8 @@ public class ConeCubeSequenceBlue extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.5, -1),
 
                         // Go To Cube + Scoop
@@ -70,10 +70,10 @@ public class ConeCubeSequenceBlue extends AutoSequence {
                                         new WaitAction(1.2),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(2, -0.2))),
+                                new RunIntakeAction(1.0, -0.3))),
 
                         // Score Cube
-                        new RunIntakeAction(0.3, 0.5),
+                        new RunIntakeAction(0.5, 1.0),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),

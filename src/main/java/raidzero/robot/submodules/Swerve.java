@@ -203,6 +203,8 @@ public class Swerve extends Submodule {
         // if(vision.getRobotPose() != null) {
         // setPose(vision.getRobotPose());
         // }
+
+        // Auto Balance Updates
         double disp = odometry.getEstimatedPosition().getX() - prevX;
         //SmartDashboard.putNumber("disp", disp);
         prevX = odometry.getEstimatedPosition().getX();
