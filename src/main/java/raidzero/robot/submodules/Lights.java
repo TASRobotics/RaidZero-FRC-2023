@@ -32,6 +32,7 @@ public class Lights extends Submodule {
     private boolean mFirstTimeNotDetected = false;
     private ControlState mControlState = ControlState.PLAIN;
     private ControlState mPrevControlState = ControlState.PLAIN;
+    private int prevNumber = 0;
 
     private int[] mPixels;
 
@@ -67,9 +68,8 @@ public class Lights extends Submodule {
         } else if(mControlState == ControlState.ANIMATION) {
             mCANdle.animate(mAnimation, LightsConstants.PRIMARY_ANIMATION_SLOT);
         } else if(mControlState == ControlState.CUSTOM_PIXELS) {
-            mCANdle.setLEDs(mR, mG, mB);
             for(int i : mPixels) {
-                mCANdle.setLEDs(mR, mG, mB, 0, i+8, 1);
+                mCANdle.setLEDs(mPixelR, mPixelG, mPixelB, 0, i+8, 1);
             }
         }
     }
@@ -144,10 +144,6 @@ public class Lights extends Submodule {
         mPixelB = b;
     }
 
-    public void setPixelBackground(int r, int g, int b) {
-        setColor(r, g, b);
-    }
-
     public void intake(double intake, double deadband) {
         setBrightness(1.0);
         if(intake > deadband) {
@@ -159,8 +155,33 @@ public class Lights extends Submodule {
             // Animation animation = new RainbowAnimation(1, 0.5, -1, false, 8);
             // setAnimation(animation);
             // enablePixels(255, 0, 0, 5, 12, 15);
-            setPixelBackground(211, 211, 211);
-            displayNumber(10, 255, 192, 203);
+            // displayNumber(4, 255, 0, 255);
+            if(!mFirstTimeNotDetected) {
+                mFirstTimeNotDetected = true;
+                mTimer.restart();
+            }
+            int num = ((int)mTimer.get()) % 5;
+            if(prevNumber != num) {
+                stop();
+            }
+            prevNumber = num;
+            switch(num) {
+                case 0:
+                    displayNumber(4, 255, 0, 255);
+                    break;
+                case 1:
+                    displayNumber(2, 255, 0, 255);
+                    break;
+                case 2:
+                    displayNumber(5, 255, 0, 255);
+                    break;
+                case 3:
+                    displayNumber(3, 255, 0, 255);
+                    break;
+                case 4:
+                    displayNumber(10, 255, 0, 255);
+                    break;
+            }
         }
     }
 
