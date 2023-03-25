@@ -490,6 +490,8 @@ public class Constants {
         public static final double BRIGHTNESS_SCALAR = 1.0;
         public static final boolean STATUS_LED_CONFIG = false;
         public static final VBatOutputMode V_BAT_OUTPUT_MODE = VBatOutputMode.Off;
+
+        public static final int PRIMARY_ANIMATION_SLOT = 0;
     }
 
     public static final String NETWORKTABLESNAME = "SmartDashboard";

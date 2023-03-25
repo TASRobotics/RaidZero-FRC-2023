@@ -2,19 +2,14 @@ package raidzero.robot.submodules;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.FireAnimation;
-import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
-import com.ctre.phoenix.led.TwinkleOffAnimation;
 
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.Constants.LightsConstants;
 
 public class Lights extends Submodule {
     private enum ControlState {
-        PLAIN, ANIMATION
+        PLAIN, ANIMATION, CUSTOM_PIXELS
     };
 
     private Lights() {}
@@ -31,12 +26,14 @@ public class Lights extends Submodule {
     private final CANdle mCANdle = new CANdle(LightsConstants.CANDLE_ID);
     private final Timer mTimer = new Timer();
 
-    private int mR, mG, mB;
+    private int mR, mG, mB, mPixelR, mPixelG, mPixelB;
     private Animation mAnimation = new StrobeAnimation(0, 0, 0);
     private double mBrightness = 1.0;
     private boolean mFirstTimeNotDetected = false;
     private ControlState mControlState = ControlState.PLAIN;
-    private boolean justCalledAnimation = false;
+    private ControlState mPrevControlState = ControlState.PLAIN;
+
+    private int[] mPixels;
 
     @Override
     public void onInit() {
@@ -58,11 +55,22 @@ public class Lights extends Submodule {
 
     @Override
     public void run() {
+        if(mPrevControlState != mControlState) {
+            stop();
+        }
+        mPrevControlState = mControlState;
+
         mCANdle.configBrightnessScalar(mBrightness);
         if(mControlState == ControlState.PLAIN) {
+            mCANdle.clearAnimation(LightsConstants.PRIMARY_ANIMATION_SLOT);
             mCANdle.setLEDs(mR, mG, mB, 0, 8, 512);
         } else if(mControlState == ControlState.ANIMATION) {
-            mCANdle.animate(mAnimation);
+            mCANdle.animate(mAnimation, LightsConstants.PRIMARY_ANIMATION_SLOT);
+        } else if(mControlState == ControlState.CUSTOM_PIXELS) {
+            mCANdle.setLEDs(mR, mG, mB);
+            for(int i : mPixels) {
+                mCANdle.setLEDs(mR, mG, mB, 0, i+8, 1);
+            }
         }
     }
 
@@ -90,21 +98,69 @@ public class Lights extends Submodule {
         mBrightness = num; 
     }
 
+    public void displayNumber(int num, int r, int g, int b) {
+        switch(num) {
+            case 0:
+                enablePixels(r, g, b, 1, 2, 4, 7, 11, 8, 15, 12, 18, 17);
+                break;
+            case 1:
+                enablePixels(r, g, b, 0, 7, 11, 10, 9, 8, 15, 12, 18, 16);
+                break;
+            case 2:
+                enablePixels(r, g, b, 18, 12, 11, 5, 9, 15, 16, 8, 7, 0);
+                break;
+            case 3:
+                enablePixels(r, g, b, 11, 4, 3, 10, 5, 2, 8, 7, 0);
+                break;
+            case 4:
+                enablePixels(r, g, b, 12, 13, 17, 14, 9, 6, 1, 4, 5, 7);
+                break;
+            case 5:
+                enablePixels(r, g, b, 11, 4, 3, 10, 9, 6, 1, 8, 7, 0);
+                break;
+            case 6:
+                enablePixels(r, g, b, 3, 4, 11, 12, 19, 18, 17, 14, 9, 6, 1);
+                break;
+            case 7:
+                enablePixels(r, g, b, 0, 7, 8, 15, 16);
+                break;
+            case 8:
+                enablePixels(r, g, b, 16, 15, 11, 4, 3, 17, 14, 10, 5, 2, 18, 1, 19, 12, 11, 7, 0);
+                break;
+            case 9:
+                enablePixels(r, g, b, 17, 11, 4, 15, 13, 9, 5, 6, 7);
+                break;
+            default:
+                enablePixels(r, g, b, 2, 3, 4, 18, 19, 12, 8, 6, 14);
+                break;
+        }
+    }
+
+    public void enablePixels(int r, int g, int b, int ... pixel) {
+        mControlState = ControlState.CUSTOM_PIXELS;
+        mPixels = pixel;
+        mPixelR = r;
+        mPixelG = g;
+        mPixelB = b;
+    }
+
+    public void setPixelBackground(int r, int g, int b) {
+        setColor(r, g, b);
+    }
+
     public void intake(double intake, double deadband) {
         setBrightness(1.0);
         if(intake > deadband) {
             setColor(255, 255, 0);
-            justCalledAnimation = false;
         } else if(intake < -deadband) {
             setColor(255, 0, 255);
-            justCalledAnimation = false;
-        } else if(justCalledAnimation) {
-            justCalledAnimation = true;
-            // Animation animation = new StrobeAnimation(255, 165, 0, 0, 0.5, -1, 8);
-            // Animation animation = new LarsonAnimation(255, 0, 0);
-            // Animation animation = new TwinkleOffAnimation(0, 255, 0, 0, 0.1, 512, TwinkleOffAnimation.TwinkleOffPercent.Percent18, 8);    
-            Animation animation = new RainbowAnimation(1, 1, -1, false, 8);
-            setAnimation(animation);
+        } 
+        else {
+            // Animation animation = new RainbowAnimation(1, 0.5, -1, false, 8);
+            // setAnimation(animation);
+            // enablePixels(255, 0, 0, 5, 12, 15);
+            setPixelBackground(211, 211, 211);
+            displayNumber(10, 255, 192, 203);
         }
     }
 
