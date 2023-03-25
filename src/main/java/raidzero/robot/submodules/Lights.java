@@ -2,7 +2,12 @@ package raidzero.robot.submodules;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.FireAnimation;
+import com.ctre.phoenix.led.LarsonAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
+import com.ctre.phoenix.led.TwinkleAnimation;
+import com.ctre.phoenix.led.TwinkleOffAnimation;
 
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.Constants.LightsConstants;
@@ -31,6 +36,7 @@ public class Lights extends Submodule {
     private double mBrightness = 1.0;
     private boolean mFirstTimeNotDetected = false;
     private ControlState mControlState = ControlState.PLAIN;
+    private boolean justCalledAnimation = false;
 
     @Override
     public void onInit() {
@@ -88,10 +94,16 @@ public class Lights extends Submodule {
         setBrightness(1.0);
         if(intake > deadband) {
             setColor(255, 255, 0);
+            justCalledAnimation = false;
         } else if(intake < -deadband) {
             setColor(255, 0, 255);
-        } else {
-            Animation animation = new StrobeAnimation(255, 165, 0, 0, 0.5, -1, 8);
+            justCalledAnimation = false;
+        } else if(justCalledAnimation) {
+            justCalledAnimation = true;
+            // Animation animation = new StrobeAnimation(255, 165, 0, 0, 0.5, -1, 8);
+            // Animation animation = new LarsonAnimation(255, 0, 0);
+            // Animation animation = new TwinkleOffAnimation(0, 255, 0, 0, 0.1, 512, TwinkleOffAnimation.TwinkleOffPercent.Percent18, 8);    
+            Animation animation = new RainbowAnimation(1, 1, -1, false, 8);
             setAnimation(animation);
         }
     }

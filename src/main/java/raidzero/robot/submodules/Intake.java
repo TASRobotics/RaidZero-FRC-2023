@@ -60,7 +60,6 @@ public class Intake extends Submodule {
     public void run() {
         if (Math.abs(mPercentOut) < 0.05) {
             holdPosition();
-            mLights.setColor(0, 255, 0);
         }
         if (mControlState == ControlState.OPEN_LOOP) {
             mMotor.set(mPercentOut);
@@ -71,7 +70,7 @@ public class Intake extends Submodule {
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
-        mLights.intake(mEncoder.getVelocity(), 50);
+        mLights.intake(mEncoder.getVelocity(), 20);
     }
 
     @Override
