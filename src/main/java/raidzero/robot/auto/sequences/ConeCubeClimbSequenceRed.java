@@ -71,13 +71,13 @@ public class ConeCubeClimbSequenceRed extends AutoSequence {
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mReturn),
                                 new SeriesAction(Arrays.asList(
-                                    new WaitForEventMarkerAction(mReturn, "cScore",
-                                    mSwerve.getPathingTime()),
+                                        new WaitForEventMarkerAction(mReturn, "cScore",
+                                                mSwerve.getPathingTime()),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(2, -0.2))),
+                                new RunIntakeAction(1.0, -0.3))),
                         // Score Cube
-                        new RunIntakeAction(0.3, 0.5),
+                        new RunIntakeAction(0.5, 1.0),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
