@@ -59,7 +59,7 @@ public class LinkSequenceRed extends AutoSequence {
                         new RunIntakeAction(0.1, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
                                 ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(0.2, -1),
+                        new RunIntakeAction(0.25, -1),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
@@ -71,7 +71,7 @@ public class LinkSequenceRed extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new AsyncRunIntakeAction(-1.0))),
+                                new AsyncRunIntakeAction(-0.7))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -95,7 +95,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncRunIntakeAction(-1.0),
+                                        new AsyncRunIntakeAction(-0.7),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))))),

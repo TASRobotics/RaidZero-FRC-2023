@@ -63,7 +63,7 @@ public class ConeCubeClimbSequenceBlue extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, -0.7))),
+                                new RunIntakeAction(2.5, -0.6))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(

@@ -85,14 +85,14 @@ public class Teleop {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
 
-        if (p.getYButton()) {
-            aiming = true;
-            // swerve.lockTo90();
-        }
-        if (p.getBButtonPressed()) {
-            aiming = false;
-            swerve.emptyBucket();
-        }
+        // if (p.getYButton()) {
+        //     aiming = true;
+        //     // swerve.lockTo90();
+        // }
+        // if (p.getBButtonPressed()) {
+        //     aiming = false;
+        //     swerve.emptyBucket();
+        // }
 
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();

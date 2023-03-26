@@ -26,7 +26,8 @@ import raidzero.robot.submodules.Swerve;
 public class ConeCubeClimbSequenceRed extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup Red", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup Red",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,

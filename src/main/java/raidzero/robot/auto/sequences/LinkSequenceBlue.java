@@ -80,7 +80,7 @@ public class LinkSequenceBlue extends AutoSequence {
                                 new MoveTwoPronged(ArmConstants.INTER_AUTON_EXTENDED_GRID_HIGH,
                                         ArmConstants.AUTON_EXTENDED_GRID_HIGH, true))),
 
-                        new RunIntakeAction(0.2, -1),
+                        new RunIntakeAction(0.25, -1),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
@@ -91,7 +91,7 @@ public class LinkSequenceBlue extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new AsyncRunIntakeAction(-1.0))),
+                                new AsyncRunIntakeAction(-0.7))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -110,12 +110,12 @@ public class LinkSequenceBlue extends AutoSequence {
                         // Go To Second Cube + Scoop
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new RunIntakeAction(0.3, 1.0),
+                                new RunIntakeAction(0.5, 1.0),
                                 new DrivePath(mSecondPickup),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncRunIntakeAction(-1.0),
+                                        new AsyncRunIntakeAction(-0.7),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))))),
@@ -123,7 +123,7 @@ public class LinkSequenceBlue extends AutoSequence {
                         // Return to community
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new RunIntakeAction(1.0, -0.3),
+                                new RunIntakeAction(0.7, -0.3),
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mSecondScore),
                                         // Score Cube
