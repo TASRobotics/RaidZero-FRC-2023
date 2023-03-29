@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import raidzero.robot.Constants.SwerveConstants;
+import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.ParallelAction;
@@ -35,7 +36,13 @@ public class TestSequence extends AutoSequence {
         // )
         // );
         addAction(
-                new DrivePath(mTrajectory)
+            new SeriesAction(Arrays.asList(
+                new AutoBalanceAction(false, 20),
+                new LambdaAction(() -> mSwerve.rotorBrake(true)
+            )))
+                //new DrivePath(mTrajectory)
+                
+                
         // new RunIntakeAction(5, 0.5)
         );
     }

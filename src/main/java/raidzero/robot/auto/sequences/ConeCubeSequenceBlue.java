@@ -23,7 +23,7 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class ConeCubeSequence extends AutoSequence {
+public class ConeCubeSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
     private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
@@ -34,7 +34,7 @@ public class ConeCubeSequence extends AutoSequence {
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    public ConeCubeSequence() {
+    public ConeCubeSequenceBlue() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
@@ -46,8 +46,8 @@ public class ConeCubeSequence extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.5, -1),
 
                         // Go To Cube + Scoop
@@ -70,16 +70,14 @@ public class ConeCubeSequence extends AutoSequence {
                                         new WaitAction(1.2),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(2, -0.2))),
+                                new RunIntakeAction(1.0, -0.3))),
 
                         // Score Cube
-                        new RunIntakeAction(0.3, 0.5),
+                        new RunIntakeAction(0.5, 1.0),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance)))
-                        // new AutoBalanceAction(true),
-                        // new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
     }
@@ -90,6 +88,6 @@ public class ConeCubeSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Sequence";
+        return "Cone Cube Sequence Blue";
     }
 }

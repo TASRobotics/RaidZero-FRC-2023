@@ -23,7 +23,7 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class ConeCubeClimbSequence extends AutoSequence {
+public class ConeCubeClimbSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
     private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
@@ -37,7 +37,7 @@ public class ConeCubeClimbSequence extends AutoSequence {
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    public ConeCubeClimbSequence() {
+    public ConeCubeClimbSequenceBlue() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
@@ -49,8 +49,8 @@ public class ConeCubeClimbSequence extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         // Score Cone
                         new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH,
-                                ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.5, -1),
 
                         // Go To Cube + Scoop
@@ -63,7 +63,7 @@ public class ConeCubeClimbSequence extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, -0.7))),
+                                new RunIntakeAction(2.5, -0.6))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -73,10 +73,10 @@ public class ConeCubeClimbSequence extends AutoSequence {
                                         new WaitAction(1.2),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(2, -0.2))),
+                                new RunIntakeAction(1.0, -0.3))),
 
                         // Score Cube
-                        new RunIntakeAction(0.3, 0.5),
+                        new RunIntakeAction(0.5, 1.0),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
@@ -93,6 +93,6 @@ public class ConeCubeClimbSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Climb Sequence";
+        return "Cone Cube Climb Sequence Blue";
     }
 }

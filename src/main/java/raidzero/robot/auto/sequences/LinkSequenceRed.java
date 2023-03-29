@@ -11,7 +11,6 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
-import raidzero.robot.auto.actions.AsyncDrivePath;
 import raidzero.robot.auto.actions.AsyncMoveTwoPronged;
 import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.AutoBalanceAction;
@@ -29,73 +28,50 @@ import raidzero.robot.submodules.Swerve;
 public class LinkSequenceRed extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mFirstTurn = PathPlanner.loadPath("Link Turn Blue",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.3,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.3);
-
-    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("Link First Pickup Blue",
+    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("CC Pickup Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.8,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link First Score Blue",
+    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link First Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Second Pickup Blue",
+    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Second Pickup Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.8);
 
-    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Second Score Blue",
+    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Second Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    private PathPlannerTrajectory mDriveThrough = PathPlanner.loadPath("Link Drive Through Blue",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 2.0,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.2);
-
-    // private PathPlannerTrajectory mBalance = PathPlanner.loadPath("Link Balance
-    // Blue",
-    // SwerveConstants.MAX_DRIVE_VEL_MPS * 3.0,
-    // SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.5);
-
     public LinkSequenceRed() {
-    }
-
-    public void transformTrajectories(){
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstTurn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstPickup, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstScore, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mSecondPickup, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mSecondScore, DriverStation.getAlliance());
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mDriveThrough, DriverStation.getAlliance());
-        // PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance,
-        // DriverStation.getAlliance());
     }
 
     @Override
     public void sequence() {
-        transformTrajectories();
         addAction(
                 new SeriesAction(Arrays.asList(
                         // Score Cone
-                        new ParallelAction(Arrays.asList(
-                                new RunIntakeAction(0.1, 0.5),
-                                new AsyncDrivePath(mFirstTurn),
-                                new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
-                                        ArmConstants.AUTON_GRID_HIGH, true))),
-
-                        new RunIntakeAction(0.2, -1),
+                        new RunIntakeAction(0.1, 0.5),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
+                        new RunIntakeAction(0.25, -1),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mFirstPickup),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mFirstPickup, "fIntake", mSwerve.getPathingTime()),
+                                        new WaitForEventMarkerAction(mFirstPickup, "fIntake",
+                                                mSwerve.getPathingTime()),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new AsyncRunIntakeAction(-1.0))),
+                                new AsyncRunIntakeAction(-0.7))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -104,12 +80,12 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mFirstScore),
                                         // Score Cube
-                                        new RunIntakeAction(0.5,1.0))),
+                                        new RunIntakeAction(0.5, 1.0))),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mFirstScore, "cScore", mSwerve.getPathingTime()),
+                                        new WaitForEventMarkerAction(mFirstScore, "cScore",
+                                                mSwerve.getPathingTime()),
                                         new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
-                                                ArmConstants.CUBE_GRID_HIGH, true)))
-                        )),
+                                                ArmConstants.CUBE_GRID_HIGH, true))))),
 
                         // Go To Second Cube + Scoop
                         new ParallelAction(Arrays.asList(
@@ -119,7 +95,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncRunIntakeAction(-1.0),
+                                        new AsyncRunIntakeAction(-0.7),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))))),
@@ -131,14 +107,20 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mSecondScore),
                                         // Score Cube
-                                        new RunIntakeAction(0.5,1.0),
+                                        new RunIntakeAction(0.5, 1.0),
                                         new ArmHomeAction())),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondScore, "cScore",
                                                 mSwerve.getPathingTime()),
                                         new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_MEDIUM,
-                                                ArmConstants.CUBE_GRID_MEDIUM, true)
-                                ))))
+                                                ArmConstants.CUBE_GRID_MEDIUM, true)))))
+
+                // new ParallelAction(Arrays.asList(
+                // new ArmHomeAction(),
+                // new DrivePath(mBalance)))
+                // new AutoBalanceAction(true),
+                // new LambdaAction(() -> mSwerve.rotorBrake(true))
+
                 )));
     }
 

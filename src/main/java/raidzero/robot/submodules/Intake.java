@@ -53,23 +53,15 @@ public class Intake extends Submodule {
 
     @Override
     public void update(double timestamp) {
-        SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("Intake current draw", mMotor.getOutputCurrent());
     }
 
     @Override
     public void run() {
         if (Math.abs(mPercentOut) < 0.05) {
             holdPosition();
-            mLights.setColor(0, 255, 0);
         }
         if (mControlState == ControlState.OPEN_LOOP) {
-            if(mPercentOut > 0.05) {
-                mLights.setColor(255, 255, 0);
-            } else if(mPercentOut < -0.05) {
-                mLights.setColor(255, 0, 255);
-            } else {
-                mLights.setColor(0, 0, 0);
-            }
             mMotor.set(mPercentOut);
             mPrevOpenLoopPosition = mEncoder.getPosition();
         } else if (mControlState == ControlState.CLOSED_LOOP) {
@@ -78,6 +70,7 @@ public class Intake extends Submodule {
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
+        mLights.intake(mEncoder.getVelocity(), 50);
     }
 
     @Override
@@ -114,7 +107,7 @@ public class Intake extends Submodule {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(IntakeConstants.INVERSION);
-        mMotor.setSmartCurrentLimit(IntakeConstants.FREE_CURRENT_LIMIT);
+        mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT, IntakeConstants.STALL_RPM);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mPIDController.setFeedbackDevice(mEncoder);

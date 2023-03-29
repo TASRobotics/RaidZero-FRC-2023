@@ -272,10 +272,13 @@ public class Constants {
         public static final double[] GRID_MEDIUM = { 0.93, 1.01, 155 };
 
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
-        public static final double[] GRID_HIGH = { 1.20, 1.30, 155 };
+        public static final double[] GRID_HIGH = { 1.25, 1.35, 155 };
+
+        public static final double[] INTER_AUTON_EXTENDED_GRID_HIGH = { 0.52, 1.25, 70 };
+        public static final double[] AUTON_EXTENDED_GRID_HIGH = { 1.30, 1.30, 155 };
 
         public static final double[] INTER_AUTON_GRID_HIGH = { 0.52, 1.25, 70 };
-        public static final double[] AUTON_GRID_HIGH = { 1.30, 1.30, 155 };
+        public static final double[] AUTON_GRID_HIGH = { 1.20, 1.30, 155 };
 
         public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
         public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
@@ -458,8 +461,9 @@ public class Constants {
 
         public static final boolean INVERSION = false;
 
-        public static final int STALL_CURRENT_LIMIT = 1;
+        public static final int STALL_CURRENT_LIMIT = 3;
         public static final int FREE_CURRENT_LIMIT = 5;
+        public static final int STALL_RPM = 100;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
         public static final double KF = 0.00005;
@@ -486,6 +490,8 @@ public class Constants {
         public static final double BRIGHTNESS_SCALAR = 1.0;
         public static final boolean STATUS_LED_CONFIG = false;
         public static final VBatOutputMode V_BAT_OUTPUT_MODE = VBatOutputMode.Off;
+
+        public static final int PRIMARY_ANIMATION_SLOT = 0;
     }
 
     public static final String NETWORKTABLESNAME = "SmartDashboard";
