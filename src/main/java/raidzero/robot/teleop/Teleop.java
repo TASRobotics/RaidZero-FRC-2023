@@ -138,12 +138,12 @@ public class Teleop {
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                     ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-            intake.setPercentSpeed(-0.50);
+            intake.setPercentSpeed(-0.80);
         } else if (arm.isSafe()) {
             fIntake = false;
         } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
             arm.goHome();
-            intake.setPercentSpeed(-0.50);
+            intake.setPercentSpeed(-0.80);
         }
 
         // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
@@ -446,7 +446,7 @@ public class Teleop {
         if (p.getRawButton(12)) {
             intake.setPercentSpeed(0.5);
         } else if (p.getRawButton(11)) {
-            intake.setPercentSpeed(-0.5);
+            intake.setPercentSpeed(-0.8);
         } else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
