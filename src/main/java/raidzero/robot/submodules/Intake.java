@@ -97,9 +97,9 @@ public class Intake extends Submodule {
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
         if (Math.signum(mPercentOut) < 0)
-            mDesiredPosition = mPrevOpenLoopPosition - 7;
+            mDesiredPosition = mPrevOpenLoopPosition - 1;
         else
-            mDesiredPosition = mPrevOpenLoopPosition + 3;
+            mDesiredPosition = mPrevOpenLoopPosition + 1;
     }
 
     /** Configure intake motor & integrated encoder/PID controller */
