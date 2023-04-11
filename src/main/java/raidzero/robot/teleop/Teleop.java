@@ -86,12 +86,12 @@ public class Teleop {
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
 
         // if (p.getYButton()) {
-        //     aiming = true;
-        //     // swerve.lockTo90();
+        // aiming = true;
+        // // swerve.lockTo90();
         // }
         // if (p.getBButtonPressed()) {
-        //     aiming = false;
-        //     swerve.emptyBucket();
+        // aiming = false;
+        // swerve.emptyBucket();
         // }
 
         // if (p.getAButtonPressed()) {
@@ -107,14 +107,10 @@ public class Teleop {
             intake.setPercentSpeed(0.5);
         }
 
-        if (p.getBButton()){
-            swerve.lockTo180();
-        }
-
-        // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
+        // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {r54te3
         // swerve.drive(0.2, 0, 0, true);
         // } else {
-        if (!aiming)
+        if (!aiming) {
             swerve.drive(
                     JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
@@ -123,7 +119,7 @@ public class Teleop {
                     JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
                             arm.slurping() * arm.delivering()),
                     true);
-        else
+        } else
             swerve.drive(
                     JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
@@ -142,12 +138,12 @@ public class Teleop {
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                     ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-            intake.setPercentSpeed(-0.80);
+            intake.setPercentSpeed(-0.8);
         } else if (arm.isSafe()) {
             fIntake = false;
         } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
             arm.goHome();
-            intake.setPercentSpeed(-0.80);
+            intake.setPercentSpeed(-0.8);
         }
 
         // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
@@ -353,29 +349,31 @@ public class Teleop {
             // ArmConstants.INTER_CUBE_GRID_HIGH,
             // ArmConstants.CUBE_GRID_HIGH,
             // true);
-        } 
-        // else if (p.getRawButtonPressed(3) && arm.atPosition(new double[] { ArmConstants.GRID_HIGH[0],
-        //         ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
-        //         true)) {
-        //     dHighDelivery -= 0.05;
+        }
+        // else if (p.getRawButtonPressed(3) && arm.atPosition(new double[] {
+        // ArmConstants.GRID_HIGH[0],
+        // ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
+        // true)) {
+        // dHighDelivery -= 0.05;
 
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_GRID_HIGH,
-        //             new double[] { ArmConstants.GRID_HIGH[0],
-        //                     ArmConstants.GRID_HIGH[1] + dHighDelivery,
-        //                     ArmConstants.GRID_HIGH[2] },
-        //             true);
-        // } else if (p.getRawButtonPressed(4) && arm.atPosition(new double[] { ArmConstants.GRID_HIGH[0],
-        //         ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
-        //         true)) {
-        //     dHighDelivery += 0.05;
+        // arm.moveTwoPronged(
+        // ArmConstants.INTER_GRID_HIGH,
+        // new double[] { ArmConstants.GRID_HIGH[0],
+        // ArmConstants.GRID_HIGH[1] + dHighDelivery,
+        // ArmConstants.GRID_HIGH[2] },
+        // true);
+        // } else if (p.getRawButtonPressed(4) && arm.atPosition(new double[] {
+        // ArmConstants.GRID_HIGH[0],
+        // ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
+        // true)) {
+        // dHighDelivery += 0.05;
 
-        //     arm.moveTwoPronged(
-        //             ArmConstants.INTER_GRID_HIGH,
-        //             new double[] { ArmConstants.GRID_HIGH[0],
-        //                     ArmConstants.GRID_HIGH[1] + dHighDelivery,
-        //                     ArmConstants.GRID_HIGH[2] },
-        //             true);
+        // arm.moveTwoPronged(
+        // ArmConstants.INTER_GRID_HIGH,
+        // new double[] { ArmConstants.GRID_HIGH[0],
+        // ArmConstants.GRID_HIGH[1] + dHighDelivery,
+        // ArmConstants.GRID_HIGH[2] },
+        // true);
         // }
 
         // Medium Grid
@@ -458,111 +456,111 @@ public class Teleop {
 
         // Auto Alignments
         // if (((!arm.isGoingHome() && arm.isSafe())
-        //         || noSafenoProblemo)) {
-        //     if (p.getRawButton(9)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.LL);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(8)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.LM);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(7)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.LR);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(6)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.ML);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(5)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.MM);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(4)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.MR);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(3)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.RL);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(2)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.RM);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else if (p.getRawButton(1)) {
-        //         buttonPressed = true;
-        //         if (buttonPressed && !wasPreviouslyPressed) {
-        //             wasPreviouslyPressed = true;
-        //             swerve.setAutoAimLocation(AutoAimLocation.RR);
-        //             swerve.enableAutoAimController(true);
-        //         }
-        //         if (!buttonPressed) {
-        //             wasPreviouslyPressed = false;
-        //             swerve.enableAutoAimController(false);
-        //         }
-        //     } else {
-        //         buttonPressed = false;
-        //         wasPreviouslyPressed = false;
-        //         swerve.enableAutoAimController(false);
-        //     }
+        // || noSafenoProblemo)) {
+        // if (p.getRawButton(9)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.LL);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(8)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.LM);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(7)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.LR);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(6)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.ML);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(5)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.MM);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(4)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.MR);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(3)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.RL);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(2)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.RM);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else if (p.getRawButton(1)) {
+        // buttonPressed = true;
+        // if (buttonPressed && !wasPreviouslyPressed) {
+        // wasPreviouslyPressed = true;
+        // swerve.setAutoAimLocation(AutoAimLocation.RR);
+        // swerve.enableAutoAimController(true);
+        // }
+        // if (!buttonPressed) {
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
+        // } else {
+        // buttonPressed = false;
+        // wasPreviouslyPressed = false;
+        // swerve.enableAutoAimController(false);
+        // }
         // }
     }
 }
