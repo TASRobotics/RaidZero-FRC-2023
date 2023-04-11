@@ -1,6 +1,7 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,18 +82,13 @@ public class Teleop {
     private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
+    private Rotation2d desiredRotation = new Rotation2d();
+    private boolean snapping = false;
+    private boolean holdingSnap = false;
+
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
-
-        // if (p.getYButton()) {
-        // aiming = true;
-        // // swerve.lockTo90();
-        // }
-        // if (p.getBButtonPressed()) {
-        // aiming = false;
-        // swerve.emptyBucket();
-        // }
 
         // if (p.getAButtonPressed()) {
         // noSafenoProblemo = !noSafenoProblemo && !p.getAButtonPressed();
@@ -100,6 +96,7 @@ public class Teleop {
 
         if (p.getXButtonPressed()) {
             swerve.zeroTele(blue ? 180 : 0);
+            desiredRotation = Rotation2d.fromDegrees(blue ? 180 : 0);
             // swerve.zero();
         }
 
@@ -111,20 +108,30 @@ public class Teleop {
         // swerve.drive(0.2, 0, 0, true);
         // } else {
         if (!aiming) {
+            if(p.getRightStickButton() && !holdingSnap) {
+                holdingSnap = true;
+                snapping = !snapping;
+            } 
+            if(!p.getRightStickButton()) {
+                holdingSnap = false;
+            }
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
+                JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
+                    JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-                            arm.slurping() * arm.delivering()),
-                    true);
-        } else
+                    JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
+                            arm.slurping() * 1.5),
+                    true, 
+                    snapping);
+        }
+        else {
             swerve.drive(
                     JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getRightX()),
                     true);
+        }
         // }
 
         if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
