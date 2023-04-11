@@ -1,6 +1,7 @@
 package raidzero.robot.teleop;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -81,6 +82,8 @@ public class Teleop {
     private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
+    private Rotation2d desiredRotation = new Rotation2d();
+
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
@@ -110,7 +113,9 @@ public class Teleop {
         // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
         // swerve.drive(0.2, 0, 0, true);
         // } else {
-        if (!aiming)
+        if (!aiming) {
+            desiredRotation = Rotation2d.fromRadians(desiredRotation.getRadians() + JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
+            arm.slurping()));
             swerve.drive(
                     JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
@@ -118,13 +123,16 @@ public class Teleop {
                             arm.slurping() * reverse),
                     JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
                             arm.slurping()),
-                    true);
-        else
+                    true, 
+                    desiredRotation);
+        }
+        else {
             swerve.drive(
                     JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
                     JoystickUtils.aimingDeadband(-p.getRightX()),
                     true);
+        }
         // }
 
         if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)

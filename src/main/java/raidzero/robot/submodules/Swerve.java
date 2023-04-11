@@ -94,6 +94,8 @@ public class Swerve extends Submodule {
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
+    // private boolean justStartedSnapping = false;
+
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
         alliance = DriverStation.getAlliance();
@@ -406,6 +408,15 @@ public class Swerve extends Submodule {
         topRightModule.setTargetState(targetState[1], ignoreAngle, true, true);
         bottomLeftModule.setTargetState(targetState[2], ignoreAngle, true, true);
         bottomRightModule.setTargetState(targetState[3], ignoreAngle, true, true);
+    }
+
+    public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, Rotation2d snapAngle) {
+        if(Math.abs(angularSpeed) > Constants.JOYSTICK_DEADBAND) {
+            drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
+        } else {
+            double thetaOutput = thetaController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
+            drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
+        }
     }
 
     /**
