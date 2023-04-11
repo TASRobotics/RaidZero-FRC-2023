@@ -73,7 +73,6 @@ public class Teleop {
         // System.out.println("P3 Time :: " + p3Time);
         // System.out.println();
         // }
-        SmartDashboard.putNumber("MD", dMediumDelivery);
     }
 
     private double[] target = { 0, 0.15 };
@@ -104,35 +103,24 @@ public class Teleop {
             intake.setPercentSpeed(0.5);
         }
 
-        // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {r54te3
-        // swerve.drive(0.2, 0, 0, true);
-        // } else {
-        if (!aiming) {
-            if(p.getRightStickButton() && !holdingSnap) {
-                holdingSnap = true;
-                snapping = !snapping;
-            } 
-            if(!p.getRightStickButton()) {
-                holdingSnap = false;
-            }
-            swerve.drive(
+        if (p.getRightStickButton() && !holdingSnap) {
+            holdingSnap = true;
+            snapping = !snapping;
+        }
+
+        if (!p.getRightStickButton()) {
+            holdingSnap = false;
+        }
+
+        swerve.drive(
                 JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
-                            arm.slurping() * reverse),
-                    JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
-                            arm.slurping() * reverse),
-                    JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
-                            arm.slurping() * 1.5),
-                    true, 
-                    snapping);
-        }
-        else {
-            swerve.drive(
-                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getRightX()),
-                    true);
-        }
-        // }
+                        arm.slurping() * reverse),
+                JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
+                        arm.slurping() * reverse),
+                JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
+                        arm.slurping() * 1.5),
+                true,
+                snapping);
 
         if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
                 && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
@@ -145,12 +133,12 @@ public class Teleop {
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                     ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-            intake.setPercentSpeed(-0.8);
+            intake.setPercentSpeed(-0.7);
         } else if (arm.isSafe()) {
             fIntake = false;
         } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
             arm.goHome();
-            intake.setPercentSpeed(-0.8);
+            intake.setPercentSpeed(-0.7);
         }
 
         // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
@@ -357,31 +345,6 @@ public class Teleop {
             // ArmConstants.CUBE_GRID_HIGH,
             // true);
         }
-        // else if (p.getRawButtonPressed(3) && arm.atPosition(new double[] {
-        // ArmConstants.GRID_HIGH[0],
-        // ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
-        // true)) {
-        // dHighDelivery -= 0.05;
-
-        // arm.moveTwoPronged(
-        // ArmConstants.INTER_GRID_HIGH,
-        // new double[] { ArmConstants.GRID_HIGH[0],
-        // ArmConstants.GRID_HIGH[1] + dHighDelivery,
-        // ArmConstants.GRID_HIGH[2] },
-        // true);
-        // } else if (p.getRawButtonPressed(4) && arm.atPosition(new double[] {
-        // ArmConstants.GRID_HIGH[0],
-        // ArmConstants.GRID_HIGH[1] + dHighDelivery, ArmConstants.GRID_HIGH[2] },
-        // true)) {
-        // dHighDelivery += 0.05;
-
-        // arm.moveTwoPronged(
-        // ArmConstants.INTER_GRID_HIGH,
-        // new double[] { ArmConstants.GRID_HIGH[0],
-        // ArmConstants.GRID_HIGH[1] + dHighDelivery,
-        // ArmConstants.GRID_HIGH[2] },
-        // true);
-        // }
 
         // Medium Grid
         else if (p.getRawButtonPressed(15) &&
@@ -427,11 +390,6 @@ public class Teleop {
             // ArmConstants.INTER2_FLOOR_INTAKE,
             // ArmConstants.FLOOR_INTAKE, false);
 
-            //
-            // ed(
-            // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-            // ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
-
             // Flipped Cone
             arm.moveTwoPronged(
                     ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE,
@@ -440,11 +398,12 @@ public class Teleop {
             // Upright Cone
             // arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE, false);
         }
-        // Reverse Stage
+        // Reverse Stage / Direct Human Pickup
         else if (p.getRawAxis(0) == 1 &&
-                ((!swerve.isOverLimit() && !arm.isGoingHome() && !arm.isSafe() && !fIntake)
+        ((!swerve.isOverLimit() && !arm.isGoingHome() && arm.isOnTarget() && arm.isSafe() && !fIntake)
                         || noSafenoProblemo)) {
-            arm.reverseStage();
+            // arm.reverseStage();
+            arm.moveToPoint(ArmConstants.DIRECT_HUMAN_PICKUP_STATION, true);
         }
         // Go Home
         else if (p.getRawButtonPressed(13)) {
@@ -453,9 +412,9 @@ public class Teleop {
 
         // Intake
         if (p.getRawButton(12)) {
-            intake.setPercentSpeed(0.5);
+            intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
-            intake.setPercentSpeed(-0.8);
+            intake.setPercentSpeed(-0.30);
         } else if (!p1.getLeftBumper() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();

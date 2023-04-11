@@ -24,6 +24,8 @@ public class AutoRunner {
             new ConeCubeSequenceBlue(),
             new ConeCubeClimbSequenceRed(),
             new ConeCubeSequenceRed(),
+            new ConeCubeBumpClimbSequenceRed(),
+            new ConeCubeBumpSequenceRed(),
             new LinkSequence(),
             new LinkSequenceBlue(),
             new LinkSequenceRed()
