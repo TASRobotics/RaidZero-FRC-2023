@@ -262,13 +262,13 @@ public class Swerve extends Submodule {
         setPose(new Pose2d(new Translation2d(1.76, 1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
     }
 
-    // public void lockTo90() {
-    // if (Math.abs(pigeon.getYaw()-180) > 1 || Math.abs(pigeon.getYaw()-0) > 1)
-    // drive(0,0,0.3, false);
-    // // pigeon.setYaw(q, Constants.TIMEOUT_MS);
-    // // setPose(new Pose2d(new Translation2d(1.76,1.477), new
-    // Rotation2d(Math.toRadians(pigeon.getAngle()))));
-    // }
+    public void lockTo180() {
+        if (Math.abs(pigeon.getYaw() - 180) > 10 || Math.abs(pigeon.getYaw() - 0) > 10)
+            drive(0, 0, 1.0, true);
+        // pigeon.setYaw(q, Constants.TIMEOUT_MS);
+        // setPose(new Pose2d(new Translation2d(1.76,1.477), new
+        // Rotation2d(Math.toRadians(pigeon.getAngle()))));
+    }
 
     public Field2d getField() {
         return fieldPose;

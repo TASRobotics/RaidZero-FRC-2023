@@ -103,8 +103,12 @@ public class Teleop {
             // swerve.zero();
         }
 
-        if (p.getAButton()) {
+        if (p.getYButton()) {
             intake.setPercentSpeed(0.5);
+        }
+
+        if (p.getBButton()){
+            swerve.lockTo180();
         }
 
         // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {
@@ -117,7 +121,7 @@ public class Teleop {
                     JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
                     JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-                            arm.slurping()),
+                            arm.slurping() * arm.delivering()),
                     true);
         else
             swerve.drive(
@@ -447,7 +451,7 @@ public class Teleop {
             intake.setPercentSpeed(0.5);
         } else if (p.getRawButton(11)) {
             intake.setPercentSpeed(-0.8);
-        } else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getRightBumper() && !p.getRawButton(12)
+        } else if (!p1.getLeftBumper() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
         }
