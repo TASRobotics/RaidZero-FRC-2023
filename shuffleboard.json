@@ -544,44 +544,44 @@
         "vgap": 16.0,
         "titleType": 0,
         "tiles": {
-          "0,0": {
+          "3,1": {
             "size": [
-              7,
-              5
+              3,
+              2
             ],
             "content": {
               "_type": "Camera Stream",
               "_source0": "camera_server://Camera 0",
               "_title": "Camera 0",
-              "_glyph": 8,
-              "_showGlyph": false,
-              "Crosshair/Show crosshair": true,
-              "Crosshair/Crosshair color": "#FFFFFFFF",
-              "Controls/Show controls": true,
-              "Controls/Rotation": "NONE",
-              "compression": -1.0,
-              "fps": -1,
-              "imageWidth": -1,
-              "imageHeight": -1
-            }
-          },
-          "7,0": {
-            "size": [
-              4,
-              5
-            ],
-            "content": {
-              "_type": "Camera Stream",
-              "_source0": "camera_server://Camera 1 modified",
-              "_title": "Camera 1 modified",
               "_glyph": 148,
               "_showGlyph": false,
               "Crosshair/Show crosshair": true,
               "Crosshair/Crosshair color": "#FFFFFFFF",
               "Controls/Show controls": true,
-              "Controls/Rotation": "QUARTER_CW",
-              "compression": 10.0,
-              "fps": -1,
+              "Controls/Rotation": "NONE",
+              "compression": 100.0,
+              "fps": 1,
+              "imageWidth": 320,
+              "imageHeight": 240
+            }
+          },
+          "6,1": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Camera Stream",
+              "_source0": "camera_server://Camera 1",
+              "_title": "Camera 1",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Crosshair/Show crosshair": true,
+              "Crosshair/Crosshair color": "#FFFFFFFF",
+              "Controls/Show controls": true,
+              "Controls/Rotation": "NONE",
+              "compression": 100.0,
+              "fps": 1,
               "imageWidth": 320,
               "imageHeight": 240
             }

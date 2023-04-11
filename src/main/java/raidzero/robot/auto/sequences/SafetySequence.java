@@ -32,7 +32,7 @@ public class SafetySequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.2, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_GRID_HIGH, ArmConstants.GRID_HIGH, true),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH, ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(1, -1),
                         new ArmHomeAction(),
                         new DrivePath(mOut))));

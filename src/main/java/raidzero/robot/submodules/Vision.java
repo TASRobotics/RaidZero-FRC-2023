@@ -160,7 +160,7 @@ public class Vision extends Submodule{
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
         // updateRobotPose();
         // timePublisher.set(timestamp);
-        SmartDashboard.putNumber("RobotTime", timestamp);
+        // SmartDashboard.putNumber("RobotTime", timestamp);
         
         for (String cameraSubTable : cameraSubTables) {
             aprilDetect(table.getSubTable(cameraSubTable));
@@ -168,7 +168,7 @@ public class Vision extends Submodule{
         if (robotPose != null) {
             SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
             SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
-            SmartDashboard.putNumber("Cone Translation", getConeTranslation());
+            // SmartDashboard.putNumber("Cone Translation", getConeTranslation());
         }
 
         SmartDashboard.putBoolean("Apples?", !noApples());
