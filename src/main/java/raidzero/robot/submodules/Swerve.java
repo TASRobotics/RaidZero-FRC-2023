@@ -355,7 +355,7 @@ public class Swerve extends Submodule {
         return odometry;
     }
 
-    public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
+    public synchronized void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
             Matrix<N3, N1> visionMeasurementStdDevs) {
         try {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
