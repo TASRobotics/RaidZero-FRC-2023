@@ -306,10 +306,10 @@ public class Constants {
         public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.01, -97 };
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.06, -125 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.00, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
         public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };
@@ -468,10 +468,10 @@ public class Constants {
     public static final class IntakeConstants {
         public static final int ID = 16;
 
-        public static final boolean INVERSION = false;
+        public static final boolean INVERSION = true;
 
-        public static final int STALL_CURRENT_LIMIT = 3;
-        public static final int FREE_CURRENT_LIMIT = 5;
+        public static final int STALL_CURRENT_LIMIT = 10;
+        public static final int FREE_CURRENT_LIMIT = 35;
         public static final int STALL_RPM = 100;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
@@ -483,7 +483,7 @@ public class Constants {
         public static final double MIN_VEL = 0.0;
         public static final double MAX_VEL = 3000.0;
         public static final double MAX_ACCEL = 4500.0;
-        public static final double MIN_ERROR = 0.0;
+        public static final double MIN_ERROR = 3.0;
 
         public static final double MAXWINDS = 0.6;
     }
@@ -506,6 +506,7 @@ public class Constants {
     public static final String NETWORKTABLESNAME = "SmartDashboard";
 
     public static final double JOYSTICK_DEADBAND = 0.02;
+    public static final double XBOX_JOYSTICK_DEADBAND = 0.10;
     public static final double AIMING_JOYSTICK_DEADBAND = 0.02;
     public static final int TIMEOUT_MS = 20;
     public static final double TIMEOUT_S = TIMEOUT_MS / 1000.0f;

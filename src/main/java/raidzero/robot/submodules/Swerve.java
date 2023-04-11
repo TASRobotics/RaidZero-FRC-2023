@@ -88,11 +88,13 @@ public class Swerve extends Submodule {
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController;
-    private ProfiledPIDController autoAimThetaController;
+    private ProfiledPIDController autoAimThetaController, snapController;
     private TrajectoryConfig autoAimTrajectoryConfig;
     private AutoAimController autoAimController;
 
     private ControlState controlState = ControlState.OPEN_LOOP;
+
+    // private boolean justStartedSnapping = false;
 
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
@@ -137,6 +139,11 @@ public class Swerve extends Submodule {
                 DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
+
+        snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS*2));
+        snapController.enableContinuousInput(-Math.PI, Math.PI);
+        snapController.reset(getPose().getRotation().getRadians(), 0);
+
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
         thetaController = new PIDController(SwerveConstants.THETACONTROLLER_KP, 0, SwerveConstants.THETACONTROLLER_KD);
@@ -147,16 +154,18 @@ public class Swerve extends Submodule {
 
         autoAimXController = new PIDController(SwerveConstants.AA_XCONTROLLER_KP, 0.0, 0.0);
         autoAimYController = new PIDController(SwerveConstants.AA_YCONTROLLER_KP, 0.0, 0.0);
-        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0.0, 0.0, 
-            new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
-        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS, SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
-        autoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController, autoAimTrajectoryConfig);
+        autoAimThetaController = new ProfiledPIDController(SwerveConstants.AA_THETACONTROLLER_KP, 0.0, 0.0,
+                new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS,
+                        SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
+        autoAimTrajectoryConfig = new TrajectoryConfig(SwerveConstants.MAX_DRIVE_VEL_MPS,
+                SwerveConstants.MAX_DRIVE_ACCEL_MPSPS);
+        autoAimController = new AutoAimController(autoAimXController, autoAimYController, autoAimThetaController,
+                autoAimTrajectoryConfig);
         autoAimController.setTolerance(new Pose2d(
-            SwerveConstants.AA_XCONTROLLER_TOLERANCE, 
-            SwerveConstants.AA_YCONTROLLER_TOLERANCE, 
-            Rotation2d.fromRadians(SwerveConstants.AA_THETACONTROLLER_TOLERANCE))
-        );
-        
+                SwerveConstants.AA_XCONTROLLER_TOLERANCE,
+                SwerveConstants.AA_YCONTROLLER_TOLERANCE,
+                Rotation2d.fromRadians(SwerveConstants.AA_THETACONTROLLER_TOLERANCE)));
+
         zero();
 
         // Auto Balance Constants
@@ -167,20 +176,19 @@ public class Swerve extends Submodule {
     }
 
     String control_state = "nada";
+
     @Override
     public void update(double timestamp) {
         if (controlState == ControlState.PATHING) {
             control_state = "pathing";
             updatePathing();
-        }
-        else if (controlState == ControlState.AUTO_AIM) {
+        } else if (controlState == ControlState.AUTO_AIM) {
             control_state = "auto aim";
             autoAimController.update();
-        } 
-        else {
+        } else {
             control_state = "open loop";
         }
-       // SmartDashboard.putString("control mode", control_state);
+        // SmartDashboard.putString("control mode", control_state);
         topRightModule.update(timestamp);
         topLeftModule.update(timestamp);
         bottomLeftModule.update(timestamp);
@@ -206,9 +214,9 @@ public class Swerve extends Submodule {
 
         // Auto Balance Updates
         double disp = odometry.getEstimatedPosition().getX() - prevX;
-        //SmartDashboard.putNumber("disp", disp);
+        // SmartDashboard.putNumber("disp", disp);
         prevX = odometry.getEstimatedPosition().getX();
-        //SmartDashboard.putNumber("prevX", prevX);
+        // SmartDashboard.putNumber("prevX", prevX);
         beans += deadband(pigeon.getPitch()) * disp;
         SmartDashboard.putNumber("beans", beans);
     }
@@ -242,7 +250,7 @@ public class Swerve extends Submodule {
             zeroHeading(180);
         else if (alliance == Alliance.Red)
             zeroHeading(0);
-        setPose(new Pose2d(new Translation2d(1.76,1.477),new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+        setPose(new Pose2d(new Translation2d(1.76, 1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
@@ -256,11 +264,14 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
-    public void zeroTele(double q) {
+    public void zeroTele(double q){
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
-        setPose(new Pose2d(new Translation2d(1.76,1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+        setPose(new Pose2d(new Translation2d(1.76, 1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
     }
 
+    public double getYawRate(){
+        return pigeon.getRate();
+    }
 
     // public void lockTo90() {
     //     if (Math.abs(pigeon.getYaw()-180) > 1 || Math.abs(pigeon.getYaw()-0) > 1)
@@ -284,10 +295,10 @@ public class Swerve extends Submodule {
 
     public SwerveModuleState[] getModuleStates() {
         return new SwerveModuleState[] {
-            topLeftModule.getModuleState(), 
-            topRightModule.getModuleState(), 
-            bottomLeftModule.getModuleState(), 
-            bottomRightModule.getModuleState()
+                topLeftModule.getModuleState(),
+                topRightModule.getModuleState(),
+                bottomLeftModule.getModuleState(),
+                bottomRightModule.getModuleState()
         };
     }
 
@@ -328,7 +339,7 @@ public class Swerve extends Submodule {
      * @return is over limit?
      */
     public boolean isOverLimit() {
-        //return overLimit;
+        // return overLimit;
         return false;
     }
 
@@ -351,10 +362,9 @@ public class Swerve extends Submodule {
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
             odometry.addVisionMeasurement(
-                visionRobotPoseMeters, 
-                timestampSeconds,
-                visionMeasurementStdDevs
-            );
+                    visionRobotPoseMeters,
+                    timestampSeconds,
+                    visionMeasurementStdDevs);
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
         }
@@ -366,6 +376,7 @@ public class Swerve extends Submodule {
 
     /**
      * Updates odometry
+     * 
      * @param timestamp
      * 
      * @return current position
@@ -373,7 +384,7 @@ public class Swerve extends Submodule {
     private Pose2d updateOdometry(double timestamp) {
         try {
             return odometry.updateWithTime(timestamp,
-                    Rotation2d.fromDegrees( pigeon.getAngle()),
+                    Rotation2d.fromDegrees(pigeon.getAngle()),
                     getModulePositions());
         } catch (Exception e) {
             System.out.println(e);
@@ -390,7 +401,7 @@ public class Swerve extends Submodule {
      * @param fieldOriented
      */
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented) {
-        if(controlState == ControlState.AUTO_AIM) {
+        if (controlState == ControlState.AUTO_AIM) {
             return;
         }
         controlState = ControlState.OPEN_LOOP;
@@ -406,6 +417,24 @@ public class Swerve extends Submodule {
         topRightModule.setTargetState(targetState[1], ignoreAngle, true, true);
         bottomLeftModule.setTargetState(targetState[2], ignoreAngle, true, true);
         bottomRightModule.setTargetState(targetState[3], ignoreAngle, true, true);
+    }
+
+    public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, Rotation2d snapAngle) {
+        if(Math.abs(angularSpeed) > 0.1) {
+            drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
+        } else {
+            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
+            drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
+        }
+    }
+
+    public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, boolean snap) {
+        if(snap && Math.abs(angularSpeed) < 0.1) {
+            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), DriverStation.getAlliance() == Alliance.Blue ? Math.PI : 0);
+            drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
+        } else {
+            drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
+        }
     }
 
     /**
@@ -441,7 +470,7 @@ public class Swerve extends Submodule {
         double thetaSpeed = thetaController.calculate(getPose().getRotation().getRadians(),
                 state.holonomicRotation.getRadians());
         // Math
-        //SmartDashboard.putNumber("theta speed", thetaSpeed);
+        // SmartDashboard.putNumber("theta speed", thetaSpeed);
 
         ChassisSpeeds desiredSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(
                 xSpeed,
@@ -492,11 +521,14 @@ public class Swerve extends Submodule {
 
     public ChassisSpeeds getOpenLoopSpeeds() {
         return SwerveConstants.KINEMATICS.toChassisSpeeds(
-            new SwerveModuleState(topLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topLeftModule.getRotorAngle())), 
-            new SwerveModuleState(topRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(topRightModule.getRotorAngle())),
-            new SwerveModuleState(bottomLeftModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomLeftModule.getRotorAngle())),
-            new SwerveModuleState(bottomRightModule.getThrottlePercentSpeed(), Rotation2d.fromDegrees(bottomRightModule.getRotorAngle()))
-        );
+                new SwerveModuleState(topLeftModule.getThrottlePercentSpeed(),
+                        Rotation2d.fromDegrees(topLeftModule.getRotorAngle())),
+                new SwerveModuleState(topRightModule.getThrottlePercentSpeed(),
+                        Rotation2d.fromDegrees(topRightModule.getRotorAngle())),
+                new SwerveModuleState(bottomLeftModule.getThrottlePercentSpeed(),
+                        Rotation2d.fromDegrees(bottomLeftModule.getRotorAngle())),
+                new SwerveModuleState(bottomRightModule.getThrottlePercentSpeed(),
+                        Rotation2d.fromDegrees(bottomRightModule.getRotorAngle())));
     }
 
     public void setAutoAimLocation(AutoAimLocation location) {
@@ -504,7 +536,7 @@ public class Swerve extends Submodule {
     }
 
     public void enableAutoAimController(boolean isEnabled) {
-        if(isEnabled) {
+        if (isEnabled) {
             controlState = ControlState.AUTO_AIM;
             autoAimController.enable(isEnabled);
         } else {

@@ -17,6 +17,13 @@ public class JoystickUtils {
         return input;
     }
 
+    public static double xboxDeadband(double input) {
+        if (Math.abs(input) < Constants.XBOX_JOYSTICK_DEADBAND) {
+            return 0.0;
+        }
+        return input;
+    }
+
     public static double aimingDeadband(double input) {
         if (Math.abs(input) < Constants.AIMING_JOYSTICK_DEADBAND) {
             return 0.0;
