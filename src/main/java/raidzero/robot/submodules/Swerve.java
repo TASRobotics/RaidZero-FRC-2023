@@ -142,6 +142,7 @@ public class Swerve extends Submodule {
 
         snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS*2));
         snapController.enableContinuousInput(-Math.PI, Math.PI);
+        snapController.reset(getPose().getRotation().getRadians(), 0);
 
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);

@@ -71,7 +71,7 @@ public class LinkSequenceRed extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new AsyncRunIntakeAction(-0.7))),
+                                new AsyncRunIntakeAction(-0.8))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -95,7 +95,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncRunIntakeAction(-0.7),
+                                        new AsyncRunIntakeAction(-0.8),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))))),
