@@ -140,7 +140,7 @@ public class Swerve extends Submodule {
                 DriveConstants.VISION_STDEVS_MATRIX);
 
 
-        snapController = new ProfiledPIDController(0.9, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
+        snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS*2));
         snapController.enableContinuousInput(-Math.PI, Math.PI);
 
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
@@ -425,6 +425,15 @@ public class Swerve extends Submodule {
         } else {
             double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
             drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
+        }
+    }
+
+    public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, boolean snap) {
+        if(snap && Math.abs(angularSpeed) < 0.1) {
+            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), DriverStation.getAlliance() == Alliance.Blue ? Math.PI : 0);
+            drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
+        } else {
+            drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
         }
     }
 

@@ -84,6 +84,7 @@ public class Teleop {
 
     private Rotation2d desiredRotation = new Rotation2d();
     private boolean snapping = false;
+    private boolean holdingSnap = false;
 
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
@@ -116,30 +117,49 @@ public class Teleop {
         // swerve.drive(0.2, 0, 0, true);
         // } else {
         if (!aiming) {
-            if(Math.abs(p.getRightX()) < 0.1 /*&& swerve.getYawRate() < 5 */) {
-                // System.out.println("hihi");
-                if(p.getPOV() != -1) {
-                    desiredRotation = Rotation2d.fromDegrees(p.getPOV());
-                } else {
-                    if(!snapping) {
-                        desiredRotation = swerve.getPose().getRotation();
-                        snapping = true;
-                    }
-                }
-            } else {
-                snapping = false;
-            }
+            // if(Math.abs(p.getRightX()) < 0.15 /*&& swerve.getYawRate() < 5 */) {
+            //     // System.out.println("hihi");
+            //     if(p.getPOV() != -1) {
+            //         desiredRotation = Rotation2d.fromDegrees(p.getPOV());
+            //     } else {
+            //         if(!snapping) {
+            //             desiredRotation = swerve.getPose().getRotation();
+            //             snapping = true;
+            //         }
+            //     }
+            // } else {
+            //     snapping = false;
+            // }
+
+
+
             // desiredRotation = Rotation2d.fromRadians(desiredRotation.getRadians() + JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
             // arm.slurping()));
+            // swerve.drive(
+            //         JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
+            //                 arm.slurping() * reverse),
+            //         JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
+            //                 arm.slurping() * reverse),
+            //         JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
+            //                 arm.slurping() * 1.5),
+            //         true, 
+            //         desiredRotation);
+            if(p.getRightStickButton() && !holdingSnap) {
+                holdingSnap = true;
+                snapping = !snapping;
+            } 
+            if(!p.getRightStickButton()) {
+                holdingSnap = false;
+            }
             swerve.drive(
-                    JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
+                JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
                     JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
                     JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
                             arm.slurping() * 1.5),
                     true, 
-                    desiredRotation);
+                    snapping);
         }
         else {
             swerve.drive(
