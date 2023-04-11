@@ -497,6 +497,7 @@ public class Constants {
     public static final String NETWORKTABLESNAME = "SmartDashboard";
 
     public static final double JOYSTICK_DEADBAND = 0.02;
+    public static final double XBOX_JOYSTICK_DEADBAND = 0.10;
     public static final double AIMING_JOYSTICK_DEADBAND = 0.02;
     public static final int TIMEOUT_MS = 20;
     public static final double TIMEOUT_S = TIMEOUT_MS / 1000.0f;

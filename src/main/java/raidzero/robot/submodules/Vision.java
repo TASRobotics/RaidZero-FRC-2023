@@ -149,7 +149,7 @@ public class Vision extends Submodule {
     @Override
     public void update(double timestamp) {
         angleInterpolate.addSample(timestamp, robotDrive.getPose().getRotation());
-        // updateRobotPose();
+        updateRobotPose();
         // timePublisher.set(timestamp);
         // SmartDashboard.putNumber("RobotTime", timestamp);
         

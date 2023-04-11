@@ -83,6 +83,7 @@ public class Teleop {
     private boolean noSafenoProblemo = false;
 
     private Rotation2d desiredRotation = new Rotation2d();
+    private boolean snapping = false;
 
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
@@ -103,6 +104,7 @@ public class Teleop {
 
         if (p.getXButtonPressed()) {
             swerve.zeroTele(blue ? 180 : 0);
+            desiredRotation = Rotation2d.fromDegrees(blue ? 180 : 0);
             // swerve.zero();
         }
 
@@ -114,15 +116,28 @@ public class Teleop {
         // swerve.drive(0.2, 0, 0, true);
         // } else {
         if (!aiming) {
-            desiredRotation = Rotation2d.fromRadians(desiredRotation.getRadians() + JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-            arm.slurping()));
+            if(Math.abs(p.getRightX()) < 0.1 /*&& swerve.getYawRate() < 5 */) {
+                // System.out.println("hihi");
+                if(p.getPOV() != -1) {
+                    desiredRotation = Rotation2d.fromDegrees(p.getPOV());
+                } else {
+                    if(!snapping) {
+                        desiredRotation = swerve.getPose().getRotation();
+                        snapping = true;
+                    }
+                }
+            } else {
+                snapping = false;
+            }
+            // desiredRotation = Rotation2d.fromRadians(desiredRotation.getRadians() + JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
+            // arm.slurping()));
             swerve.drive(
-                    JoystickUtils.deadband(-p.getLeftY() * arm.tooFasttooFurious() *
+                    JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
-                    JoystickUtils.deadband(-p.getLeftX() * arm.tooFasttooFurious() *
+                    JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
                             arm.slurping() * reverse),
-                    JoystickUtils.deadband(-p.getRightX() * arm.tooFasttooFurious() *
-                            arm.slurping()),
+                    JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
+                            arm.slurping() * 1.5),
                     true, 
                     desiredRotation);
         }

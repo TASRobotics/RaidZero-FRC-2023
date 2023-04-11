@@ -88,7 +88,7 @@ public class Swerve extends Submodule {
 
     private Pose2d desiredAutoAimPose;
     private PIDController autoAimXController, autoAimYController;
-    private ProfiledPIDController autoAimThetaController;
+    private ProfiledPIDController autoAimThetaController, snapController;
     private TrajectoryConfig autoAimTrajectoryConfig;
     private AutoAimController autoAimController;
 
@@ -138,6 +138,10 @@ public class Swerve extends Submodule {
                 DriveConstants.STARTING_POSE,
                 DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
+
+
+        snapController = new ProfiledPIDController(0.9, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS));
+        snapController.enableContinuousInput(-Math.PI, Math.PI);
 
         xController = new PIDController(SwerveConstants.XCONTROLLER_KP, 0, 0);
         yController = new PIDController(SwerveConstants.YCONTROLLER_KP, 0, 0);
@@ -258,10 +262,15 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
-    public void zeroTele(double q) {
+    public void zeroTele(double q){
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
         setPose(new Pose2d(new Translation2d(1.76,1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
     }
+
+    public double getYawRate(){
+        return pigeon.getRate();
+    }
+
 
 
     // public void lockTo90() {
@@ -411,10 +420,10 @@ public class Swerve extends Submodule {
     }
 
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, Rotation2d snapAngle) {
-        if(Math.abs(angularSpeed) > Constants.JOYSTICK_DEADBAND) {
+        if(Math.abs(angularSpeed) > 0.1) {
             drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
         } else {
-            double thetaOutput = thetaController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
+            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
             drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
         }
     }
