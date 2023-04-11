@@ -544,6 +544,17 @@ public class Swerve extends Submodule {
         }
     }
 
+    public void setFortniteAutoAimTM(double yDist, double xSpeed) {
+        enableAutoAimController(true);
+        Rotation2d desiredAngle = new Rotation2d();
+        if(DriverStation.getAlliance() == Alliance.Blue) {
+            desiredAngle = Rotation2d.fromDegrees(180);
+        } else {
+            desiredAngle = Rotation2d.fromDegrees(0);
+        }
+        autoAimController.setTarget(yDist, desiredAngle, xSpeed);
+    }
+
     /**
      * Test swerve modules
      * 

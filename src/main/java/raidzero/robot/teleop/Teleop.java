@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Swerve;
@@ -85,6 +86,7 @@ public class Teleop {
     private Rotation2d desiredRotation = new Rotation2d();
     private boolean snapping = false;
     private boolean holdingSnap = false;
+    private double desiredXSpeed = 0.0;
 
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
@@ -107,33 +109,24 @@ public class Teleop {
         // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {r54te3
         // swerve.drive(0.2, 0, 0, true);
         // } else {
-        if (!aiming) {
-            if(p.getRightStickButton() && !holdingSnap) {
-                holdingSnap = true;
-                snapping = !snapping;
-            } 
-            if(!p.getRightStickButton()) {
-                holdingSnap = false;
-            }
-            swerve.drive(
-                JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
-                            arm.slurping() * reverse),
-                    JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
-                            arm.slurping() * reverse),
-                    JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
-                            arm.slurping() * 1.5),
-                    true, 
-                    snapping);
+        desiredXSpeed = JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse);
+        if(p.getRightStickButton() && !holdingSnap) {
+            holdingSnap = true;
+            snapping = !snapping;
+        } 
+        if(!p.getRightStickButton()) {
+            holdingSnap = false;
         }
-        else {
-            swerve.drive(
-                    JoystickUtils.aimingDeadband(-p.getLeftY() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getLeftX() * 0.25 * reverse),
-                    JoystickUtils.aimingDeadband(-p.getRightX()),
-                    true);
-        }
-        // }
-
+        swerve.drive(
+            JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
+                        arm.slurping() * reverse),
+                JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
+                        arm.slurping() * reverse),
+                JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
+                        arm.slurping() * 1.5),
+                true, 
+                snapping);
+        
         if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
                 && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)) {
             fIntake = true;
@@ -459,6 +452,52 @@ public class Teleop {
         } else if (!p1.getLeftBumper() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
+        }
+
+        if(DriverStation.getAlliance() == Alliance.Blue) {
+            if(p.getRawButton(9)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BLL, desiredXSpeed);
+            } else if(p.getRawButton(8)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BLM, desiredXSpeed);
+            } else if(p.getRawButton(7)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BLR, desiredXSpeed);
+            } else if(p.getRawButton(6)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BML, desiredXSpeed);
+            } else if(p.getRawButton(5)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BMM, desiredXSpeed);
+            } else if(p.getRawButton(4)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BMR, desiredXSpeed);
+            } else if(p.getRawButton(3)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BRL, desiredXSpeed);
+            } else if(p.getRawButton(2)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BRM, desiredXSpeed);
+            } else if(p.getRawButton(1)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.BRR, desiredXSpeed);
+            } else {
+                swerve.enableAutoAimController(false);
+            }
+        } else {
+            if(p.getRawButton(9)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RLL, desiredXSpeed);
+            } else if(p.getRawButton(8)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RLM, desiredXSpeed);
+            } else if(p.getRawButton(7)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RLR, desiredXSpeed);
+            } else if(p.getRawButton(6)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RML, desiredXSpeed);
+            } else if(p.getRawButton(5)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RMM, desiredXSpeed);
+            } else if(p.getRawButton(4)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RMR, desiredXSpeed);
+            } else if(p.getRawButton(3)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RRL, desiredXSpeed);
+            } else if(p.getRawButton(2)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RRM, desiredXSpeed);
+            } else if(p.getRawButton(1)) {
+                swerve.setFortniteAutoAimTM(VisionConstants.RRR, desiredXSpeed);
+            } else {
+                swerve.enableAutoAimController(false);
+            }
         }
 
         // Auto Alignments
