@@ -1,9 +1,7 @@
-package raidzero.robot;
+package raidzero.robot.utils;
 
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.submodules.Swerve;
-import raidzero.robot.utils.MathTools;
-
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
