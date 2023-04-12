@@ -190,7 +190,9 @@ public class Constants {
         public static final double MID_FIELD_Y_POS = 4.2;
         
         public static final double ADD_VISION_TOLERANCE = 1.0;
-        public static final double RESET_TOLERANCE = 3.0;
+        public static final double DISTANCE_RESET_TOLERANCE = 3.0;
+        public static final double SPEED_RESET_TOLERANCE = 0.5;
+        public static final double OMEGA_RESET_TOLERANCE = 0.2;
         
         public static final int NUM_THREADS = 10;
 
