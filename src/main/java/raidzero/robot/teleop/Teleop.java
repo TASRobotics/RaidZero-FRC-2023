@@ -105,9 +105,6 @@ public class Teleop {
             intake.setPercentSpeed(0.5);
         }
 
-        // if (p.getAButton() && Math.abs(swerve.getBeans()) < 20) {r54te3
-        // swerve.drive(0.2, 0, 0, true);
-        // } else {
         desiredXSpeed = JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse);
         if(p.getRightStickButton() && !holdingSnap) {
             holdingSnap = true;
@@ -122,7 +119,7 @@ public class Teleop {
                 JoystickUtils.xboxDeadband(-p.getLeftX() * arm.tooFasttooFurious() *
                         arm.slurping() * reverse),
                 JoystickUtils.xboxDeadband(-p.getRightX() * arm.tooFasttooFurious() *
-                        arm.slurping() * 1.5),
+                        arm.slurping() * arm.delivering()),
                 true, 
                 snapping);
         
@@ -144,15 +141,6 @@ public class Teleop {
             arm.goHome();
             intake.setPercentSpeed(-0.7);
         }
-
-        // double xSpeed = -p.getLeftY() * reverse * (aiming ? arm.tooFasttooFurious() *
-        // arm.slurping() : 0.25);
-        // double ySpeed = -p.getLeftX() * reverse * (aiming ? arm.tooFasttooFurious() *
-        // arm.slurping() : 0.25);
-        // double angularSpeed = -p.getRightX() * (aiming ? arm.tooFasttooFurious() *
-        // arm.slurping() * 2.0 : 0.5);
-        // swerve.drive(JoystickUtils.deadband(xSpeed), JoystickUtils.deadband(ySpeed),
-        // JoystickUtils.deadband(angularSpeed), true);
 
         // // Auto Alignments
         // if (blue && ((!arm.isGoingHome() && arm.isSafe())
