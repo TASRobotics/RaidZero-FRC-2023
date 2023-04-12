@@ -311,10 +311,10 @@ public class Constants {
         public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.01, -97 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.00, -125 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.03, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
         public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };
@@ -475,7 +475,7 @@ public class Constants {
 
         public static final boolean INVERSION = true;
 
-        public static final int STALL_CURRENT_LIMIT = 10;
+        public static final int STALL_CURRENT_LIMIT = 15;
         public static final int FREE_CURRENT_LIMIT = 35;
         public static final int STALL_RPM = 100;
         public static final int PID_SLOT = 0;

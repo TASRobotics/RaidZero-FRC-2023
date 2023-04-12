@@ -83,7 +83,7 @@ public class Teleop {
     private boolean noSafenoProblemo = false;
 
     private Rotation2d desiredRotation = new Rotation2d();
-    private boolean snapping = false;
+    private boolean snapping = true;
     private boolean holdingSnap = false;
     private double desiredXSpeed = 0.0;
 
@@ -101,8 +101,8 @@ public class Teleop {
             // swerve.zero();
         }
 
-        if (p.getYButton()) {
-            intake.setPercentSpeed(0.5);
+        if (p.getAButton()) {
+            intake.setPercentSpeed(0.7);
         }
 
         desiredXSpeed = JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse);
@@ -407,7 +407,7 @@ public class Teleop {
             intake.setPercentSpeed(0.7);
         } else if (p.getRawButton(11)) {
             intake.setPercentSpeed(-0.30);
-        } else if (!p1.getLeftBumper() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
+        } else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
         }
