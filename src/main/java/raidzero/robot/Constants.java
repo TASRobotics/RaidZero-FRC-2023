@@ -299,9 +299,13 @@ public class Constants {
 
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
+        public static final double[] TELE_CUBE_GRID_HIGH = { 1.28, 1.02, 97 };
 
         public static final double[] INTER_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
         public static final double[] CUBE_GRID_MEDIUM = { 0.93, 0.85, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
+        public static final double[] TELE_CUBE_GRID_MEDIUM = { 0.93, 0.65, 97 };
 
         public static final double[] INTER_FLOOR_INTAKE = { 0.84, 0.39, 45 };
         public static final double[] INTER2_FLOOR_INTAKE = { 1.12, 0.27, 90 };
