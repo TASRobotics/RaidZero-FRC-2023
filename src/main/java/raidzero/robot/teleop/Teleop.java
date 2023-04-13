@@ -107,10 +107,11 @@ public class Teleop {
         }
 
         if (p.getYButton()) {
-            intake.configSmartCurrentLimit(200, 200, 10);
+            intake.configSmartCurrentLimit(200, 200, 100);
             intake.setPercentSpeed(1.0);
         } else {
-            intake.configSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT, IntakeConstants.STALL_RPM);
+            intake.configSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT,
+                    IntakeConstants.STALL_RPM);
         }
 
         desiredXSpeed = JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse);
@@ -118,11 +119,11 @@ public class Teleop {
             holdingSnap = true;
             snapping = !snapping;
             rumbleTimer.restart();
-        } 
-        if(!p.getRightStickButton()) {
+        }
+        if (!p.getRightStickButton()) {
             holdingSnap = false;
         }
-        if(rumbleTimer.get() > 0.25) {
+        if (rumbleTimer.get() > 0.25) {
             p.setRumble(RumbleType.kRightRumble, 0.0);
         } else {
             p.setRumble(RumbleType.kRightRumble, 1.0);
@@ -137,8 +138,8 @@ public class Teleop {
                 true,
                 snapping);
 
-        // Low Dump
-        if (p.getLeftBumper() && !p.getRightBumper() && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
+        // Cube Dump
+        if (p.getRawAxis(2)==1 && !(p.getRawAxis(3)==1) && !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
                 && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)
                 && !arm.atPosition(ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE, false)
                 && !arm.atPosition(ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE, false)) {
@@ -147,7 +148,7 @@ public class Teleop {
                     ArmConstants.CUBE_DUMP, true);
         }
         // Floor Intake Cone/Cube
-        if (p.getRightBumper() && !p.getLeftBumper() && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+        if (p.getRawAxis(3)==1 && !(p.getRawAxis(2)==1) && !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
             fIntake = true;
             if (cone) {
                 arm.moveTwoPronged(
@@ -162,13 +163,47 @@ public class Teleop {
             }
         } else if (arm.inSafeZone()) {
             fIntake = false;
-        } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
+        } else if (fIntake && !(p.getRawAxis(2)==1) && !(p.getRawAxis(3)==1)) {
             arm.goHome();
             if (cone)
                 intake.setPercentSpeed(0.7);
             else
                 intake.setPercentSpeed(-0.7);
         }
+
+        // if (p.getLeftBumper() && !p.getRightBumper() &&
+        // !arm.atPosition(ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE, false)
+        // && !arm.atPosition(ArmConstants.REV_CUBE_FLOOR_INTAKE, false)
+        // && !arm.atPosition(ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE, false)
+        // && !arm.atPosition(ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE, false)) {
+        // fIntake = true;
+        // arm.moveToPoint(
+        // ArmConstants.CUBE_DUMP, true);
+        // }
+        // // Floor Intake Cone/Cube
+        // if (p.getRightBumper() && !p.getLeftBumper() &&
+        // !arm.atPosition(ArmConstants.CUBE_DUMP, true)) {
+        // fIntake = true;
+        // if (cone) {
+        // arm.moveTwoPronged(
+        // ArmConstants.INTER_REV_FLIPPED_CONE_FLOOR_INTAKE,
+        // ArmConstants.REV_FLIPPED_CONE_FLOOR_INTAKE, false);
+        // intake.setPercentSpeed(0.7);
+        // } else {
+        // arm.moveTwoPronged(
+        // ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+        // ArmConstants.REV_CUBE_FLOOR_INTAKE, false);
+        // intake.setPercentSpeed(-0.7);
+        // }
+        // } else if (arm.inSafeZone()) {
+        // fIntake = false;
+        // } else if (fIntake && !p.getRightBumper() && !p.getLeftBumper()) {
+        // arm.goHome();
+        // if (cone)
+        // intake.setPercentSpeed(0.7);
+        // else
+        // intake.setPercentSpeed(-0.7);
+        // }
 
         // // Upright Cone
         // // arm.moveToPoint(ArmConstants.REV_CONE_FLOOR_INTAKE, false);
@@ -415,7 +450,8 @@ public class Teleop {
                 intake.setPercentSpeed(0.5);
         }
         // Hold
-        else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
+        else if (!(p1.getRawAxis(2)==1) && !(p1.getRawAxis(3)==1) && !p1.getLeftBumper() && !p1.getAButton() && !p1.getYButton() && !p1.getRightBumper()
+                && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
         }
