@@ -236,6 +236,15 @@ public class Vision extends Submodule {
         return table.getEntry(key);
     }
 
+    private NetworkTableEntry getSubValue(String key, String subtable) {
+        if (table == null) {
+            NetworkTableInstance.getDefault();
+            table = NetworkTableInstance.getDefault().getTable(VisionConstants.NAME);
+
+        }
+        return table.getSubTable(subtable).getEntry(key);
+    }
+
     private String[] getCameraNames() {
         return getValue("CameraNames").getStringArray(new String[] { "Camera 0", "Camera 1" });
     }
@@ -528,19 +537,19 @@ public class Vision extends Submodule {
      */
     public boolean noApples() {
         boolean apples = aprilTagIDs.length > 0;
-        //lights.apples(apples);
+        // lights.apples(apples);
         return !apples;
     }
 
     public double getCubeX() {
-        return table.getSubTable("Camera 2").getEntry("X Translation").getDouble(0);
+        return getSubValue("X Translation","Camera 2").getDouble(0.0);
     }
 
     public double getCubeY() {
-        return table.getSubTable("Camera 2").getEntry("Y Translation").getDouble(0);
+        return getSubValue("Y Translation","Camera 2").getDouble(0.0);
     }
 
-    public double getCubeAngle(){
-        return table.getSubTable("Camera 2").getEntry("Angle").getDouble(0);
+    public double getCubeAngle() {
+        return getSubValue("Angle","Camera 2").getDouble(0.0);
     }
 }

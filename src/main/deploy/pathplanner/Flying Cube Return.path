@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.0,
+        "x": 5.5,
         "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.574383148081703,
-        "y": 0.7
+        "x": 3.2768407620786633,
+        "y": 0.6999999999999997
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -24,12 +24,12 @@
     },
     {
       "anchorPoint": {
-        "x": 7.0,
+        "x": 2.0,
         "y": 0.7
       },
       "prevControl": {
-        "x": 5.6019017793454315,
-        "y": 0.7
+        "x": 3.3413583756781677,
+        "y": 0.6999999999999998
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -47,9 +47,9 @@
   ],
   "markers": [
     {
-      "position": 0.5,
+      "position": 0.35555555555555346,
       "names": [
-        "fly"
+        "fIntake"
       ]
     }
   ]

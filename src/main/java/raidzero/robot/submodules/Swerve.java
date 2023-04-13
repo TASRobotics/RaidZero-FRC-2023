@@ -444,7 +444,7 @@ public class Swerve extends Submodule {
      */
     public void followPath(PathPlannerTrajectory trajectory) {
         if (controlState == ControlState.PATHING) {
-            return;
+            //return;
         }
         if (firstPath) {
             setPose(trajectory.getInitialHolonomicPose());

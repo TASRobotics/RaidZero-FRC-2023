@@ -24,11 +24,11 @@
     },
     {
       "anchorPoint": {
-        "x": 7.0,
+        "x": 5.5,
         "y": 0.7
       },
       "prevControl": {
-        "x": 5.6019017793454315,
+        "x": 4.1019017793454315,
         "y": 0.7
       },
       "nextControl": null,
@@ -47,9 +47,9 @@
   ],
   "markers": [
     {
-      "position": 0.5,
+      "position": 0.15,
       "names": [
-        "fly"
+        "fIntake"
       ]
     }
   ]
