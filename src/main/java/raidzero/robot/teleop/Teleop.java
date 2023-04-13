@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
@@ -87,6 +88,8 @@ public class Teleop {
     private boolean holdingSnap = false;
     private double desiredXSpeed = 0.0;
 
+    private Timer rumbleTimer = new Timer();
+
     private void p1Loop(XboxController p) {
         SmartDashboard.putBoolean("Aiming", aiming);
         SmartDashboard.putBoolean("Safety", noSafenoProblemo);
@@ -109,9 +112,15 @@ public class Teleop {
         if(p.getRightStickButton() && !holdingSnap) {
             holdingSnap = true;
             snapping = !snapping;
+            rumbleTimer.restart();
         } 
         if(!p.getRightStickButton()) {
             holdingSnap = false;
+        }
+        if(rumbleTimer.get() > 0.25) {
+            p.setRumble(RumbleType.kRightRumble, 0.0);
+        } else {
+            p.setRumble(RumbleType.kRightRumble, 1.0);
         }
         swerve.drive(
             JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() *
