@@ -11,32 +11,49 @@ import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
+import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
+import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
+import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
+import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
 public class SafetySequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("Safety", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
     public SafetySequence() {
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
     }
 
     @Override
     public void sequence() {
         addAction(
                 new SeriesAction(Arrays.asList(
-                        new RunIntakeAction(0.2, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH, ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(1, IntakeConstants.AUTON_CONE_SCORE),
-                        new ArmHomeAction(),
-                        new DrivePath(mOut))));
+                        new RunIntakeAction(0.1, 0.5),
+                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
+                                ArmConstants.AUTON_GRID_HIGH, true),
+                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CONE_SCORE),
 
+                        // Get Cube
+                        new ParallelAction(Arrays.asList(
+                                new AsyncArmHomeAction(),
+                                new DrivePath(mOverRamp),
+                                new SeriesAction(Arrays.asList(
+                                        new WaitForEventMarkerAction(mOverRamp, "fIntake",
+                                                mSwerve.getPathingTime()),
+                                        new MoveTwoPronged(
+                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
+                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
+                                new RunIntakeAction(3.0, IntakeConstants.AUTON_CUBE_INTAKE))),
+
+                        new ArmHomeAction())));
     }
 
     @Override
