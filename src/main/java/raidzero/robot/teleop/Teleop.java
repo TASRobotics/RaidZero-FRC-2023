@@ -48,6 +48,7 @@ public class Teleop {
     public void onStart() {
         blue = DriverStation.getAlliance() == Alliance.Blue;
         reverse = blue ? 1 : -1;
+        rumbleTimer.restart();
     }
 
     // private Timer mTimer = new Timer();
@@ -83,7 +84,7 @@ public class Teleop {
     private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
-    private boolean snapping = true;
+    private boolean snapping = false;
     private boolean holdingSnap = false;
     private double desiredXSpeed = 0.0;
 

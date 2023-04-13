@@ -289,10 +289,10 @@ public class Constants {
         public static final double[] GRID_HIGH = { 1.25, 1.29, 155 };
 
         public static final double[] INTER_AUTON_EXTENDED_GRID_HIGH = { 0.52, 1.25, 70 };
-        public static final double[] AUTON_EXTENDED_GRID_HIGH = { 1.30, 1.30, 155 };
+        public static final double[] AUTON_EXTENDED_GRID_HIGH = { 1.25, 1.30, 155 };
 
         public static final double[] INTER_AUTON_GRID_HIGH = { 0.52, 1.25, 70 };
-        public static final double[] AUTON_GRID_HIGH = { 1.20, 1.30, 155 };
+        public static final double[] AUTON_GRID_HIGH = { 1.15, 1.30, 155 };
 
         public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
         public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
@@ -317,7 +317,7 @@ public class Constants {
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
         public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
 
-        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
+        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -7 };
         public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.03, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
@@ -494,9 +494,9 @@ public class Constants {
         public static final double MAX_ACCEL = 4500.0;
         public static final double MIN_ERROR = 3.0;
 
-        public static final double AUTON_CONE_SCORE = -1.0;
-        public static final double AUTON_CUBE_INTAKE = -0.8;
-        public static final double AUTON_CUBE_SCORE = 1.0;
+        public static final double AUTON_CONE_SCORE = -0.45;
+        public static final double AUTON_CUBE_INTAKE = -0.7;
+        public static final double AUTON_CUBE_SCORE = 0.35;
 
         public static final double MAXWINDS = 0.6;
     }

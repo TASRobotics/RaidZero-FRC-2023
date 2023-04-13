@@ -80,6 +80,7 @@ public class ConeCubeBumpSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mReturn),
                                         // Score Cube
+                                        new WaitAction(1.0),
                                         new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE))),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mReturn, "cScore",

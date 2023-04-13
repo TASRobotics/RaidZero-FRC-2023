@@ -20,6 +20,7 @@ public class AutoRunner {
             new EmptySequence(),
             new SafetySequence(),
             new SingleConeClimbSequence(),
+            new SingleConeSafeClimbSequence(),
             new ConeCubeBumpClimbSequenceBlue(),
             new ConeCubeBumpSequenceBlue(),
             new ConeCubeClimbSequenceRed(),

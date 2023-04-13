@@ -2,26 +2,19 @@ package raidzero.robot.auto.sequences;
 
 import java.util.Arrays;
 
-import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPoint;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
-import raidzero.robot.auto.actions.AsyncDrivePath;
 import raidzero.robot.auto.actions.DrivePath;
-import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
-import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
-import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
 public class SafetySequence extends AutoSequence {
@@ -40,11 +33,9 @@ public class SafetySequence extends AutoSequence {
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.2, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH, ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(1, -1),
+                        new RunIntakeAction(1, IntakeConstants.AUTON_CONE_SCORE),
                         new ArmHomeAction(),
-                        new DrivePath(mOut)
-
-                )));
+                        new DrivePath(mOut))));
 
     }
 

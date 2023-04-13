@@ -103,6 +103,6 @@ public class ConeCubeBumpClimbSequenceRed extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Bump Sequence Red";
+        return "Cone Cube Bump Climb Sequence Red";
     }
 }

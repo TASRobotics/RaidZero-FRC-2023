@@ -22,18 +22,15 @@ import raidzero.robot.auto.actions.SeriesAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class SingleConeClimbSequence extends AutoSequence {
+public class SingleConeSafeClimbSequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("SCC Balance",
+    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Safe Over",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
-    public SingleConeClimbSequence() {
+    public SingleConeSafeClimbSequence() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
-        PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
     }
 
     @Override
@@ -48,22 +45,10 @@ public class SingleConeClimbSequence extends AutoSequence {
                         // Get Cube
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new DrivePath(mOverRamp),
-                                new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mOverRamp, "fIntake",
-                                                mSwerve.getPathingTime()),
-                                        new MoveTwoPronged(
-                                                ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
-                                                ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(3.0, IntakeConstants.AUTON_CUBE_INTAKE))),
+                                new DrivePath(mOverRamp))),
 
                         // Balance
-                        new ParallelAction(Arrays.asList(
-                                new AsyncArmHomeAction(),
-                                new SeriesAction(Arrays.asList(
-                                        new DrivePath(mBalance),
-                                        new AutoBalanceAction(false, 20))),
-                                new RunIntakeAction(3.0, -0.3))),
+                        new AutoBalanceAction(false, 20),
                         new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }
 
@@ -73,6 +58,6 @@ public class SingleConeClimbSequence extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Single Cone Climb Sequence";
+        return "Single Cone Safe Climb Sequence";
     }
 }
