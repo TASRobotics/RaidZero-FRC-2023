@@ -33,7 +33,7 @@ public class AutoAimController {
     }
 
     private PIDController mXController, mYController;
-    private ProfiledPIDController mThetaController;
+    private ProfiledPIDController mThetaController, mFortniteAimAssistYController;
     private TrajectoryConfig mTrajectoryConfig;
     private Pose2d mPoseError = new Pose2d();
     private Rotation2d mRotationError = new Rotation2d();
@@ -46,6 +46,8 @@ public class AutoAimController {
     private Rotation2d mDesiredRotationPose = new Rotation2d();
     private double mDesiredXSpeed;
     private boolean mUsingTrajectory = false; 
+
+    private boolean firstStart = true;
 
     private Field2d field;
 
@@ -72,6 +74,9 @@ public class AutoAimController {
 
         mThetaController.enableContinuousInput(-Math.PI, Math.PI);
         mThetaController.reset(mSwerve.getPose().getRotation().getRadians(), 0);
+
+        mFortniteAimAssistYController = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        // mFortniteAimAssistYController.reset(0, 0);
 
         field = mSwerve.getField();
 
@@ -268,9 +273,14 @@ public class AutoAimController {
             ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
             mSwerve.setOpenLoopSpeeds(speeds);
         } else {
+            if(firstStart) {
+                mFortniteAimAssistYController.reset(mSwerve.getPose().getY(), 0);
+                mThetaController.reset(mSwerve.getPose().getRotation().getRadians(), 0);
+            }
+            firstStart = false;
             ChassisSpeeds speeds = new ChassisSpeeds(
                 mDesiredXSpeed, 
-                mYController.calculate(mSwerve.getPose().getY(), mDesiredYPose), 
+                mFortniteAimAssistYController.calculate(mSwerve.getPose().getY(), mDesiredYPose), 
                 mThetaController.calculate(mSwerve.getPose().getRotation().getRadians(), mDesiredRotationPose.getRadians())
             );
             mSwerve.setOpenLoopSpeeds(speeds);
