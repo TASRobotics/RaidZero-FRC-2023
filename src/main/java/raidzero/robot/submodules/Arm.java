@@ -243,7 +243,6 @@ public class Arm extends Submodule {
             wrist.configSmartMotionConstraints(
                     WristConstants.MAX_VEL,
                     WristConstants.MAX_ACCEL);
-
         }
 
         // Check Safe Zone
@@ -418,7 +417,7 @@ public class Arm extends Submodule {
 
 
     public double delivering() {
-        return (Math.abs(state[1].getX()) > 0.35 && Math.abs(state[0].getX()) > 0.6) ? 0.7 : 1.5;
+        return (Math.abs(state[1].getX()) > 0.35 && Math.abs(state[0].getX()) > 0.6) ? 0.5 : 1.5;
     }
 
     /**
@@ -656,6 +655,7 @@ public class Arm extends Submodule {
      */
     public boolean isGoingHome() {
         return goingHome;
+        //return false;
     }
 
     /**
@@ -674,6 +674,7 @@ public class Arm extends Submodule {
      */
     public boolean isOnTarget() {
         return targetAcquired;
+        //return true;
     }
 
     /**
@@ -682,6 +683,11 @@ public class Arm extends Submodule {
      * @return is safe?
      */
     public boolean isSafe() {
+        //return safeZone;
+        return true;
+    }
+
+    public boolean inSafeZone(){
         return safeZone;
     }
 

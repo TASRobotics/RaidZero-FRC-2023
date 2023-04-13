@@ -8,6 +8,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
@@ -59,7 +60,7 @@ public class LinkSequenceRed extends AutoSequence {
                         new RunIntakeAction(0.1, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
                                 ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(0.25, -1),
+                        new RunIntakeAction(0.25, IntakeConstants.AUTON_CONE_SCORE),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
@@ -71,7 +72,7 @@ public class LinkSequenceRed extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new AsyncRunIntakeAction(-0.8))),
+                                new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -80,7 +81,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mFirstScore),
                                         // Score Cube
-                                        new RunIntakeAction(0.5, 1.0))),
+                                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE))),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mFirstScore, "cScore",
                                                 mSwerve.getPathingTime()),
@@ -90,7 +91,7 @@ public class LinkSequenceRed extends AutoSequence {
                         // Go To Second Cube + Scoop
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new RunIntakeAction(0.5, 1.0),
+                                new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_INTAKE),
                                 new DrivePath(mSecondPickup),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
@@ -107,19 +108,13 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new DrivePath(mSecondScore),
                                         // Score Cube
-                                        new RunIntakeAction(0.5, 1.0),
+                                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE),
                                         new ArmHomeAction())),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondScore, "cScore",
                                                 mSwerve.getPathingTime()),
                                         new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_MEDIUM,
                                                 ArmConstants.CUBE_GRID_MEDIUM, true)))))
-
-                // new ParallelAction(Arrays.asList(
-                // new ArmHomeAction(),
-                // new DrivePath(mBalance)))
-                // new AutoBalanceAction(true),
-                // new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
     }

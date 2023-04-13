@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.0,
-        "y": 2.0
+        "x": 14.77,
+        "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1435321694018508,
-        "y": 2.0
+        "x": 14.534031370216281,
+        "y": 0.7
       },
       "holonomicAngle": 0.0,
       "isReversal": false,
@@ -24,12 +24,12 @@
     },
     {
       "anchorPoint": {
-        "x": 4.0,
-        "y": 3.0
+        "x": 14.033124066248131,
+        "y": 2.0892761785523577
       },
       "prevControl": {
-        "x": 2.9176604055383977,
-        "y": 3.0
+        "x": 14.362318369289849,
+        "y": 2.0892761785523577
       },
       "nextControl": null,
       "holonomicAngle": 0.0,
@@ -45,15 +45,5 @@
       }
     }
   ],
-  "maxVelocity": 5.0,
-  "maxAcceleration": 3.75,
-  "isReversed": null,
-  "markers": [
-    {
-      "position": 0.7151515151515349,
-      "names": [
-        "deez nuts"
-      ]
-    }
-  ]
+  "markers": []
 }

@@ -205,4 +205,13 @@ public class Lights extends Submodule {
             setColor(0, 255, 0);
         }
     }
+
+    public void coneCube(boolean cone) {
+        setBrightness(1.0);
+        if(cone) {
+            setColor(255, 255, 0);
+        } else {
+            setColor(255, 0, 255);
+        } 
+    }
 }

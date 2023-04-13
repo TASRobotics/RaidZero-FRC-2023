@@ -299,9 +299,13 @@ public class Constants {
 
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
+        public static final double[] TELE_CUBE_GRID_HIGH = { 1.28, 1.02, 97 };
 
         public static final double[] INTER_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
         public static final double[] CUBE_GRID_MEDIUM = { 0.93, 0.85, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
+        public static final double[] TELE_CUBE_GRID_MEDIUM = { 0.93, 0.65, 97 };
 
         public static final double[] INTER_FLOOR_INTAKE = { 0.84, 0.39, 45 };
         public static final double[] INTER2_FLOOR_INTAKE = { 1.12, 0.27, 90 };
@@ -311,10 +315,10 @@ public class Constants {
         public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.01, -97 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
 
         public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.00, -125 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.03, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
         public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };
@@ -475,7 +479,7 @@ public class Constants {
 
         public static final boolean INVERSION = true;
 
-        public static final int STALL_CURRENT_LIMIT = 10;
+        public static final int STALL_CURRENT_LIMIT = 15;
         public static final int FREE_CURRENT_LIMIT = 35;
         public static final int STALL_RPM = 100;
         public static final int PID_SLOT = 0;
@@ -489,6 +493,10 @@ public class Constants {
         public static final double MAX_VEL = 3000.0;
         public static final double MAX_ACCEL = 4500.0;
         public static final double MIN_ERROR = 3.0;
+
+        public static final double AUTON_CONE_SCORE = -1.0;
+        public static final double AUTON_CUBE_INTAKE = -0.8;
+        public static final double AUTON_CUBE_SCORE = 1.0;
 
         public static final double MAXWINDS = 0.6;
     }
