@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.submodules.Arm;
 import raidzero.robot.submodules.Intake;
@@ -81,7 +82,6 @@ public class Teleop {
     private boolean fIntake = false;
     private boolean noSafenoProblemo = false;
 
-    private Rotation2d desiredRotation = new Rotation2d();
     private boolean snapping = true;
     private boolean holdingSnap = false;
     private double desiredXSpeed = 0.0;
@@ -94,14 +94,20 @@ public class Teleop {
 
         if (p.getXButtonPressed()) {
             swerve.zeroTele(blue ? 180 : 0);
-            desiredRotation = Rotation2d.fromDegrees(blue ? 180 : 0);
-            // swerve.zero();
         }
 
-        if (p.getAButton() && cone) {
-            intake.setPercentSpeed(-0.7);
-        } else if (p.getAButton() && !cone) {
-            intake.setPercentSpeed(0.7);
+        if (p.getAButton()) {
+            if (cone)
+                intake.setPercentSpeed(-0.7);
+            else
+                intake.setPercentSpeed(0.5);
+        }
+
+        if (p.getYButton()) {
+            intake.configSmartCurrentLimit(200, 200, 10);
+            intake.setPercentSpeed(1.0);
+        } else {
+            intake.configSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT, IntakeConstants.STALL_RPM);
         }
 
         desiredXSpeed = JoystickUtils.xboxDeadband(-p.getLeftY() * arm.tooFasttooFurious() * arm.slurping() * reverse);
@@ -397,10 +403,10 @@ public class Teleop {
             if (cone)
                 intake.setPercentSpeed(-0.35);
             else
-                intake.setPercentSpeed(0.8);
-        } 
+                intake.setPercentSpeed(0.5);
+        }
         // Hold
-        else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getRightBumper() && !p.getRawButton(12)
+        else if (!p1.getLeftBumper() && !p1.getAButton() && !p1.getYButton() && !p1.getRightBumper() && !p.getRawButton(12)
                 && !p.getRawButton(11)) {
             intake.holdPosition();
         }

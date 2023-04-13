@@ -23,7 +23,7 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class ConeCubeSequenceBlue extends AutoSequence {
+public class ConeCubeBumpSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
     private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
@@ -34,7 +34,7 @@ public class ConeCubeSequenceBlue extends AutoSequence {
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    public ConeCubeSequenceBlue() {
+    public ConeCubeBumpSequenceBlue() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
@@ -88,6 +88,6 @@ public class ConeCubeSequenceBlue extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Sequence Blue";
+        return "Cone Cube Bump Sequence Blue";
     }
 }

@@ -243,7 +243,6 @@ public class Arm extends Submodule {
             wrist.configSmartMotionConstraints(
                     WristConstants.MAX_VEL,
                     WristConstants.MAX_ACCEL);
-
         }
 
         // Check Safe Zone
