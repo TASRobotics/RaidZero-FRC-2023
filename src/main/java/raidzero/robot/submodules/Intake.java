@@ -72,7 +72,7 @@ public class Intake extends Submodule {
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
-        mLights.intake(mEncoder.getVelocity(), 50);
+        //mLights.intake(mEncoder.getVelocity(), 50);
     }
 
     @Override

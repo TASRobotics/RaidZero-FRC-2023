@@ -31,13 +31,13 @@ public class ConeCubeBumpSequenceRed extends AutoSequence {
     private PathPlannerTrajectory mTurn = PathPlanner.loadPath("CC Bump Turn Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.3,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.3);
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup Red",
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Bump Pickup Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
-    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score Red",
+    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Bump Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance Red",
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Bump Balance Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
@@ -71,24 +71,24 @@ public class ConeCubeBumpSequenceRed extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, -0.7))),
+                                new RunIntakeAction(2.5, IntakeConstants.AUTON_CUBE_INTAKE))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
-                                new DrivePath(mReturn),
+                                new RunIntakeAction(1.0, -0.3),
+                                new SeriesAction(Arrays.asList(
+                                        new DrivePath(mReturn),
+                                        // Score Cube
+                                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE))),
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mReturn, "cScore",
                                                 mSwerve.getPathingTime()),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
                                 new RunIntakeAction(1.0, -0.3))),
-                        // Score Cube
-                        new RunIntakeAction(0.5, 1.0),
 
-                        new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
-                                new DrivePath(mBalance)))
+                        new ArmHomeAction()
 
                 )));
     }

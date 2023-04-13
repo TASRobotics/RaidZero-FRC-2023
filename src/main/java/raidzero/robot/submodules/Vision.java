@@ -526,7 +526,7 @@ public class Vision extends Submodule {
      */
     public boolean noApples() {
         boolean apples = aprilTagIDs.length > 0;
-        lights.apples(apples);
+        //lights.apples(apples);
         return !apples;
     }
 
