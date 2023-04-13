@@ -494,6 +494,10 @@ public class Constants {
         public static final double MAX_ACCEL = 4500.0;
         public static final double MIN_ERROR = 3.0;
 
+        public static final double AUTON_CONE_SCORE = -1.0;
+        public static final double AUTON_CUBE_INTAKE = -0.8;
+        public static final double AUTON_CUBE_SCORE = 1.0;
+
         public static final double MAXWINDS = 0.6;
     }
 

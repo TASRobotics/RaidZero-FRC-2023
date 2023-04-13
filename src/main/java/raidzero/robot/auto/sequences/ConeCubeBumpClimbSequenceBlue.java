@@ -26,14 +26,11 @@ import raidzero.robot.submodules.Swerve;
 public class ConeCubeBumpClimbSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Bump Pickup Blue", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
-    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
+    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Bump Score Blue", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-    // private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance",
-    // SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
-    // SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Auto Balance",
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Bump Balance Blue",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
