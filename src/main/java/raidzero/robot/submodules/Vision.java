@@ -168,7 +168,9 @@ public class Vision extends Submodule{
         if (robotPose != null) {
             SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());
             SmartDashboard.putNumber("April Tag Y Pose", robotPose.getY());
-            SmartDashboard.putNumber("Cone Translation", getConeTranslation());
+            SmartDashboard.putNumber("Cube X", getCubeX());
+            SmartDashboard.putNumber("Cube Y", getCubeY());
+            SmartDashboard.putNumber("Cube Angle", getCubeAngle());
         }
 
         SmartDashboard.putBoolean("Apples?", !noApples());
@@ -500,20 +502,15 @@ public class Vision extends Submodule{
         return !apples;
     }
 
-    public double getConeTranslation() {
-        return table.getSubTable("Camera 0").getEntry("X Translation").getDouble(0)
-                * VisionConstants.CONE_PIXELS_TO_METERS;
+    public double getCubeX() {
+        return table.getSubTable("Camera 2").getEntry("X Translation").getDouble(0);
     }
 
-    public Transform2d getConeTransform(){
-        double pigeonAngle = pigeon.getAngle();
-        Rotation2d robotRotation = Rotation2d.fromDegrees(pigeonAngle);
+    public double getCubeY() {
+        return table.getSubTable("Camera 2").getEntry("Y Translation").getDouble(0);
+    }
 
-        if (robotRotation.getDegrees() < 90 && robotRotation.getDegrees() > -90){
-            return new Transform2d(new Translation2d(0, getConeTranslation()), new Rotation2d());
-        }
-        else{
-            return new Transform2d(new Translation2d(0, -getConeTranslation()), new Rotation2d());
-        }
+    public double getCubeAngle(){
+        return table.getSubTable("Camera 2").getEntry("Angle").getDouble(0);
     }
 }
