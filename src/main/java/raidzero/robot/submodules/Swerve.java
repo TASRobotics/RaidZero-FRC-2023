@@ -587,4 +587,7 @@ public class Swerve extends Submodule {
             bottomLeftModule.setRotorAngle(315);
         }
     }
+
+    public void addVisionMeasurement(Pose2d plus, double pathingTime, double d) {
+    }
 }

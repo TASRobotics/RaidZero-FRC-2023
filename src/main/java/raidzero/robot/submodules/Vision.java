@@ -176,7 +176,7 @@ public class Vision extends Submodule {
             SmartDashboard.putNumber("Cube Angle", getCubeAngle());
         }
 
-        SmartDashboard.putBoolean("Apples?", !noApples());
+        //SmartDashboard.putBoolean("Apples?", !noApples());
 
         // table.putValue("April Tag X Pose", robotPose.getX());
         // table.putValue("April Tag X Pose", robotPose.getX());

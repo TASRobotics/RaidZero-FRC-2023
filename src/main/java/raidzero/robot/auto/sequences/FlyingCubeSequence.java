@@ -7,7 +7,9 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -21,9 +23,11 @@ import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
 import raidzero.robot.auto.actions.MoveTwoPronged;
+import raidzero.robot.auto.actions.OTFdrivePath;
 import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
+import raidzero.robot.auto.actions.SetPoseAction;
 import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.auto.actions.WaitForFlyingCube;
@@ -43,6 +47,7 @@ public class FlyingCubeSequence extends AutoSequence {
 
     public FlyingCubeSequence() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
     }
 
     @Override
@@ -50,38 +55,25 @@ public class FlyingCubeSequence extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         new ParallelAction(Arrays.asList(
-                                new AsyncDrivePath(mOut),
+                                new DrivePath(mOut),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mOut, "fIntake", mSwerve.getPathingTime()),
+                                        new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false),
-                                        new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE))),
-                                new SeriesAction(Arrays.asList(
                                         new WaitForFlyingCube(),
-                                        new WaitAction(0.25),
-                                        new DrivePath(PathPlanner.generatePath(
-                                                new PathConstraints(SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
-                                                        SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5),
-                                                new PathPoint(
-                                                        mOut.sample(mSwerve.getPathingTime()).poseMeters
-                                                                .getTranslation(),
-                                                        mOut.sample(mSwerve.getPathingTime()).poseMeters.getRotation(),
-                                                        Rotation2d.fromDegrees(180), 1),
-                                                new PathPoint(
-                                                        mOut.sample(mSwerve.getPathingTime()).poseMeters
-                                                                .getTranslation()
-                                                                .plus(new Translation2d(mVision.getCubeX()+0.7,
-                                                                        mVision.getCubeY()+0.25)),
-                                                        mOut.sample(mSwerve.getPathingTime()).poseMeters.getRotation(),
-                                                        Rotation2d.fromDegrees(180), 1))))))),
+                                        // new WaitForEventMarkerAction(mOut, "fIntake", mSwerve.getPathingTime()),
+                                        new SetPoseAction(
+                                                new Pose2d(mOut.getEndState().poseMeters.getTranslation(),
+                                                        Rotation2d.fromDegrees(mVision.getCubeAngle()).unaryMinus()),
+                                                new Transform2d(mSwerve.getPose().getTranslation().minus(mOut.getEndState().poseMeters.getTranslation()),
+                                                        mSwerve.getPose().getRotation().minus(
+                                                                Rotation2d.fromDegrees(mVision.getCubeAngle())))))))),
                         // Return to community
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
                                 new RunIntakeAction(1.0, -0.3)))
-
                 )));
-
     }
 
     @Override
@@ -93,3 +85,23 @@ public class FlyingCubeSequence extends AutoSequence {
         return "Flying Cube Sequence";
     }
 }
+
+// new OTFdrivePath(1,
+// new PathConstraints(SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+// SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5),
+// new PathPoint(
+// mOut.sample(mSwerve.getPathingTime() + 1).poseMeters
+// .getTranslation(),
+// mOut.sample(mSwerve.getPathingTime() + 1).poseMeters
+// .getRotation(),
+// Rotation2d.fromDegrees(180), 1),
+// new PathPoint(
+// mOut.getEndState().poseMeters.getTranslation(),
+// // mOut.sample(mSwerve.getPathingTime()).poseMeters
+// // .getTranslation()
+// // .plus(new Translation2d(Math.abs(mVision.getCubeY()),
+// // Math.abs(mVision.getCubeX()))),
+// mOut.getEndState().poseMeters.getRotation()
+// .minus(Rotation2d.fromDegrees(mVision.getCubeAngle())),
+// Rotation2d.fromDegrees(100),
+// 1))

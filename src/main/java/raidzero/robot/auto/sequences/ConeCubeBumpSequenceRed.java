@@ -86,8 +86,7 @@ public class ConeCubeBumpSequenceRed extends AutoSequence {
                                         new WaitForEventMarkerAction(mReturn, "cScore",
                                                 mSwerve.getPathingTime()),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
-                                                ArmConstants.CUBE_GRID_HIGH, true))),
-                                new RunIntakeAction(1.0, -0.3))),
+                                                ArmConstants.CUBE_GRID_HIGH, true))))),
 
                         new ArmHomeAction()
 

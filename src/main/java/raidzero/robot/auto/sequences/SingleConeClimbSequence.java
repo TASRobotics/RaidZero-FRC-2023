@@ -38,6 +38,8 @@ public class SingleConeClimbSequence extends AutoSequence {
 
     @Override
     public void sequence() {
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
         addAction(
                 new SeriesAction(Arrays.asList(
                         new RunIntakeAction(0.1, 0.5),
