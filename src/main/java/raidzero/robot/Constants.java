@@ -49,10 +49,15 @@ public class Constants {
 
         public static final int IMU_ID = 0;
 
-        public static final double FRONT_LEFT_ROTOR_OFFSET = 118.828;
-        public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
-        public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
-        public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
+        // public static final double FRONT_LEFT_ROTOR_OFFSET = 118.828;
+        // public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
+        // public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
+        // public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
+
+        public static final double FRONT_LEFT_ROTOR_OFFSET = 352.881;
+        public static final double FRONT_RIGHT_ROTOR_OFFSET = 205.928;
+        public static final double REAR_LEFT_ROTOR_OFFSET = 208.828;
+        public static final double REAR_RIGHT_ROTOR_OFFSET = 236.426;
 
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
