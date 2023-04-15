@@ -27,7 +27,7 @@ import raidzero.robot.auto.actions.OTFdrivePath;
 import raidzero.robot.auto.actions.ParallelAction;
 import raidzero.robot.auto.actions.RunIntakeAction;
 import raidzero.robot.auto.actions.SeriesAction;
-import raidzero.robot.auto.actions.SetPoseAction;
+import raidzero.robot.auto.actions.CubeAlighmentAction;
 import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.auto.actions.WaitForFlyingCube;
@@ -63,17 +63,12 @@ public class FlyingCubeSequence extends AutoSequence {
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false),
                                         new WaitForFlyingCube(),
                                         // new WaitForEventMarkerAction(mOut, "fIntake", mSwerve.getPathingTime()),
-                                        new SetPoseAction(
-                                                new Pose2d(mOut.getEndState().poseMeters.getTranslation(),
-                                                        Rotation2d.fromDegrees(mVision.getCubeAngle()).unaryMinus()),
-                                                new Transform2d(mSwerve.getPose().getTranslation().minus(mOut.getEndState().poseMeters.getTranslation()),
-                                                        mSwerve.getPose().getRotation().minus(
-                                                                Rotation2d.fromDegrees(mVision.getCubeAngle())))))))),
+                                        new CubeAlighmentAction(mOut.getEndState().poseMeters))),
                         // Return to community
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
                                 new RunIntakeAction(1.0, -0.3)))
-                )));
+                )))));
     }
 
     @Override

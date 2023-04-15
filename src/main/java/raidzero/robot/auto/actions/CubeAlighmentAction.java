@@ -5,25 +5,30 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.submodules.Swerve;
+import raidzero.robot.submodules.Vision;
 
 /**
  * Action for following a path.
  */
-public class SetPoseAction implements Action {
+public class CubeAlighmentAction implements Action {
 
     private static final Swerve swerve = Swerve.getInstance();
     private Transform2d transform;
-    private Pose2d current;
+    private Pose2d updatePose;
+    private Pose2d endPose;
+    private Rotation2d cubeAngle;
     private Timer timer = new Timer();
+    private Vision vision = Vision.getInstance();
 
-    public SetPoseAction(Pose2d c, Transform2d t) {
-        transform = t;
-        current = c;
+    public CubeAlighmentAction(Pose2d endPose) {
+        this.endPose = endPose;
     }
 
     @Override
@@ -40,10 +45,17 @@ public class SetPoseAction implements Action {
 
     @Override
     public void update() {
-        swerve.addVisionMeasurement(current.transformBy(transform.div(10*(timer.get() + 1))), Timer.getFPGATimestamp(),
+        Translation2d relativeTranslation = swerve.getPose().minus(endPose).getTranslation();
+        transform = swerve.getPose().minus(endPose);
+        cubeAngle = new Rotation2d(Math.toRadians(vision.getCubeAngle()));
+        transform = transform.plus(new Transform2d(new Translation2d(), transform.getRotation().minus(cubeAngle)));
+        updatePose = swerve.getPose().plus(transform);
+        Pose2d relativeRobotPose = new Pose2d(relativeTranslation, cubeAngle);
+
+        swerve.addVisionMeasurement(relativeRobotPose.plus(transform), Timer.getFPGATimestamp(),
                 new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(
-                        0.01 / (10*(timer.get() + 1)),
-                        0.01 / (10*(timer.get() + 1)), 1.0));
+                        0.01 * relativeTranslation.getNorm(),
+                        0.01 * relativeTranslation.getNorm(), 1.0));
     }
 
     @Override
