@@ -49,16 +49,21 @@ public class CubeAlighmentAction implements Action {
             transform = swerve.getPose().minus(endPose);
             // Translation2d relativeTranslation = transform.getTranslation();
 
-            Rotation2d relativeAngle = transform.getRotation();
+            // Rotation2d relativeAngle = transform.getRotation();
+            // Rotation2d angleDiff = cubeAngle.minus(relativeAngle);
+            
             cubeAngle = new Rotation2d(Math.toRadians(vision.getCubeAngle()));
-            Rotation2d angleDiff = cubeAngle.minus(relativeAngle);
+            Rotation2d angleDiff = new Rotation2d(Math.PI).minus(transform.getTranslation().getAngle()).plus(transform.getRotation()).minus(cubeAngle);
+            
             Transform2d angleTransform = new Transform2d(new Translation2d(), angleDiff);
+
             // transform = transform.plus(new Transform2d(new Translation2d(), transform.getRotation().minus(cubeAngle)));
             // updatePose = swerve.getPose().plus(transform);
             // Pose2d relativeRobotPose = new Pose2d(relativeTranslation, cubeAngle);
             
-            Pose2d newCubePose = new Pose2d(endPose.getTranslation(), endPose.getRotation().plus(angleDiff));
-            Transform2d newRobotTransform = new Transform2d(transform.getTranslation(), transform.getRotation().minus(angleDiff));
+            // Pose2d newCubePose = new Pose2d(endPose.getTranslation(), endPose.getRotation().plus(angleDiff));
+            // Transform2d newRobotTransform = new Transform2d(transform.getTranslation(), transform.getRotation().minus(angleDiff));
+            
             Pose2d newRobotPose = endPose.plus(angleTransform).plus(transform).plus(angleTransform.inverse());  //newCubePose.plus(newRobotTransform);
 
             swerve.addVisionMeasurement(newRobotPose, Timer.getFPGATimestamp(),

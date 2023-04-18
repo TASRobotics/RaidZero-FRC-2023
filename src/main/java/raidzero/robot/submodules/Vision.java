@@ -345,8 +345,8 @@ public class Vision extends Submodule {
                     double oldToNewDistance = newRobotPose.getTranslation().getDistance(robotDrive.getPose().getTranslation());
                 
                     if (oldToNewDistance > VisionConstants.ADD_VISION_TOLERANCE){
-                        Transform2d oldToNewTrasnform = newRobotPose.minus(robotDrive.getPose());
-                        newRobotPose = robotDrive.getPose().plus(oldToNewTrasnform);
+                        Transform2d oldToNewTransform = newRobotPose.minus(robotDrive.getPose()).div(oldToNewDistance).times(VisionConstants.ADD_VISION_TOLERANCE);
+                        newRobotPose = robotDrive.getPose().plus(oldToNewTransform);
                     } 
 
                     Multithreading multithreadingRunnable = new Multithreading(newRobotPose, timestamp,
