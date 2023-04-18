@@ -80,6 +80,11 @@ public class Vision extends Submodule {
     private Pose2d robotPose;
     private Transform2d coneTransform;
 
+    private double cubeX;
+    private double cubeY;
+    private double cubeAngle;
+    private double cubePercentArea;
+
     private NetworkTable table;
     // private final DoublePublisher timePublisher;
     // private final DoubleSubscriber timeSubscriber;
@@ -164,6 +169,8 @@ public class Vision extends Submodule {
         // updateRobotPose();
         // timePublisher.set(timestamp);
         SmartDashboard.putNumber("RobotTime", timestamp);
+
+        updateCubeValues();
 
         for (String cameraSubTable : cameraSubTables) {
             aprilDetect(table.getSubTable(cameraSubTable));
@@ -328,10 +335,6 @@ public class Vision extends Submodule {
                     angleError = 10;
                 }
 
-                // double maxDistance = (VisionConstants.POSE_MAX_DISTANCE - 1) /
-                // -VisionConstants.POSE_MAX_COUNT * poseCounter +
-                // VisionConstants.POSE_MAX_DISTANCE;
-
                 // System.out.println("Aligning with Apriltag " + aTagID);,
                 if (newRobotPose.getTranslation().getDistance(new Translation2d()) > 0
                         && newRobotPose.getTranslation().getDistance(
@@ -339,31 +342,37 @@ public class Vision extends Submodule {
                                         VisionConstants.MID_FIELD_Y_POS)) < 10) {
                     // SmartDashboard.putNumber("TimetoCalc", calcTime.get());
 
-                    if (newRobotPose.getTranslation().getDistance(
-                            robotDrive.getPose().getTranslation()) < VisionConstants.ADD_VISION_TOLERANCE) {
-                        Multithreading multithreadingRunnable = new Multithreading(newRobotPose, timestamp,
+                    double oldToNewDistance = newRobotPose.getTranslation().getDistance(robotDrive.getPose().getTranslation());
+                
+                    if (oldToNewDistance > VisionConstants.ADD_VISION_TOLERANCE){
+                        Transform2d oldToNewTrasnform = newRobotPose.minus(robotDrive.getPose());
+                        newRobotPose = robotDrive.getPose().plus(oldToNewTrasnform);
+                    } 
+
+                    Multithreading multithreadingRunnable = new Multithreading(newRobotPose, timestamp,
                                 new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(positionError, positionError,
                                         angleError));
 
-                        Thread addThread = new Thread(multithreadingRunnable);
-                        // offer a new thread to the blocking queue if not full
-                        if (blockingQueue.offer(addThread))
-                            addThread.start();
-                        // Clear the queue of finished threads
-                        for (int threadNum = 0; blockingQueue.peek() != null
-                                && !blockingQueue.peek().isAlive()
-                                && threadNum < VisionConstants.NUM_THREADS; threadNum++) {
-                            blockingQueue.poll();
-                        }
-                        SmartDashboard.putNumber("Active Threads", blockingQueue.size());
-
-                    } else if (zTranslationNT[aTagID] < VisionConstants.DISTANCE_RESET_TOLERANCE
-                            && Math.hypot(robotDrive.getOpenLoopSpeeds().vxMetersPerSecond, robotDrive
-                                    .getOpenLoopSpeeds().vyMetersPerSecond) < VisionConstants.SPEED_RESET_TOLERANCE
-                            && robotDrive
-                                    .getOpenLoopSpeeds().omegaRadiansPerSecond < VisionConstants.OMEGA_RESET_TOLERANCE) {
-                        robotDrive.setPose(newRobotPose);
+                    Thread addThread = new Thread(multithreadingRunnable);
+                    // offer a new thread to the blocking queue if not full
+                    if (blockingQueue.offer(addThread))
+                        addThread.start();
+                    // Clear the queue of finished threads
+                    for (int threadNum = 0; blockingQueue.peek() != null
+                            && !blockingQueue.peek().isAlive()
+                            && threadNum < VisionConstants.NUM_THREADS; threadNum++) {
+                        blockingQueue.poll();
                     }
+                    SmartDashboard.putNumber("Active Threads", blockingQueue.size());
+
+
+                    // else if (zTranslationNT[aTagID] < VisionConstants.DISTANCE_RESET_TOLERANCE
+                    //         && Math.hypot(robotDrive.getOpenLoopSpeeds().vxMetersPerSecond, robotDrive
+                    //                 .getOpenLoopSpeeds().vyMetersPerSecond) < VisionConstants.SPEED_RESET_TOLERANCE
+                    //         && robotDrive
+                    //                 .getOpenLoopSpeeds().omegaRadiansPerSecond < VisionConstants.OMEGA_RESET_TOLERANCE) {
+                    //     robotDrive.setPose(newRobotPose);
+                    // }
 
                     // if (!blockingQueue.offer(addThread)){
                     // Thread removeThread = blockingQueue.poll();
@@ -541,15 +550,37 @@ public class Vision extends Submodule {
         return !apples;
     }
 
+    public void updateCubeValues(){
+        cubeX = getSubValue("X Translation","Camera 2").getDouble(0.0);
+        cubeY = getSubValue("Y Translation","Camera 2").getDouble(0.0);
+        cubeAngle = getSubValue("Angle","Camera 2").getDouble(0.0);
+        cubePercentArea = getSubValue("Percent Area","Camera 2").getDouble(0.0);
+    }
+
+    public void resetCubeValues(){
+        cubeX = 0;
+        cubeY = 0;
+        cubeAngle = 0;
+        cubePercentArea = 0;
+    }
+
     public double getCubeX() {
-        return getSubValue("X Translation","Camera 2").getDouble(0.0);
+        return cubeX;
     }
 
     public double getCubeY() {
-        return getSubValue("Y Translation","Camera 2").getDouble(0.0);
+        return cubeY;
     }
 
     public double getCubeAngle() {
-        return getSubValue("Angle","Camera 2").getDouble(0.0);
+        return cubeAngle;
+    }
+
+    public double getCubePercentArea() {
+        return cubePercentArea;
+    }
+
+    public boolean isCube(){
+        return cubePercentArea >= 0.05;
     }
 }
