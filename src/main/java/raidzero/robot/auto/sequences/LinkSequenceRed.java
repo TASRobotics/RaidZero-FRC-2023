@@ -96,7 +96,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mSecondPickup, "fIntake",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncRunIntakeAction(-0.8),
+                                        new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE),
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))))),

@@ -102,7 +102,7 @@ public class Teleop {
 
         if (p.getAButton()) {
             if (cone)
-                intake.setPercentSpeed(-0.7);
+                intake.setPercentSpeed(-0.35);
             else
                 intake.setPercentSpeed(0.5);
         }

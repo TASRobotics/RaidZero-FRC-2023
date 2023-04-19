@@ -74,10 +74,11 @@ public class ConeCubeBumpSequenceBlue extends AutoSequence {
 
                         // Score Cube
                         new RunIntakeAction(0.5, 1.0),
-
-                        new ParallelAction(Arrays.asList(
-                                new ArmHomeAction(),
-                                new DrivePath(mBalance)))
+                        
+                        new ArmHomeAction()
+                        // new ParallelAction(Arrays.asList(
+                        //         new ArmHomeAction(),
+                        //         new DrivePath(mBalance)))
 
                 )));
     }

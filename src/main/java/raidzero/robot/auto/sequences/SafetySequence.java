@@ -28,6 +28,9 @@ public class SafetySequence extends AutoSequence {
     private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
+    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("SCC Return", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
+
     public SafetySequence() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
     }
@@ -53,6 +56,8 @@ public class SafetySequence extends AutoSequence {
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
                                 new RunIntakeAction(3.0, IntakeConstants.AUTON_CUBE_INTAKE))),
+                        // Return Test
+                        // new DrivePath(mReturn),
 
                         new ArmHomeAction())));
     }

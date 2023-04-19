@@ -14,9 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Vision;
 
-/**
- * Action for following a path.
- */
+
 public class CubeAlighmentAction implements Action {
 
     private static final Swerve swerve = Swerve.getInstance();

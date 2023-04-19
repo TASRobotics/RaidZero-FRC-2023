@@ -26,11 +26,11 @@ import raidzero.robot.submodules.Swerve;
 public class CenterConeCubeClimbSequence extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
+    private PathPlannerTrajectory mOverRamp = PathPlanner.loadPath("SCC Over", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
     private PathPlannerTrajectory mReturn = PathPlanner.loadPath("Center Cube Score",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.5);
 
     public CenterConeCubeClimbSequence() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOverRamp, DriverStation.getAlliance());
