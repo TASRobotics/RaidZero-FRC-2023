@@ -64,6 +64,9 @@ public class Constants {
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
         // public static final double WHEEL_DIAMETER_METERS = 0.095;
         public static final double MAX_VEL_MPS = 4.959668;
+
+        public static final double AUTO_BEANS = 19.9;
+
         // 20.75 OR 22.75 inches
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75);
         public static final double WHEELBASE_METERS = Units.inchesToMeters(22.75);
@@ -282,7 +285,7 @@ public class Constants {
 
         //public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
         public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.16, 1.02, -60 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 1.02, -106 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.98, -106 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };

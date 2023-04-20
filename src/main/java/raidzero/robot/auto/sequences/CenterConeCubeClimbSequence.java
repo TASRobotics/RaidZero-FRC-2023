@@ -77,7 +77,7 @@ public class CenterConeCubeClimbSequence extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
                                 new RunIntakeAction(3.0, -0.3),
-                                new AutoBalanceAction(true, 20))),
+                                new AutoBalanceAction(true, SwerveConstants.AUTO_BEANS))),
 
                         new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }

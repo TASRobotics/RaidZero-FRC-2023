@@ -8,9 +8,11 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.Constants.ArmConstants;
+import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
@@ -60,7 +62,7 @@ public class ConeCubeBumpClimbSequenceBlue extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, -0.6))),
+                                new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -73,12 +75,12 @@ public class ConeCubeBumpClimbSequenceBlue extends AutoSequence {
                                 new RunIntakeAction(1.0, -0.3))),
 
                         // Score Cube
-                        new RunIntakeAction(0.5, 1.0),
+                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE),
 
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance))),
-                        new AutoBalanceAction(true, 20),
+                        new AutoBalanceAction(true, SwerveConstants.AUTO_BEANS),
                         new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));

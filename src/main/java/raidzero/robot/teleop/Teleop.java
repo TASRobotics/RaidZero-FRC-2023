@@ -70,6 +70,7 @@ public class Teleop {
          */
         // mTimer.restart();
         p3Loop(p3);
+
         // p3Time = mTimer.get();
 
         // if(p1Time + p3Time > 0.02) {
@@ -77,6 +78,8 @@ public class Teleop {
         // System.out.println("P3 Time :: " + p3Time);
         // System.out.println();
         // }
+        
+        SmartDashboard.putBoolean("Snapping", snapping);
     }
 
     private double[] target = { 0, 0.15 };
@@ -104,7 +107,7 @@ public class Teleop {
             if (cone)
                 intake.setPercentSpeed(-0.35);
             else
-                intake.setPercentSpeed(0.5);
+                intake.setPercentSpeed(0.45);
         }
 
         if (p.getYButton()) {
@@ -448,7 +451,7 @@ public class Teleop {
             if (cone)
                 intake.setPercentSpeed(-0.35);
             else
-                intake.setPercentSpeed(0.5);
+                intake.setPercentSpeed(0.45);
         }
         // Hold
         else if (!(p1.getRawAxis(2)==1) && !(p1.getRawAxis(3)==1) && !p1.getLeftBumper() && !p1.getAButton() && !p1.getYButton() && !p1.getRightBumper()

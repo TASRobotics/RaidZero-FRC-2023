@@ -49,7 +49,7 @@ public class SingleConeSafeClimbSequence extends AutoSequence {
                                 new DrivePath(mOverRamp))),
 
                         // Balance
-                        new AutoBalanceAction(false, 20),
+                        new AutoBalanceAction(false, SwerveConstants.AUTO_BEANS),
                         new LambdaAction(() -> mSwerve.rotorBrake(true)))));
     }
 

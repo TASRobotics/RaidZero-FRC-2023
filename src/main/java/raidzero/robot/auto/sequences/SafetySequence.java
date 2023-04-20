@@ -12,6 +12,7 @@ import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
@@ -55,7 +56,7 @@ public class SafetySequence extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(3.0, IntakeConstants.AUTON_CUBE_INTAKE))),
+                                new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE))),
                         // Return Test
                         // new DrivePath(mReturn),
 

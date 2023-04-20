@@ -12,6 +12,7 @@ import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.AutoBalanceAction;
 import raidzero.robot.auto.actions.DrivePath;
 import raidzero.robot.auto.actions.LambdaAction;
@@ -63,7 +64,7 @@ public class ConeCubeClimbSequenceRed extends AutoSequence {
                                         new MoveTwoPronged(
                                                 ArmConstants.INTER_REV_CUBE_FLOOR_INTAKE,
                                                 ArmConstants.REV_CUBE_FLOOR_INTAKE, false))),
-                                new RunIntakeAction(2.5, IntakeConstants.AUTON_CUBE_INTAKE))),
+                                new AsyncRunIntakeAction(IntakeConstants.AUTON_CUBE_INTAKE))),
 
                         // Return to community
                         new ParallelAction(Arrays.asList(
@@ -81,7 +82,7 @@ public class ConeCubeClimbSequenceRed extends AutoSequence {
                         new ParallelAction(Arrays.asList(
                                 new ArmHomeAction(),
                                 new DrivePath(mBalance))),
-                        new AutoBalanceAction(true, 20),
+                        new AutoBalanceAction(true, SwerveConstants.AUTO_BEANS),
                         new LambdaAction(() -> mSwerve.rotorBrake(true))
 
                 )));
