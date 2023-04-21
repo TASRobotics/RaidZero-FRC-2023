@@ -50,7 +50,7 @@ public class ConeCubeBumpClimbSequenceBlue extends AutoSequence {
                         new RunIntakeAction(0.1, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
                                 ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(0.5, -1),
+                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CONE_SCORE),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(

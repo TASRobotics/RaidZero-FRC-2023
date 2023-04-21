@@ -94,8 +94,6 @@ public class Swerve extends Submodule {
 
     private ControlState controlState = ControlState.OPEN_LOOP;
 
-    // private boolean justStartedSnapping = false;
-
     public void onStart(double timestamp) {
         controlState = ControlState.OPEN_LOOP;
         alliance = DriverStation.getAlliance();
@@ -139,8 +137,8 @@ public class Swerve extends Submodule {
                 DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
-
-        snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS*2));
+        snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(
+                SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS * 2));
         snapController.enableContinuousInput(-Math.PI, Math.PI);
         snapController.reset(getPose().getRotation().getRadians(), 0);
 
@@ -251,10 +249,12 @@ public class Swerve extends Submodule {
         else if (alliance == Alliance.Red)
             zeroHeading(0);
         setPose(new Pose2d(new Translation2d(1.76, 1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+
         topRightModule.zero();
         topLeftModule.zero();
         bottomLeftModule.zero();
         bottomRightModule.zero();
+
     }
 
     /**
@@ -264,20 +264,21 @@ public class Swerve extends Submodule {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
     }
 
-    public void zeroTele(double q){
+    public void zeroTele(double q) {
         pigeon.setYaw(q, Constants.TIMEOUT_MS);
         setPose(new Pose2d(new Translation2d(1.76, 1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
     }
 
-    public double getYawRate(){
+    public double getYawRate() {
         return pigeon.getRate();
     }
 
     // public void lockTo90() {
-    //     if (Math.abs(pigeon.getYaw()-180) > 1 || Math.abs(pigeon.getYaw()-0) > 1)
-    //         drive(0,0,0.3, false); 
-    //     // pigeon.setYaw(q, Constants.TIMEOUT_MS);
-    //     // setPose(new Pose2d(new Translation2d(1.76,1.477), new Rotation2d(Math.toRadians(pigeon.getAngle()))));
+    // if (Math.abs(pigeon.getYaw()-180) > 1 || Math.abs(pigeon.getYaw()-0) > 1)
+    // drive(0,0,0.3, false);
+    // // pigeon.setYaw(q, Constants.TIMEOUT_MS);
+    // // setPose(new Pose2d(new Translation2d(1.76,1.477), new
+    // Rotation2d(Math.toRadians(pigeon.getAngle()))));
     // }
 
     public Field2d getField() {
@@ -420,7 +421,7 @@ public class Swerve extends Submodule {
     }
 
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, Rotation2d snapAngle) {
-        if(Math.abs(angularSpeed) > 0.1) {
+        if (Math.abs(angularSpeed) > 0.1) {
             drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
         } else {
             double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), snapAngle.getRadians());
@@ -429,8 +430,9 @@ public class Swerve extends Submodule {
     }
 
     public void drive(double xSpeed, double ySpeed, double angularSpeed, boolean fieldOriented, boolean snap) {
-        if(snap && Math.abs(angularSpeed) < 0.1) {
-            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(), DriverStation.getAlliance() == Alliance.Blue ? Math.PI : 0);
+        if (snap && Math.abs(angularSpeed) < 0.1) {
+            double thetaOutput = snapController.calculate(getPose().getRotation().getRadians(),
+                    DriverStation.getAlliance() == Alliance.Blue ? Math.PI : 0);
             drive(xSpeed, ySpeed, thetaOutput, fieldOriented);
         } else {
             drive(xSpeed, ySpeed, angularSpeed, fieldOriented);
@@ -444,7 +446,7 @@ public class Swerve extends Submodule {
      */
     public void followPath(PathPlannerTrajectory trajectory) {
         if (controlState == ControlState.PATHING) {
-            //return;
+            // return;
         }
         if (firstPath) {
             setPose(trajectory.getInitialHolonomicPose());
@@ -547,7 +549,7 @@ public class Swerve extends Submodule {
     public void setFortniteAutoAimTM(double yDist, double xSpeed) {
         enableAutoAimController(true);
         Rotation2d desiredAngle = new Rotation2d();
-        if(DriverStation.getAlliance() == Alliance.Blue) {
+        if (DriverStation.getAlliance() == Alliance.Blue) {
             desiredAngle = Rotation2d.fromDegrees(180);
         } else {
             desiredAngle = Rotation2d.fromDegrees(0);
