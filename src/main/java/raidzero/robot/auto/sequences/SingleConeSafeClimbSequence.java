@@ -43,7 +43,6 @@ public class SingleConeSafeClimbSequence extends AutoSequence {
                                 ArmConstants.AUTON_GRID_HIGH, true),
                         new RunIntakeAction(0.5, IntakeConstants.AUTON_CONE_SCORE),
 
-                        // Get Cube
                         new ParallelAction(Arrays.asList(
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mOverRamp))),
