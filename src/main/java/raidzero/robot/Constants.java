@@ -49,16 +49,24 @@ public class Constants {
 
         public static final int IMU_ID = 0;
 
-        public static final double FRONT_LEFT_ROTOR_OFFSET = 118.828;
-        public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
-        public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
-        public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
+        // public static final double FRONT_LEFT_ROTOR_OFFSET = 118.828;
+        // public static final double FRONT_RIGHT_ROTOR_OFFSET = 134.473;
+        // public static final double REAR_LEFT_ROTOR_OFFSET = 268.066;
+        // public static final double REAR_RIGHT_ROTOR_OFFSET = 349.980;
+
+        public static final double FRONT_LEFT_ROTOR_OFFSET = 166.553;
+        public static final double FRONT_RIGHT_ROTOR_OFFSET = 24.082;
+        public static final double REAR_LEFT_ROTOR_OFFSET = 31.641;
+        public static final double REAR_RIGHT_ROTOR_OFFSET = 63.281;
 
         public static final double THROTTLE_REDUCTION = (14.0 / 50.0) * (28.0 / 16.0) * (15.0 / 45.0);
         public static final double ROTOR_REDUCTION = (14.0 / 50.0) * (10.0 / 60.0);
         public static final double WHEEL_DIAMETER_METERS = 0.1016;
         // public static final double WHEEL_DIAMETER_METERS = 0.095;
         public static final double MAX_VEL_MPS = 4.959668;
+
+        public static final double AUTO_BEANS = 19.9;
+
         // 20.75 OR 22.75 inches
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(22.75);
         public static final double WHEELBASE_METERS = Units.inchesToMeters(22.75);
@@ -137,7 +145,8 @@ public class Constants {
                 0.5,
                 3.0,
                 STARTING_ROTATION);
-        private static final double MAX_ACCEL_DISTANCE = 6.0 * Math.pow(TIMEOUT_S, 2);
+        // private static final double MAX_ACCEL_DISTANCE = 6.0 * Math.pow(TIMEOUT_S, 2);
+        private static final double MAX_ACCEL_DISTANCE = 0.01;
         private static final double GYRO_ERROR_DEGREES_TIMEOUT = (0.4 / SECONDS_IN_MINUTE) * TIMEOUT_S;
         public static final double CONFIDENCE_TO_ERROR = 1.0;
         public static final Matrix<N3, N1> STATE_STDEVS_MATRIX = new MatBuilder<N3, N1>(
@@ -184,6 +193,16 @@ public class Constants {
         public static final int IMU_ID = 0;
 
         public static final double CONE_PIXELS_TO_METERS = 0.001;
+
+        public static final double MID_FIELD_X_POS = 8.3;
+        public static final double MID_FIELD_Y_POS = 4.2;
+        
+        public static final double ADD_VISION_TOLERANCE = 1.0;
+        public static final double DISTANCE_RESET_TOLERANCE = 3.0;
+        public static final double SPEED_RESET_TOLERANCE = 0.5;
+        public static final double OMEGA_RESET_TOLERANCE = 0.2;
+        
+        public static final int NUM_THREADS = 10;
 
         /**
          * Auto Alignment Constants
@@ -262,8 +281,11 @@ public class Constants {
         public static final double[] INTER2_HUMAN_PICKUP_STATION = { 0.01, 1.4, 90 };
         public static final double[] HUMAN_PICKUP_STATION = { 0.50, 0.97, 160 };
 
-        public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
-        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.99, -106 };
+        public static final double[] DIRECT_HUMAN_PICKUP_STATION = { 0.73, 1.09, 133 };
+
+        //public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.52, 0.79, -60 };
+        public static final double[] INTER_EXT_HUMAN_PICKUP_STATION = { 0.16, 1.02, -60 };
+        public static final double[] EXT_HUMAN_PICKUP_STATION = { 0.64, 0.98, -106 };
 
         public static final double[] INTER_GRID_LOW = { 0.0, 0.0 };
         public static final double[] GRID_LOW = { 0.6, 0.0 };
@@ -272,22 +294,26 @@ public class Constants {
         public static final double[] GRID_MEDIUM = { 0.93, 1.01, 155 };
 
         public static final double[] INTER_GRID_HIGH = { 0.50, 1.25, 70 };
-        public static final double[] GRID_HIGH = { 1.25, 1.35, 155 };
+        public static final double[] GRID_HIGH = { 1.25, 1.29, 155 };
 
         public static final double[] INTER_AUTON_EXTENDED_GRID_HIGH = { 0.52, 1.25, 70 };
-        public static final double[] AUTON_EXTENDED_GRID_HIGH = { 1.30, 1.30, 155 };
+        public static final double[] AUTON_EXTENDED_GRID_HIGH = { 1.25, 1.30, 155 };
 
         public static final double[] INTER_AUTON_GRID_HIGH = { 0.52, 1.25, 70 };
-        public static final double[] AUTON_GRID_HIGH = { 1.20, 1.30, 155 };
+        public static final double[] AUTON_GRID_HIGH = { 1.15, 1.30, 155 };
 
         public static final double[] INTER_REV_GRID_HIGH = { 0.52, 1.25, -70 };
         public static final double[] REV_GRID_HIGH = { 1.36, 1.28, -155 };
 
         public static final double[] INTER_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
         public static final double[] CUBE_GRID_HIGH = { 1.28, 1.14, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_HIGH = { 0.30, 1.11, 70 };
+        public static final double[] TELE_CUBE_GRID_HIGH = { 1.06, 1.15, 97 };
 
         public static final double[] INTER_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
         public static final double[] CUBE_GRID_MEDIUM = { 0.93, 0.85, 97 };
+        public static final double[] INTER_TELE_CUBE_GRID_MEDIUM = { 0.30, 1.05, 70 };
+        public static final double[] TELE_CUBE_GRID_MEDIUM = { 0.93, 0.79, 97 };
 
         public static final double[] INTER_FLOOR_INTAKE = { 0.84, 0.39, 45 };
         public static final double[] INTER2_FLOOR_INTAKE = { 1.12, 0.27, 90 };
@@ -297,10 +323,10 @@ public class Constants {
         public static final double[] REV_CONE_FLOOR_INTAKE = { 0.60, 0.22, -135 };
 
         public static final double[] INTER_REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.65, 0.19, -147 };
-        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.08, -97 };
+        public static final double[] REV_FLIPPED_CONE_FLOOR_INTAKE = { 0.70, -0.05, -97 };
 
-        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -45 };
-        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.06, -125 };
+        public static final double[] INTER_REV_CUBE_FLOOR_INTAKE = { 0.65, 0.19, -7 };
+        public static final double[] REV_CUBE_FLOOR_INTAKE = { 0.70, -0.03, -125 };
 
         public static final double[] INTER_CUBE_DUMP = { 0.65, 0.19, -147 };
         public static final double[] CUBE_DUMP = { 0.42, 0.27, 133 };
@@ -459,10 +485,10 @@ public class Constants {
     public static final class IntakeConstants {
         public static final int ID = 16;
 
-        public static final boolean INVERSION = false;
+        public static final boolean INVERSION = true;
 
-        public static final int STALL_CURRENT_LIMIT = 3;
-        public static final int FREE_CURRENT_LIMIT = 5;
+        public static final int STALL_CURRENT_LIMIT = 15;
+        public static final int FREE_CURRENT_LIMIT = 35;
         public static final int STALL_RPM = 100;
         public static final int PID_SLOT = 0;
         public static final int SMART_MOTION_SLOT = 0;
@@ -474,7 +500,11 @@ public class Constants {
         public static final double MIN_VEL = 0.0;
         public static final double MAX_VEL = 3000.0;
         public static final double MAX_ACCEL = 4500.0;
-        public static final double MIN_ERROR = 0.0;
+        public static final double MIN_ERROR = 3.0;
+
+        public static final double AUTON_CONE_SCORE = -0.45;
+        public static final double AUTON_CUBE_INTAKE = -0.7;
+        public static final double AUTON_CUBE_SCORE = 0.35;
 
         public static final double MAXWINDS = 0.6;
     }
@@ -497,6 +527,7 @@ public class Constants {
     public static final String NETWORKTABLESNAME = "SmartDashboard";
 
     public static final double JOYSTICK_DEADBAND = 0.02;
+    public static final double XBOX_JOYSTICK_DEADBAND = 0.10;
     public static final double AIMING_JOYSTICK_DEADBAND = 0.02;
     public static final int TIMEOUT_MS = 20;
     public static final double TIMEOUT_S = TIMEOUT_MS / 1000.0f;

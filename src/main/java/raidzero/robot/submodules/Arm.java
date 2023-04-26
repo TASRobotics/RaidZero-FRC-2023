@@ -164,9 +164,12 @@ public class Arm extends Submodule {
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
 
-        // SmartDashboard.putNumber("Proximal Absolute Angle", Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
-        // SmartDashboard.putNumber("Proximal Angle", state[0].getRotation().getDegrees());
-        // SmartDashboard.putNumber("Distal Angle", state[1].getRotation().getDegrees());
+        // SmartDashboard.putNumber("Proximal Absolute Angle",
+        // Math.toDegrees(mLowerAbsoluteEncoder.getPosition()) + 90);
+        // SmartDashboard.putNumber("Proximal Angle",
+        // state[0].getRotation().getDegrees());
+        // SmartDashboard.putNumber("Distal Angle",
+        // state[1].getRotation().getDegrees());
 
         // SmartDashboard.putNumber("Proximal X ", state[0].getX());
         // SmartDashboard.putNumber("Proximal Y ", state[0].getY());
@@ -179,8 +182,10 @@ public class Arm extends Submodule {
 
         SmartDashboard.putNumber("Wrist Relative Angle", calculateWristRelativeAngle(wrist.getAngle().getDegrees()));
 
-        // SmartDashboard.putNumber("Proximal Current Draw", mLowerLeader.getOutputCurrent());
-        // SmartDashboard.putNumber("Distal Current Draw", mUpperLeader.getOutputCurrent());
+        // SmartDashboard.putNumber("Proximal Current Draw",
+        // mLowerLeader.getOutputCurrent());
+        // SmartDashboard.putNumber("Distal Current Draw",
+        // mUpperLeader.getOutputCurrent());
 
         // Multi-pronged Movement
         // if (stage > 0) {
@@ -238,7 +243,6 @@ public class Arm extends Submodule {
             wrist.configSmartMotionConstraints(
                     WristConstants.MAX_VEL,
                     WristConstants.MAX_ACCEL);
-
         }
 
         // Check Safe Zone
@@ -408,7 +412,12 @@ public class Arm extends Submodule {
      * @return Speed Reduction
      */
     public double tooFasttooFurious() {
-        return (Math.abs(state[1].getX()) > 0.25 || Math.abs(state[0].getX()) > 0.15) ? 0.95 : 1.0;
+        return (Math.abs(state[1].getX()) > 0.25 || Math.abs(state[0].getX()) > 0.15) ? 1.0 : 1.0;
+    }
+
+
+    public double delivering() {
+        return (Math.abs(state[1].getX()) > 0.35 && Math.abs(state[0].getX()) > 0.6) ? 0.5 : 1.5;
     }
 
     /**
@@ -427,7 +436,7 @@ public class Arm extends Submodule {
                 || Math.abs(state[1].getY() - ArmConstants.REV_CUBE_FLOOR_INTAKE[1]) > 0.05
                 || Math.abs(state[1].getX() - ArmConstants.EXT_HUMAN_PICKUP_STATION[0]) > 0.05
                 || Math.abs(state[1].getY() - ArmConstants.EXT_HUMAN_PICKUP_STATION[1]) > 0.05)
-            return 0.85;
+            return 1;
         else
             return 1;
     }
@@ -646,6 +655,7 @@ public class Arm extends Submodule {
      */
     public boolean isGoingHome() {
         return goingHome;
+        //return false;
     }
 
     /**
@@ -664,6 +674,7 @@ public class Arm extends Submodule {
      */
     public boolean isOnTarget() {
         return targetAcquired;
+        //return true;
     }
 
     /**
@@ -672,6 +683,11 @@ public class Arm extends Submodule {
      * @return is safe?
      */
     public boolean isSafe() {
+        //return safeZone;
+        return true;
+    }
+
+    public boolean inSafeZone(){
         return safeZone;
     }
 

@@ -37,7 +37,7 @@ public class TestSequence extends AutoSequence {
         // );
         addAction(
             new SeriesAction(Arrays.asList(
-                new AutoBalanceAction(false, 20),
+                new AutoBalanceAction(false, SwerveConstants.AUTO_BEANS),
                 new LambdaAction(() -> mSwerve.rotorBrake(true)
             )))
                 //new DrivePath(mTrajectory)

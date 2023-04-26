@@ -14,7 +14,8 @@ import raidzero.robot.Constants;
 import raidzero.robot.Constants.IntakeConstants;
 
 public class Intake extends Submodule {
-    private Intake() {}
+    private Intake() {
+    }
 
     private static Intake instance = null;
 
@@ -49,7 +50,8 @@ public class Intake extends Submodule {
     }
 
     @Override
-    public void onStart(double timestamp) {}
+    public void onStart(double timestamp) {
+    }
 
     @Override
     public void update(double timestamp) {
@@ -70,7 +72,7 @@ public class Intake extends Submodule {
                     ControlType.kPosition,
                     IntakeConstants.PID_SLOT);
         }
-        mLights.intake(mEncoder.getVelocity(), 50);
+        //mLights.intake(mEncoder.getVelocity(), 50);
     }
 
     @Override
@@ -97,9 +99,13 @@ public class Intake extends Submodule {
     public void holdPosition() {
         mControlState = ControlState.CLOSED_LOOP;
         if (Math.signum(mPercentOut) < 0)
-            mDesiredPosition = mPrevOpenLoopPosition - 7;
+            mDesiredPosition = mPrevOpenLoopPosition - 1;
         else
-            mDesiredPosition = mPrevOpenLoopPosition + 3;
+            mDesiredPosition = mPrevOpenLoopPosition + 1;
+    }
+
+    public void configSmartCurrentLimit(int stall, int free, int stallrpm) {
+        mMotor.setSmartCurrentLimit(stall, free, stallrpm);
     }
 
     /** Configure intake motor & integrated encoder/PID controller */
@@ -107,7 +113,8 @@ public class Intake extends Submodule {
         mMotor.restoreFactoryDefaults();
         mMotor.setIdleMode(IdleMode.kBrake);
         mMotor.setInverted(IntakeConstants.INVERSION);
-        mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT, IntakeConstants.STALL_RPM);
+        mMotor.setSmartCurrentLimit(IntakeConstants.STALL_CURRENT_LIMIT, IntakeConstants.FREE_CURRENT_LIMIT,
+                IntakeConstants.STALL_RPM);
         mMotor.enableVoltageCompensation(Constants.VOLTAGE_COMP);
 
         mPIDController.setFeedbackDevice(mEncoder);

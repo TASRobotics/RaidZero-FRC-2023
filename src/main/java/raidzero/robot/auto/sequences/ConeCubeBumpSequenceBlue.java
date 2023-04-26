@@ -25,19 +25,18 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class ConeCubeSequenceRed extends AutoSequence {
+public class ConeCubeBumpSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Pickup Red", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
+    private PathPlannerTrajectory mOut = PathPlanner.loadPath("CC Bump Pickup Blue", SwerveConstants.MAX_DRIVE_VEL_MPS * 0.7,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.7);
-    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Score Red",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
+    private PathPlannerTrajectory mReturn = PathPlanner.loadPath("CC Bump Score Blue", SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Balance Red",
+    private PathPlannerTrajectory mBalance = PathPlanner.loadPath("CC Bump Balance Blue",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.0,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    public ConeCubeSequenceRed() {
+    public ConeCubeBumpSequenceBlue() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mOut, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mReturn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mBalance, DriverStation.getAlliance());
@@ -51,7 +50,7 @@ public class ConeCubeSequenceRed extends AutoSequence {
                         new RunIntakeAction(0.1, 0.5),
                         new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
                                 ArmConstants.AUTON_GRID_HIGH, true),
-                        new RunIntakeAction(0.5, IntakeConstants.AUTON_CONE_SCORE),
+                        new RunIntakeAction(0.5, -1),
 
                         // Go To Cube + Scoop
                         new ParallelAction(Arrays.asList(
@@ -70,15 +69,18 @@ public class ConeCubeSequenceRed extends AutoSequence {
                                 new AsyncArmHomeAction(),
                                 new DrivePath(mReturn),
                                 new SeriesAction(Arrays.asList(
-                                        new WaitForEventMarkerAction(mReturn, "cScore",
-                                                mSwerve.getPathingTime()),
+                                        new WaitAction(1.2),
                                         new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))),
                                 new RunIntakeAction(1.0, -0.3))),
+
                         // Score Cube
                         new RunIntakeAction(0.5, IntakeConstants.AUTON_CUBE_SCORE),
-
+                        
                         new ArmHomeAction()
+                        // new ParallelAction(Arrays.asList(
+                        //         new ArmHomeAction(),
+                        //         new DrivePath(mBalance)))
 
                 )));
     }
@@ -89,6 +91,6 @@ public class ConeCubeSequenceRed extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Cone Cube Sequence Red";
+        return "Cone Cube Bump Sequence Blue";
     }
 }

@@ -28,8 +28,12 @@ public class AutoAimController {
         R_LOAD, L_LOAD
     };
 
+    public enum LoadStationLocation { 
+        WALL_SIDE, GRID_SIDE
+    }
+
     private PIDController mXController, mYController;
-    private ProfiledPIDController mThetaController;
+    private ProfiledPIDController mThetaController, mFortniteAimAssistYController;
     private TrajectoryConfig mTrajectoryConfig;
     private Pose2d mPoseError = new Pose2d();
     private Rotation2d mRotationError = new Rotation2d();
@@ -37,6 +41,13 @@ public class AutoAimController {
 
     private Trajectory mTrajectory;
     private Rotation2d mEndHeading;
+
+    private double mDesiredYPose;
+    private Rotation2d mDesiredRotationPose = new Rotation2d();
+    private double mDesiredXSpeed;
+    private boolean mUsingTrajectory = false; 
+
+    private boolean firstStart = true;
 
     private Field2d field;
 
@@ -62,6 +73,10 @@ public class AutoAimController {
         mTrajectoryConfig = trajectoryConfig;
 
         mThetaController.enableContinuousInput(-Math.PI, Math.PI);
+        mThetaController.reset(mSwerve.getPose().getRotation().getRadians(), 0);
+
+        mFortniteAimAssistYController = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        // mFortniteAimAssistYController.reset(0, 0);
 
         field = mSwerve.getField();
 
@@ -79,6 +94,7 @@ public class AutoAimController {
      * @param endHeading end heading of chassis
      */
     public void setTarget(List<Pose2d> points, Rotation2d endHeading) {
+        mUsingTrajectory = true;
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
                 points,
                 mTrajectoryConfig);
@@ -97,6 +113,7 @@ public class AutoAimController {
      * @param endHeading  end heading
      */
     public void setTarget(Pose2d startPose, List<Translation2d> interPoints, Pose2d endPose, Rotation2d endHeading) {
+        mUsingTrajectory = true;
         Trajectory traj = TrajectoryGenerator.generateTrajectory(
                 startPose,
                 interPoints,
@@ -227,6 +244,13 @@ public class AutoAimController {
         setTarget(startPose, location);
     }
 
+    public void setTarget(double desiredYMeters, Rotation2d desiredTheta, double xSpeed) {
+        mUsingTrajectory = false;
+        mDesiredYPose = desiredYMeters;
+        mDesiredRotationPose = desiredTheta;
+        mDesiredXSpeed = xSpeed;
+    }
+
     /**
      * Set enabled state of controller
      * 
@@ -240,13 +264,27 @@ public class AutoAimController {
     public void update() {
         if (!mEnabled)
             return;
-        Trajectory.State currState = mTrajectory.sample(mTimer.get());
-        // field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(),
-        // mEndHeading);
-        // SmartDashboard.putData(field);
+        if(mUsingTrajectory) {
+            Trajectory.State currState = mTrajectory.sample(mTimer.get());
+            // field.setRobotPose(currState.poseMeters.getX(), currState.poseMeters.getY(),
+            // mEndHeading);
+            // SmartDashboard.putData(field);
 
-        ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
-        mSwerve.setOpenLoopSpeeds(speeds);
+            ChassisSpeeds speeds = calculate(mSwerve.getPose(), currState, mEndHeading);
+            mSwerve.setOpenLoopSpeeds(speeds);
+        } else {
+            if(firstStart) {
+                mFortniteAimAssistYController.reset(mSwerve.getPose().getY(), 0);
+                mThetaController.reset(mSwerve.getPose().getRotation().getRadians(), 0);
+            }
+            firstStart = false;
+            ChassisSpeeds speeds = new ChassisSpeeds(
+                mDesiredXSpeed, 
+                mFortniteAimAssistYController.calculate(mSwerve.getPose().getY(), mDesiredYPose), 
+                mThetaController.calculate(mSwerve.getPose().getRotation().getRadians(), mDesiredRotationPose.getRadians())
+            );
+            mSwerve.setOpenLoopSpeeds(speeds);
+        }
     }
 
     /**

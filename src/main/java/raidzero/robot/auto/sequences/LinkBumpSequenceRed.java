@@ -12,6 +12,7 @@ import raidzero.robot.Constants.IntakeConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.auto.actions.ArmHomeAction;
 import raidzero.robot.auto.actions.AsyncArmHomeAction;
+import raidzero.robot.auto.actions.AsyncDrivePath;
 import raidzero.robot.auto.actions.AsyncMoveTwoPronged;
 import raidzero.robot.auto.actions.AsyncRunIntakeAction;
 import raidzero.robot.auto.actions.AutoBalanceAction;
@@ -26,26 +27,27 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class LinkSequenceRed extends AutoSequence {
+public class LinkBumpSequenceRed extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("CC Pickup Red",
+    private PathPlannerTrajectory mTurn = PathPlanner.loadPath("CC Bump Turn Red",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 0.3,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.3);
+    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("Link Bump First Pickup Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.8,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-
-    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link First Score Red",
+    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link Bump First Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-
-    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Second Pickup Red",
+    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Bump Second Pickup Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.8);
-
-    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Second Score Red",
+    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Bump Second Score Red",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    public LinkSequenceRed() {
+    public LinkBumpSequenceRed() {
+        PathPlannerTrajectory.transformTrajectoryForAlliance(mTurn, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstPickup, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstScore, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mSecondPickup, DriverStation.getAlliance());
@@ -57,9 +59,11 @@ public class LinkSequenceRed extends AutoSequence {
         addAction(
                 new SeriesAction(Arrays.asList(
                         // Score Cone
-                        new RunIntakeAction(0.1, 0.5),
-                        new MoveTwoPronged(ArmConstants.INTER_AUTON_GRID_HIGH,
-                                ArmConstants.AUTON_GRID_HIGH, true),
+                        new ParallelAction(Arrays.asList(
+                                new RunIntakeAction(0.1, 0.5),
+                                new AsyncDrivePath(mTurn),
+                                new MoveTwoPronged(ArmConstants.INTER_AUTON_EXTENDED_GRID_HIGH,
+                                        ArmConstants.AUTON_EXTENDED_GRID_HIGH, true))),
                         new RunIntakeAction(0.25, IntakeConstants.AUTON_CONE_SCORE),
 
                         // Go To Cube + Scoop
@@ -85,7 +89,7 @@ public class LinkSequenceRed extends AutoSequence {
                                 new SeriesAction(Arrays.asList(
                                         new WaitForEventMarkerAction(mFirstScore, "cScore",
                                                 mSwerve.getPathingTime()),
-                                        new AsyncMoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
+                                        new MoveTwoPronged(ArmConstants.INTER_CUBE_GRID_HIGH,
                                                 ArmConstants.CUBE_GRID_HIGH, true))))),
 
                         // Go To Second Cube + Scoop
@@ -125,6 +129,6 @@ public class LinkSequenceRed extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Link Sequence Red";
+        return "Link Bump Sequence Red";
     }
 }

@@ -20,13 +20,19 @@ public class AutoRunner {
             new EmptySequence(),
             new SafetySequence(),
             new SingleConeClimbSequence(),
-            new ConeCubeClimbSequenceBlue(),
-            new ConeCubeSequenceBlue(),
+            new SingleConeSafeClimbSequence(),
+            new CenterConeCubeClimbSequence(),
+            new ConeCubeBumpClimbSequenceBlue(),
+            new ConeCubeBumpSequenceBlue(),
             new ConeCubeClimbSequenceRed(),
             new ConeCubeSequenceRed(),
-            new LinkSequence(),
+            new ConeCubeBumpClimbSequenceRed(),
+            new ConeCubeBumpSequenceRed(),
             new LinkSequenceBlue(),
-            new LinkSequenceRed()
+            new LinkSequenceRed(),
+            new LinkBumpSequenceBlue(),
+            new LinkBumpSequenceRed(),
+            new FlyingCubeSequence()
     };
 
     public AutoRunner() {

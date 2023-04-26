@@ -10,7 +10,7 @@
         "x": 2.5705091410182823,
         "y": 4.6393292786585585
       },
-      "holonomicAngle": 152.0,
+      "holonomicAngle": 147.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -50,11 +50,11 @@
     {
       "anchorPoint": {
         "x": 6.9,
-        "y": 4.72
+        "y": 4.65
       },
       "prevControl": {
         "x": 6.486634425208742,
-        "y": 4.72
+        "y": 4.65
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -72,7 +72,7 @@
   ],
   "markers": [
     {
-      "position": 0.55,
+      "position": 0.65,
       "names": [
         "fIntake"
       ]

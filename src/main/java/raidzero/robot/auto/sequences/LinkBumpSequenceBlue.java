@@ -26,26 +26,23 @@ import raidzero.robot.auto.actions.WaitAction;
 import raidzero.robot.auto.actions.WaitForEventMarkerAction;
 import raidzero.robot.submodules.Swerve;
 
-public class LinkSequenceRed extends AutoSequence {
+public class LinkBumpSequenceBlue extends AutoSequence {
     private static final Swerve mSwerve = Swerve.getInstance();
 
-    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("CC Pickup Red",
+    private PathPlannerTrajectory mFirstPickup = PathPlanner.loadPath("CC Bump Pickup Blue",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 0.8,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-
-    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link First Score Red",
+    private PathPlannerTrajectory mFirstScore = PathPlanner.loadPath("Link Bump First Score Blue",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
+    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Bump Second Pickup Blue",
+            SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
+            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
+    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Bump Second Score Blue",
             SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
             SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
 
-    private PathPlannerTrajectory mSecondPickup = PathPlanner.loadPath("Link Second Pickup Red",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 0.8);
-
-    private PathPlannerTrajectory mSecondScore = PathPlanner.loadPath("Link Second Score Red",
-            SwerveConstants.MAX_DRIVE_VEL_MPS * 1.5,
-            SwerveConstants.MAX_DRIVE_ACCEL_MPSPS * 1.0);
-
-    public LinkSequenceRed() {
+    public LinkBumpSequenceBlue() {
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstPickup, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mFirstScore, DriverStation.getAlliance());
         PathPlannerTrajectory.transformTrajectoryForAlliance(mSecondPickup, DriverStation.getAlliance());
@@ -125,6 +122,6 @@ public class LinkSequenceRed extends AutoSequence {
 
     @Override
     public String getName() {
-        return "Link Sequence Red";
+        return "Link Bump Sequence Blue";
     }
 }

@@ -49,11 +49,11 @@
     },
     {
       "anchorPoint": {
-        "x": 6.91,
+        "x": 7.0,
         "y": 2.25
       },
       "prevControl": {
-        "x": 6.237597787965407,
+        "x": 6.327597787965407,
         "y": 2.25
       },
       "nextControl": null,
@@ -75,7 +75,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.7,
+      "position": 1.0,
       "names": [
         "fIntake"
       ]

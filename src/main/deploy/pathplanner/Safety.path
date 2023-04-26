@@ -45,5 +45,12 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.5,
+      "names": [
+        "fly"
+      ]
+    }
+  ]
 }
