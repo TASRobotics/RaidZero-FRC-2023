@@ -134,6 +134,8 @@ public class Constants {
                 35,
                 60,
                 0.1);
+                
+        public static final double POSEHISTSECS = 2.0;
     }
 
     public static final class DriveConstants {
@@ -181,7 +183,7 @@ public class Constants {
         public static final double ANGLEHISTSECS = 1.0;
         public static final double DISTANCETOLERANCE = 3.0;
         public static final double DISTANCEERRORFACTOR = 0.01;
-        public static final double ANGLEERRORFACTOR = 1;
+        public static final double ANGLEERRORFACTOR = 1.0;
         // public static final Pose2d[] APRILTAG_POSE2DS = {new Pose2d(1, 1, new
         // Rotation2d(.5))};
         // public final Pose2d[] APRILTAG_POSE2DS =
@@ -251,6 +253,11 @@ public class Constants {
         public static final double RRL = 3.79;
         public static final double RRM = 4.26;
         public static final double RRR = 4.77;
+    }
+
+    public static final class PoseConstants {
+        public static final double ANGLE_DIFF_TOLERANCE = 10.0;
+        public static final double DISTANCE_ADD_TOLERANCE = 1.0;
     }
 
     public static final class ArmConstants {

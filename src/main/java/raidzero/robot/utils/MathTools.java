@@ -1,5 +1,10 @@
 package raidzero.robot.utils;
 
+import java.util.Arrays;
+import java.util.function.DoubleToIntFunction;
+
+import com.fasterxml.jackson.databind.ser.std.StdArraySerializers.DoubleArraySerializer;
+
 import edu.wpi.first.math.MathUtil;
 
 public class MathTools {
@@ -28,6 +33,25 @@ public class MathTools {
         for(int i =0; i<darray.length;i++){
             converted[i] = (int)darray[i];
         }
+        return converted;
+    }
+
+    
+    static DoubleToIntFunction castToInt = doubleVal -> {     // lambda expression
+        int intVal = (int) doubleVal;
+        return intVal;
+     };
+
+     static DoubleToIntFunction nonZeroDouble = doubleVal -> {     // lambda expression
+        int intVal = Math.abs(doubleVal)<.01 ? 0 : 1 ;
+        return intVal;
+     };
+     
+    public static int[][] doubleArraytoInt(double[][] darray){
+        int[][] converted = new int[darray.length][];
+        for(int depth=0; depth<darray.length;depth++) 
+            converted[depth] =  Arrays.stream(darray[depth]).mapToInt(castToInt).toArray();
+        
         return converted;
     }
 

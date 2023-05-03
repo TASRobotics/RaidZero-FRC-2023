@@ -3,6 +3,8 @@ package raidzero.robot.submodules;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.Optional;
+
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -74,6 +77,7 @@ public class Swerve extends Submodule {
 
     private Pose2d currentPose;
     private Pose2d prevPose;
+    private TimeInterpolatableBuffer<Pose2d> histPose;
     private Field2d fieldPose = new Field2d();
 
     private PathPlannerTrajectory currentTrajectory;
@@ -139,6 +143,7 @@ public class Swerve extends Submodule {
                 DriveConstants.STATE_STDEVS_MATRIX,
                 DriveConstants.VISION_STDEVS_MATRIX);
 
+        histPose = TimeInterpolatableBuffer.createBuffer(SwerveConstants.POSEHISTSECS);
 
         snapController = new ProfiledPIDController(1.25, 0, 0.15, new TrapezoidProfile.Constraints(SwerveConstants.MAX_ANGULAR_VEL_RPS, SwerveConstants.MAX_ANGULAR_ACCEL_RPSPS*2));
         snapController.enableContinuousInput(-Math.PI, Math.PI);
@@ -198,6 +203,7 @@ public class Swerve extends Submodule {
 
         currentPose = updateOdometry(timestamp);
         fieldPose.setRobotPose(currentPose);
+        histPose.addSample(timestamp, currentPose);
 
         // This needs to be moved somewhere else.....
         SmartDashboard.putData(fieldPose);
@@ -282,6 +288,10 @@ public class Swerve extends Submodule {
 
     public Field2d getField() {
         return fieldPose;
+    }
+
+    public Optional<Pose2d> getHistPose(double timeOfPose){
+        return histPose.getSample(timeOfPose);
     }
 
     public SwerveModulePosition[] getModulePositions() {
