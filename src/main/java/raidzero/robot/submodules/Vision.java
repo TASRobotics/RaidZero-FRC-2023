@@ -3,6 +3,7 @@ package raidzero.robot.submodules;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
@@ -61,6 +62,7 @@ import raidzero.robot.Constants.VisionConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.utils.MathTools;
 import raidzero.robot.utils.ParallelPoseAdding;
+import raidzero.robot.utils.VisionPose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -235,11 +237,8 @@ public class Vision extends Submodule {
         // System.out.println("Camera Subtable " +
         // cameraSubTable.getEntry("AprilTagIDs").getDoubleArray(new double[1])[0]);
         // cameraSubTable.getEntry("timestamp").clearFlags(EntryListenerFlags.kUpdate);
-        Pose2d returnPoses[] = new Pose2d[0];
-        Pose2d tempPoses[] = new Pose2d[0];
+        LinkedList<VisionPose2d> posesToAdd = new LinkedList<VisionPose2d>();
 
-        double returnTimeStamps[] = new double[0];
-        double tempTimeStamps[] = new double[0];
         for (int cameraNum = 0; cameraNum<cameraSubTables.length;cameraNum++) {
             aprilTagIDs = MathTools.doubleArraytoInt(tagsApril[cameraNum].readQueueValues());
             xTranslationNT = xApril[cameraNum].readQueueValues();
@@ -256,37 +255,28 @@ public class Vision extends Submodule {
             for(int[] aprilTagIDhist:aprilTagIDs){
                 totalPoses+=aprilTagIDhist.length;
             }
-            Pose2d[] posesToAdd = new Pose2d[totalPoses];
-            double[] timestampsToAdd = new double[totalPoses];
-
             
-            int whichPose = 0;
+
             for(int queuePos = 0; queuePos<confidenceNT.length;queuePos++){
                 
                 for(int aprilID : aprilTagIDs[queuePos]){
                     
-                    posesToAdd[whichPose] = constructPose(xTranslationNT[queuePos][aprilID],
-                        zTranslationNT[queuePos][aprilID],yawRotationNT[queuePos][aprilID],
-                        aprilID, timestampNT[queuePos], cameraNum);
-                    timestampsToAdd[whichPose] = timestampNT[queuePos];
-                    whichPose++;
+                    Pose2d toAdd = constructPose(xTranslationNT[queuePos][aprilID],
+                    zTranslationNT[queuePos][aprilID],yawRotationNT[queuePos][aprilID],
+                    aprilID, timestampNT[queuePos], cameraNum);
+
+                    if(toAdd != null) posesToAdd.add(new VisionPose2d(
+                        toAdd, timestampNT[queuePos],
+                        zTranslationNT[queuePos][aprilID]/confidenceNT[queuePos][aprilID]));
                 }
                 
             }
-            tempPoses = new Pose2d[returnPoses.length+posesToAdd.length];
-            tempTimeStamps = new double[returnTimeStamps.length+timestampsToAdd.length];
-            System.arraycopy(returnPoses, 0, tempPoses, 0, returnPoses.length);
-            System.arraycopy(posesToAdd, 0, tempPoses, returnPoses.length, posesToAdd.length);
-            System.arraycopy(returnTimeStamps, 0, tempTimeStamps, 0, returnTimeStamps.length);
-            System.arraycopy(timestampsToAdd, 0, tempTimeStamps, returnTimeStamps.length, timestampsToAdd.length);
-            returnPoses = tempPoses.clone();
-            returnTimeStamps = tempTimeStamps.clone();
         }
+        // Need to implement this with errors and timestamps effectively
+        
 
-        returnPoses = Arrays.stream(returnPoses).filter(Objects::nonNull).toArray(Pose2d[]::new);
-
-
-        ParallelPoseAdding addPoses = new ParallelPoseAdding(returnPoses, firsttimestamp, null)
+        ParallelPoseAdding addPoses = new ParallelPoseAdding(posesToAdd);
+        addPoses.run();
         // updatePose(
         //         (new Pose2d()).plus(new Transform2d(
         //                 VisionConstants.CAMERATRANSFORMS[cameraNum].getTranslation(), new Rotation2d())),

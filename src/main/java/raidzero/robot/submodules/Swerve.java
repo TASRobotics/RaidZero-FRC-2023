@@ -35,6 +35,7 @@ import raidzero.robot.Constants.DriveConstants;
 import raidzero.robot.Constants.SwerveConstants;
 import raidzero.robot.dashboard.Tab;
 import raidzero.robot.utils.AutoAimController;
+import raidzero.robot.utils.VisionPose2d;
 import raidzero.robot.utils.AutoAimController.AutoAimLocation;
 
 public class Swerve extends Submodule {
@@ -365,16 +366,15 @@ public class Swerve extends Submodule {
         return odometry;
     }
 
-    public synchronized void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds,
-            Matrix<N3, N1> visionMeasurementStdDevs) {
+    public synchronized void addVisionMeasurement(VisionPose2d visionRobotPoseMeters) {
         try {
             // visionMeasurementStdDevs = new MatBuilder<N3, N1>(Nat.N3(),
             // Nat.N1()).fill(0.2, 0.2, 0.1);
             // odometry.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
             odometry.addVisionMeasurement(
                     visionRobotPoseMeters,
-                    timestampSeconds,
-                    visionMeasurementStdDevs);
+                    visionRobotPoseMeters.getTimestamp(),
+                    visionRobotPoseMeters.getVisionErrors());
         } catch (Exception e) {
             System.out.println("Cholesky decomposition failed, reverting...:");
         }
