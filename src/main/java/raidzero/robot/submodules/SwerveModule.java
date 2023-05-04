@@ -285,6 +285,10 @@ public class SwerveModule extends Submodule implements Sendable {
         return error;
     }
 
+    /**
+     * @param throttleOutput
+     * @param rotorOutput
+     */
     public void testThrottleAndRotor(double throttleOutput, double rotorOutput) {
         controlState = ControlState.TESTING;
 

@@ -13,6 +13,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Vision;
+import raidzero.robot.utils.VisionPose2d;
 
 /**
  * Action for following a path.
@@ -65,11 +66,8 @@ public class CubeAlighmentAction implements Action {
             // Transform2d newRobotTransform = new Transform2d(transform.getTranslation(), transform.getRotation().minus(angleDiff));
             
             Pose2d newRobotPose = endPose.plus(angleTransform).plus(transform).plus(angleTransform.inverse());  //newCubePose.plus(newRobotTransform);
-
-            swerve.addVisionMeasurement(newRobotPose, Timer.getFPGATimestamp(),
-            new MatBuilder<N3, N1>(Nat.N3(), Nat.N1()).fill(
-                    0.01  / (Math.abs(vision.getCubePercentArea()) + 1),
-                    0.01 / (Math.abs(vision.getCubePercentArea()) + 1), 1.0));
+            VisionPose2d addingPose = new VisionPose2d(newRobotPose, Timer.getFPGATimestamp(), 0.01  / (Math.abs(vision.getCubePercentArea()) + 1));
+            swerve.addVisionMeasurement(addingPose);
         }
     }
 

@@ -1,21 +1,21 @@
 package raidzero.robot.submodules;
 
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.EnumSet;
+// import java.util.Arrays;
+// import java.util.EnumSet;
 import java.util.LinkedList;
-import java.util.Objects;
-import java.util.concurrent.BlockingDeque;
+// import java.util.Objects;
+// import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiFunction;
-import java.util.function.DoubleToIntFunction;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
+// import java.util.concurrent.ThreadPoolExecutor;
+// import java.util.concurrent.atomic.AtomicReference;
+// import java.util.function.BiFunction;
+// import java.util.function.DoubleToIntFunction;
+// import java.util.stream.DoubleStream;
+// import java.util.stream.IntStream;
 
-import javax.annotation.processing.Generated;
+// import javax.annotation.processing.Generated;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,26 +27,26 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 // import com.fasterxml.jackson.annotation.JsonProperty;
 // import com.fasterxml.jackson.databind.ObjectMapper;
 
-import edu.wpi.first.math.MatBuilder;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.estimator.AngleStatistics;
-import edu.wpi.first.math.estimator.ExtendedKalmanFilter;
-import edu.wpi.first.math.estimator.UnscentedKalmanFilter;
+// import edu.wpi.first.math.MatBuilder;
+// import edu.wpi.first.math.Matrix;
+// import edu.wpi.first.math.Nat;
+// import edu.wpi.first.math.Num;
+// import edu.wpi.first.math.estimator.AngleStatistics;
+// import edu.wpi.first.math.estimator.ExtendedKalmanFilter;
+// import edu.wpi.first.math.estimator.UnscentedKalmanFilter;
 // import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 // import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer.InterpolateFunction;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.numbers.N3;
+// import edu.wpi.first.math.numbers.N1;
+// import edu.wpi.first.math.numbers.N2;
+// import edu.wpi.first.math.numbers.N3;
 // import edu.wpi.first.math.interpolation.Interpolatable;
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.DoublePublisher;
+// import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.IntegerArraySubscriber;
@@ -251,10 +251,10 @@ public class Vision extends Submodule {
         // System.out.println(cameraNum);
         // SmartDashboard.putNumber("Number of Seen Tags", aprilTagIDs.length);
         // if(confidenceNT.length ==0) return null;
-            int totalPoses = 0;
-            for(int[] aprilTagIDhist:aprilTagIDs){
-                totalPoses+=aprilTagIDhist.length;
-            }
+            // int totalPoses = 0;
+            // for(int[] aprilTagIDhist:aprilTagIDs){
+            //     totalPoses+=aprilTagIDhist.length;
+            // }
             
 
             for(int queuePos = 0; queuePos<confidenceNT.length;queuePos++){
