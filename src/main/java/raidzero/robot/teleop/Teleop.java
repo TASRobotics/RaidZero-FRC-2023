@@ -17,6 +17,7 @@ import raidzero.robot.submodules.Intake;
 import raidzero.robot.submodules.Lights;
 import raidzero.robot.submodules.Swerve;
 import raidzero.robot.submodules.Wrist;
+import raidzero.robot.utils.ArmPurePursuit;
 import raidzero.robot.utils.JoystickUtils;
 import raidzero.robot.utils.AutoAimController.AutoAimLocation;
 
@@ -27,7 +28,7 @@ public class Teleop {
     private static XboxController p2 = new XboxController(1);
     private static GenericHID p3 = new GenericHID(2);
 
-    private static final Arm arm = Arm.getInstance();
+    private static final ArmPurePursuit arm = ArmPurePursuit.getInstance();
     private static final Swerve swerve = Swerve.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Intake intake = Intake.getInstance();
@@ -64,12 +65,12 @@ public class Teleop {
         /**
          * p2 controls
          */
-        // p2Loop(p2);
+        p2Loop(p2);
         /**
          * p3 controls
          */
         // mTimer.restart();
-        p3Loop(p3);
+        // p3Loop(p3);
         // p3Time = mTimer.get();
 
         // if(p1Time + p3Time > 0.02) {
@@ -231,50 +232,63 @@ public class Teleop {
             wrist.setPercentSpeed(p.getLeftY() * 0.2);
         } else if (mode == 2) {
             // Human Pickup Station
-            if (p.getYButtonPressed() && !swerve.isOverLimit() && !arm.isGoingHome() &&
-                    arm.isOnTarget()
-                    && arm.isSafe()) {
-                arm.configSmartMotionConstraints(
-                        ArmConstants.LOWER_MAX_VEL * 1.5,
-                        ArmConstants.LOWER_MAX_ACCEL * 1.5,
-                        ArmConstants.UPPER_MAX_VEL * 0.75,
-                        ArmConstants.UPPER_MAX_ACCEL * 0.75);
+            // if (p.getYButtonPressed() && !swerve.isOverLimit() && !arm.isGoingHome() &&
+            //         arm.isOnTarget()
+            //         && arm.isSafe()) {
+            //     arm.configSmartMotionConstraints(
+            //             ArmConstants.LOWER_MAX_VEL * 1.5,
+            //             ArmConstants.LOWER_MAX_ACCEL * 1.5,
+            //             ArmConstants.UPPER_MAX_VEL * 0.75,
+            //             ArmConstants.UPPER_MAX_ACCEL * 0.75);
 
-                arm.moveThreePronged(ArmConstants.INTER_HUMAN_PICKUP_STATION,
-                        ArmConstants.INTER2_HUMAN_PICKUP_STATION,
-                        ArmConstants.HUMAN_PICKUP_STATION, true);
+            //     arm.moveThreePronged(ArmConstants.INTER_HUMAN_PICKUP_STATION,
+            //             ArmConstants.INTER2_HUMAN_PICKUP_STATION,
+            //             ArmConstants.HUMAN_PICKUP_STATION, true);
+            // }
+            if (p.getYButtonPressed()){
+                arm.movePurePursuit(Arm.TargetPosition.HUMAN_PICKUP_STATION);
             }
             // High Grid
-            else if (p.getBButtonPressed() &&
-                    !swerve.isOverLimit() &&
-                    !arm.isGoingHome() &&
-                    arm.isOnTarget() &&
-                    arm.isSafe()) {
-                arm.moveTwoPronged(
-                        ArmConstants.INTER_GRID_HIGH,
-                        ArmConstants.GRID_HIGH,
-                        true);
+            else if (p.getBButtonPressed()){
+                arm.movePurePursuit(Arm.TargetPosition.CUBE_GRID_HIGH);
             }
+            // else if (p.getBButtonPressed() &&
+            //         !swerve.isOverLimit() &&
+            //         !arm.isGoingHome() &&
+            //         arm.isOnTarget() &&
+            //         arm.isSafe()) {
+            //     arm.moveTwoPronged(
+            //             ArmConstants.INTER_GRID_HIGH,
+            //             ArmConstants.GRID_HIGH,
+            //             true);
+            // }
             // Medium Grid
-            else if (p.getAButtonPressed() &&
-                    !swerve.isOverLimit() &&
-                    !arm.isGoingHome() &&
-                    arm.isOnTarget() &&
-                    arm.isSafe()) {
-                arm.moveTwoPronged(
-                        ArmConstants.INTER_GRID_MEDIUM,
-                        ArmConstants.GRID_MEDIUM, true);
+            
+            else if (p.getAButtonPressed()){
+                arm.movePurePursuit(Arm.TargetPosition.CUBE_GRID_MEDIUM);
             }
+            // else if (p.getAButtonPressed() &&
+            //         !swerve.isOverLimit() &&
+            //         !arm.isGoingHome() &&
+            //         arm.isOnTarget() &&
+            //         arm.isSafe()) {
+            //     arm.moveTwoPronged(
+            //             ArmConstants.INTER_GRID_MEDIUM,
+            //             ArmConstants.GRID_MEDIUM, true);
+            // }
             // Floor Intake
-            else if (p.getXButtonPressed() &&
-                    !swerve.isOverLimit() &&
-                    !arm.isGoingHome() &&
-                    arm.isOnTarget() &&
-                    arm.isSafe()) {
-                arm.moveTwoPronged(
-                        ArmConstants.INTER_FLOOR_INTAKE,
-                        ArmConstants.FLOOR_INTAKE, true);
+            else if (p.getXButtonPressed()){
+                arm.movePurePursuit(Arm.TargetPosition.FLOOR_INTAKE);
             }
+            // else if (p.getXButtonPressed() &&
+            //         !swerve.isOverLimit() &&
+            //         !arm.isGoingHome() &&
+            //         arm.isOnTarget() &&
+            //         arm.isSafe()) {
+            //     arm.moveTwoPronged(
+            //             ArmConstants.INTER_FLOOR_INTAKE,
+            //             ArmConstants.FLOOR_INTAKE, true);
+            // }
 
         } else if (mode == 3) {
             // Extension Limits

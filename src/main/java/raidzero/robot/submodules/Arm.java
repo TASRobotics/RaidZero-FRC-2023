@@ -15,11 +15,13 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import raidzero.robot.Constants;
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.Constants.WristConstants;
+import raidzero.robot.utils.ArmPurePursuit;
 
 public class Arm extends Submodule {
 
@@ -63,7 +65,9 @@ public class Arm extends Submodule {
             MotorType.kBrushless);
     private final CANSparkMax mUpperFollower = new CANSparkMax(ArmConstants.UPPER_FOLLOWER_ID,
             MotorType.kBrushless);
+
     private Wrist wrist = Wrist.getInstance();
+
     private final SparkMaxPIDController mLowerPIDController = mLowerLeader.getPIDController();
     private final SparkMaxPIDController mUpperPIDController = mUpperLeader.getPIDController();
 
@@ -85,22 +89,29 @@ public class Arm extends Submodule {
     private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
     private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
 
-    private Arm() {
+    protected Arm() {
         int numLinkages = ArmConstants.LINKAGES;
         state = new Pose2d[numLinkages];
     }
 
     private static Arm instance = null;
 
-    public static Arm getInstance() {
-        if (instance == null) {
-            instance = new Arm();
-        }
-        return instance;
-    }
+    // protected static Arm getInstance() {
+    //     // if (instance == null) {
+    //     //     instance = new Arm();
+    //     // }
+    //     return ArmPurePursuit.getInstance();
+    // }
 
     private enum ControlState {
         OPEN_LOOP, CLOSED_LOOP
+    }
+
+    public enum TargetPosition {
+        HUMAN_PICKUP_STATION,
+        CUBE_GRID_MEDIUM,
+        CUBE_GRID_HIGH,
+        FLOOR_INTAKE,
     }
 
     @Override
@@ -119,6 +130,7 @@ public class Arm extends Submodule {
         zero();
         stage = 0;
         wrist.onInit();
+        
     }
 
     @Override
@@ -133,6 +145,8 @@ public class Arm extends Submodule {
 
         state[0] = new Pose2d(forKin(q)[0], forKin(q)[1], q[0]); // Proximal
         state[1] = new Pose2d(forKin(q)[2], forKin(q)[3], q[1]); // Distal
+        
+        
     }
 
     @Override
@@ -217,6 +231,7 @@ public class Arm extends Submodule {
                 stage %= xWaypointPositions.length;
             }
         }
+
 
         // Check On Path
         // if (Math.abs(state[1].getX() - xWaypointPositions[xWaypointPositions.length -
@@ -727,23 +742,6 @@ public class Arm extends Submodule {
         return relativeAngle;
     }
 
-    private double calcSpeedRatio() {
-        double radius_sq = state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY();
-        double square_diff = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
-                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH;
-        return ArmConstants.UPPER_ARM_LENGTH / (2 * ArmConstants.LOWER_ARM_LENGTH) * (radius_sq)
-                / (radius_sq + square_diff);
-    }
-
-    private void attemptLinearMotion() {
-        double rightTriangleDifference = ArmConstants.LOWER_ARM_LENGTH * ArmConstants.LOWER_ARM_LENGTH
-                - ArmConstants.UPPER_ARM_LENGTH * ArmConstants.UPPER_ARM_LENGTH
-                - state[1].getX() * state[1].getX() - state[1].getY() * state[1].getY();
-        double R = 1 / (2 * state[1].getX() * state[1].getX() + state[1].getY() * state[1].getY())
-                * rightTriangleDifference;
-        double ratio = Math.max(Math.abs(R / (1 + R)), 3);
-        double lower_arm_target_velocity = ArmConstants.TOTAL_MAX_VEL;
-    }
 
     /**
      * Calculates Proximal and Distal Position using Forward Kinematics

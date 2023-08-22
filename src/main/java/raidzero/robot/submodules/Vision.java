@@ -184,13 +184,14 @@ public class Vision extends Submodule {
         zApril = new DoubleArraySubscriber[cameraSubTables.length];
         yawApril = new DoubleArraySubscriber[cameraSubTables.length];
         confidenceApril = new DoubleArraySubscriber[cameraSubTables.length];
+        timeApril = new DoubleSubscriber[cameraSubTables.length];
 
         for(int cameraNum = 0; cameraNum<cameraSubTables.length; cameraNum++){
             timeApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleTopic("Timestamp").subscribe(0);
-            xApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("xTranslation").subscribe(new double[aprilTagIDs.length]);
-            zApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("zTranslation").subscribe(new double[aprilTagIDs.length]);
-            yawApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("yawRotation").subscribe(new double[aprilTagIDs.length]);
-            confidenceApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("yawRotation").subscribe(new double[aprilTagIDs.length]);            
+            xApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("xTranslation").subscribe(new double[aprilTagGlobalPoses.length]);
+            zApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("zTranslation").subscribe(new double[aprilTagGlobalPoses.length]);
+            yawApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("yawRotation").subscribe(new double[aprilTagGlobalPoses.length]);
+            confidenceApril[cameraNum] = table.getSubTable(cameraSubTables[cameraNum]).getDoubleArrayTopic("yawRotation").subscribe(new double[aprilTagGlobalPoses.length]);            
         }
         firsttimestamp = timestamp;
     }
@@ -205,7 +206,7 @@ public class Vision extends Submodule {
         updateCubeValues();
 
         // for (int cameraNum = 0; cameraNum<cameraSubTables.length;cameraNum++) {
-        aprilDetect();
+        // aprilDetect();
         // }
         if (robotPose != null) {
             SmartDashboard.putNumber("April Tag X Pose", robotPose.getX());

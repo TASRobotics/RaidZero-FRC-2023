@@ -2,13 +2,14 @@ package raidzero.robot.auto.actions;
 
 import raidzero.robot.Constants.ArmConstants;
 import raidzero.robot.submodules.Arm;
+import raidzero.robot.utils.ArmPurePursuit;
 import raidzero.robot.utils.TimerBoolean;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class AsyncMoveTwoPronged implements Action {
 
-    private static final Arm arm = Arm.getInstance();
+    private static final ArmPurePursuit arm = ArmPurePursuit.getInstance();
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };

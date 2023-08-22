@@ -414,6 +414,10 @@ public class Constants {
         public static final double UPPER_MAX_ACCEL = 6100;
         public static final double UPPER_MIN_ERROR = 0.0;
 
+        //Speeds for jacobian
+        public static final double STRAIGHT_MAX_ACCEL = 1000;
+        public static final double STRAIGHT_MAX_VEL = 1000;
+
         // Testing Speeds
         // public static final double LOWER_KF = 0.000166;
         // public static final double LOWER_KP = 0.000156;
@@ -439,6 +443,8 @@ public class Constants {
         public static final double PID_WRAPPING_MIN = 0.0;
         public static final double PID_WRAPPING_MAX = 360.0;
         public static final boolean UPPER_LIMIT_ENABLED = false;
+        
+		public static final double LOOK_AHEAD_DISTANCE = 0.1;
     }
 
     public static final class WristConstants {

@@ -2,9 +2,10 @@ package raidzero.robot.auto.actions;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import raidzero.robot.submodules.Arm;
+import raidzero.robot.utils.ArmPurePursuit;
 
 public class AsyncArmHomeAction implements Action {
-    private static final Arm mArm = Arm.getInstance();
+    private static final ArmPurePursuit mArm = ArmPurePursuit.getInstance();
 
     public AsyncArmHomeAction() {
     }
