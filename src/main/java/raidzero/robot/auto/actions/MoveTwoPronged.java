@@ -9,7 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 
 public class MoveTwoPronged implements Action {
 
-    private static final ArmPurePursuit arm = ArmPurePursuit.getInstance();
+    private static final ArmPurePursuit armPurePursuit = ArmPurePursuit.getInstance();
+    private static final Arm arm = Arm.getInstance();
     // Intermediate State Constants
     private double[] xWaypointPositions = { 0, 0, 0 };
     private double[] yWaypointPositions = { 0, 0, 0 };

@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
     private static final Swerve swerve = Swerve.getInstance();
     private static final Vision vision = Vision.getInstance();
     private static final Intake intake = Intake.getInstance();
-    private static final ArmPurePursuit arm = ArmPurePursuit.getInstance();
+    private static final Arm arm = Arm.getInstance();
     private static final Wrist wrist = Wrist.getInstance();
     private static final Lights lights = Lights.getInstance();
 

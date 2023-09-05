@@ -89,19 +89,19 @@ public class Arm extends Submodule {
     private final RelativeEncoder mLowerEncoder = mLowerLeader.getEncoder();
     private final RelativeEncoder mUpperEncoder = mUpperLeader.getEncoder();
 
-    protected Arm() {
+    private Arm() {
         int numLinkages = ArmConstants.LINKAGES;
         state = new Pose2d[numLinkages];
     }
 
     private static Arm instance = null;
 
-    // protected static Arm getInstance() {
-    //     // if (instance == null) {
-    //     //     instance = new Arm();
-    //     // }
-    //     return ArmPurePursuit.getInstance();
-    // }
+    public static Arm getInstance() {
+        if (instance == null) {
+            instance = new Arm();
+        }
+        return instance;
+    }
 
     private enum ControlState {
         OPEN_LOOP, CLOSED_LOOP
@@ -606,26 +606,26 @@ public class Arm extends Submodule {
      * @param target_y     Target Y Distal Position
      * @param target_wrist Target Wrist Angle Position
      */
-    public void moveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
-        stage = 1;
-        onPath = true;
-        double reverse = front ? -1 : 1;
-        xWaypointPositions = new double[3];
-        yWaypointPositions = new double[3];
-        wristWaypointPositions = new double[3];
-        xWaypointPositions[0] = reverse * inter[0];
-        xWaypointPositions[1] = reverse * inter2[0];
-        xWaypointPositions[2] = reverse * target[0];
+    // public void moveThreePronged(double[] inter, double[] inter2, double[] target, boolean front) {
+    //     stage = 1;
+    //     onPath = true;
+    //     double reverse = front ? -1 : 1;
+    //     xWaypointPositions = new double[3];
+    //     yWaypointPositions = new double[3];
+    //     wristWaypointPositions = new double[3];
+    //     xWaypointPositions[0] = reverse * inter[0];
+    //     xWaypointPositions[1] = reverse * inter2[0];
+    //     xWaypointPositions[2] = reverse * target[0];
 
-        yWaypointPositions[0] = inter[1];
-        yWaypointPositions[1] = inter2[1];
-        yWaypointPositions[2] = target[1];
+    //     yWaypointPositions[0] = inter[1];
+    //     yWaypointPositions[1] = inter2[1];
+    //     yWaypointPositions[2] = target[1];
 
-        wristWaypointPositions[0] = inter[2];
-        wristWaypointPositions[1] = inter2[2];
-        wristWaypointPositions[2] = target[2];
-        moveToPoint(new double[] { xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0] });
-    }
+    //     wristWaypointPositions[0] = inter[2];
+    //     wristWaypointPositions[1] = inter2[2];
+    //     wristWaypointPositions[2] = target[2];
+    //     moveToPoint(new double[] { xWaypointPositions[0], yWaypointPositions[0], wristWaypointPositions[0] });
+    // }
 
     public void moveThreePronged(double[] inter, double[] inter2, double[] target) {
         stage = 1;
